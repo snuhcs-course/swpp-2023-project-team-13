@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fooriend-backend"
+name = "backend"
 version = "0.1.0"
 description = ""
 authors = ["eldpswp99 <nrg1392@naver.com>"]
