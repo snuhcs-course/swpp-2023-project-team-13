@@ -1,0 +1,26 @@
+name: 포맷팅
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v2
+
+    - name: 파이썬 환경 설정
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'
+
+    - name: Black install
+      run: pip3 install black==^23.9.1
+
+    - name: check formatting
+      run: black --check .
