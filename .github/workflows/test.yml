@@ -9,7 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-20.04
-    working-directory: ./backend
+    env:
+      working-directory: ./backend
 
     services:
       postgres:
@@ -36,5 +37,7 @@ jobs:
         uses: actions/setup-node@v3
       - name: 의존성 설치
         run: npm install
+        working-directory: ${{env.working-directory}}
       - name: 테스트
         run:  npm test
+        working-directory: ${{env.working-directory}}
