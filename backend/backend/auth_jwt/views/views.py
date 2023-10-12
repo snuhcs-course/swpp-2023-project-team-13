@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import Token, RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from backend.auth.serializer.custom_token_serializer import CustomTokenSerializer
+from backend.auth_jwt.serializer.custom_token_serializer import CustomTokenSerializer
 
 UserModel = get_user_model()
 

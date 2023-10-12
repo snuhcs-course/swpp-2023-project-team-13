@@ -15,16 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-<<<<<<< HEAD
 from django.urls import path, include
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("auth/", include("backend.auth.urls")),
-=======
-from django.urls import path
+from backend.auth_jwt.views.views import LoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
->>>>>>> dc4fedd0575486383600a0ff51b38125118b45d1
+    path("auth_jwt/", LoginView.as_view()),
 ]
