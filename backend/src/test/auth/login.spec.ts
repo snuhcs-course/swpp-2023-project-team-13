@@ -7,6 +7,7 @@ import * as supertest from 'supertest';
 import { User } from '../../user/models/user.entity';
 import { UserFixture } from '../fixture/user.fixture';
 import { HttpStatus } from '@nestjs/common';
+import { validateDtoKeys } from '../utils';
 
 describe('login test', () => {
   let testServer: NestExpressApplication;
@@ -69,6 +70,16 @@ describe('login test', () => {
     expect(user.password).not.toEqual('world');
   });
 
-  it.todo('access token 과 refresh token을 주저야 한다.');
-  it.todo('Response body 형식 체크');
+  it('Response body 형식 체크', async () => {
+    const { body } = await supertest(testServer.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'hello',
+        password: 'world',
+      })
+      .expect(HttpStatus.CREATED);
+
+    validateDtoKeys(body, ['accessToken', 'refreshToken']);
+    expect(body.accessToken).not.toEqual(body.refreshToken);
+  });
 });
