@@ -31,6 +31,7 @@ describe('login test', () => {
     await dataSource.synchronize(true);
 
     user = await UserFixture.create({
+      name: 'hi',
       username: 'hello',
       password: 'world',
     });
@@ -40,16 +41,17 @@ describe('login test', () => {
     supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
+        name: 'hi',
         username: 'hello',
         password: 'world2',
       })
       .expect(HttpStatus.UNAUTHORIZED);
-  });
-
+  })
   it('존재하지 않는 유저로 찾기', async () => {
     await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
+        name: 'hi',
         username: 'asdfasdfasdf',
         password: 'world',
       })
@@ -60,6 +62,7 @@ describe('login test', () => {
     await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
+        name: 'hi',
         username: 'hello',
         password: 'world',
       })

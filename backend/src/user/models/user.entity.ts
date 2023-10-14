@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity, BaseEntity } from 'typeorm';
 import { IssuedAtMetaEntity } from '../../core/models/base.entity';
 import * as bcrypt from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -6,6 +6,8 @@ import * as process from 'process';
 
 @Entity()
 export class User extends IssuedAtMetaEntity {
+  @Column({ type: 'varchar' })
+  name: string;
   @Column({ type: 'varchar' })
   username: string;
   @Column({ type: 'varchar' })
