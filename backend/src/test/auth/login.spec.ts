@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import { appSetting } from '../../main';
 import * as supertest from 'supertest';
-import { User } from '../../user/models/user.entity';
+import { UserEntity } from '../../user/models/user.entity';
 import { UserFixture } from '../fixture/user.fixture';
 import { HttpStatus } from '@nestjs/common';
 import { validateDtoKeys } from '../utils';
@@ -12,7 +12,7 @@ import { validateDtoKeys } from '../utils';
 describe('login test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
-  let user: User;
+  let user: UserEntity;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -46,7 +46,7 @@ describe('login test', () => {
         password: 'world2',
       })
       .expect(HttpStatus.UNAUTHORIZED);
-  })
+  });
   it('존재하지 않는 유저로 찾기', async () => {
     await supertest(testServer.getHttpServer())
       .post('/auth/login')
@@ -62,7 +62,6 @@ describe('login test', () => {
     await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
-        name: 'hi',
         username: 'hello',
         password: 'world',
       })

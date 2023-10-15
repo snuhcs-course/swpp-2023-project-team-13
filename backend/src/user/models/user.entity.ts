@@ -5,7 +5,7 @@ import { sign } from 'jsonwebtoken';
 import * as process from 'process';
 
 @Entity()
-export class User extends IssuedAtMetaEntity {
+export class UserEntity extends IssuedAtMetaEntity {
   @Column({ type: 'varchar' })
   name: string;
   @Column({ type: 'varchar' })

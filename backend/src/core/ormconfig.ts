@@ -3,7 +3,7 @@ import { DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { getEnvFilePath } from './getEnvFilePath';
 import * as path from 'path';
-import { User } from '../user/models/user.entity';
+import { UserEntity } from '../user/models/user.entity';
 
 const envFilePath = getEnvFilePath();
 config({ path: path.resolve(process.cwd(), envFilePath) });
@@ -15,7 +15,7 @@ const ormConfig: DataSourceOptions = {
   username: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DBNAME,
-  entities: [User],
+  entities: [UserEntity],
   synchronize: true,
   migrationsTableName: 'migrations',
   migrations: ['dist/migrations/*.js'],

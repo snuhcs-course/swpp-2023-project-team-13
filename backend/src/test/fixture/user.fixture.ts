@@ -1,4 +1,4 @@
-import { User } from '../../user/models/user.entity';
+import { UserEntity } from '../../user/models/user.entity';
 
 export type UserFixtureProps = {
   name: string;
@@ -8,7 +8,7 @@ export type UserFixtureProps = {
 
 export class UserFixture {
   static create({ name, username, password }: Partial<UserFixtureProps>) {
-    return User.create({
+    return UserEntity.create({
       name: name ?? 'test',
       username: username ?? 'test',
       password: password ?? 'test',
