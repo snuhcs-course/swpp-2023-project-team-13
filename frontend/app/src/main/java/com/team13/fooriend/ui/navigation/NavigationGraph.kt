@@ -19,13 +19,13 @@ fun NavigationGraph(navController: NavHostController){
         composable("signup"){
             SignUpScreen()
         }
-        composable("home"){
+        composable(BottomNavItem.Home.route){
             HomeScreen("admin")
         }
-        composable("social"){
+        composable(BottomNavItem.Social.route){
             SocialScreen()
         }
-        composable("myPage"){
+        composable(BottomNavItem.MyPage.route){
             MyPageScreen()
         }
     }
