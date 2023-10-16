@@ -20,7 +20,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpPage(navController: NavController){
+fun SignUpScreen(navController: NavController){
     val (id, idValue) = remember { mutableStateOf("") }
     val (password, passwordValue) = remember { mutableStateOf("") }
     val (passwordCheck, passwordCheckValue) = remember { mutableStateOf("") }

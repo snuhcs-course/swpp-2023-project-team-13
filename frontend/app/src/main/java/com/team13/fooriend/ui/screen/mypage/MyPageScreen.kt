@@ -35,7 +35,7 @@ import com.team13.fooriend.ui.component.ScreenChangeBar
 
 
 @Composable
-fun MyPage(navController: NavController){
+fun MyPageScreen(navController: NavController){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally

@@ -31,17 +31,17 @@ fun ScreenChangeBar(navController: NavController) {
         }
         Spacer(modifier = Modifier.width(16.dp))
         Button(
-            onClick = { navController.navigate("search") },
+            onClick = { navController.navigate("social") },
             modifier = Modifier.weight(1f)
         ) {
-            Text("Search")
+            Text("Social")
         }
         Spacer(modifier = Modifier.width(16.dp))
         Button(
-            onClick = { navController.navigate("my") },
+            onClick = { navController.navigate("myPage") },
             modifier = Modifier.weight(1f)
         ) {
-            Text("My")
+            Text("My Page")
         }
     }
 }

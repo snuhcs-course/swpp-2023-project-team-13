@@ -16,13 +16,13 @@ import com.team13.fooriend.ui.component.ScreenChangeBar
 
 
 @Composable
-fun HomePage(navController: NavController, nickname : String){
+fun HomeScreen(navController: NavController, nickname : String){
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
-        Text(text = "Home Page")
+        Text(text = "Home Screen")
         Spacer(modifier = Modifier.height(20.dp))
         Text(nickname)
         Button(onClick = {

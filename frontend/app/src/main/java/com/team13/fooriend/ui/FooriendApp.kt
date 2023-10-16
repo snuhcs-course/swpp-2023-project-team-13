@@ -5,11 +5,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.team13.fooriend.ui.screen.home.HomePage
-import com.team13.fooriend.ui.screen.login.LogInPage
-import com.team13.fooriend.ui.screen.mypage.MyPage
-import com.team13.fooriend.ui.screen.search.SearchPage
-import com.team13.fooriend.ui.screen.signup.SignUpPage
+import com.team13.fooriend.ui.screen.home.HomeScreen
+import com.team13.fooriend.ui.screen.login.LogInScreen
+import com.team13.fooriend.ui.screen.mypage.MyPageScreen
+import com.team13.fooriend.ui.screen.signup.SignUpScreen
+import com.team13.fooriend.ui.screen.social.SocialScreen
 
 
 @Composable
@@ -25,26 +25,26 @@ fun FooriendNavHost(navController: NavHostController) {
         startDestination = "login"
     ) {
         composable("login") {
-            LogInPage(navController)
+            LogInScreen(navController)
         }
         composable("signup") {
-            SignUpPage(navController)
+            SignUpScreen(navController)
         }
         composable("home/{nickname}") {
                 backStackEntry ->
-            HomePage(
+            HomeScreen(
                 navController = navController,
                 nickname = backStackEntry.arguments?.getString("nickname") ?: "",
             )
         }
         composable("home") {
-            HomePage(navController, "admin")
+            HomeScreen(navController, "admin")
         }
-        composable("search") {
-            SearchPage(navController)
+        composable("social") {
+            SocialScreen(navController)
         }
-        composable("my") {
-            MyPage(navController)
+        composable("myPage") {
+            MyPageScreen(navController)
         }
     }
 }

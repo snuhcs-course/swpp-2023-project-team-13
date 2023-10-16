@@ -1,4 +1,4 @@
-package com.team13.fooriend.ui.screen.search
+package com.team13.fooriend.ui.screen.social
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +19,7 @@ import com.team13.fooriend.ui.component.ScreenChangeBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchPage(navController: NavController){
+fun SocialScreen(navController: NavController){
     val (search, searchValue) = remember { mutableStateOf("") }
     Column(
         modifier = Modifier.fillMaxSize(),

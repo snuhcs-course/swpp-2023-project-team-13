@@ -20,7 +20,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogInPage(navController: NavController){
+fun LogInScreen(navController: NavController){
     val (id, idValue) = remember { mutableStateOf("") }
     val (password, passwordValue) = remember { mutableStateOf("") }
 
@@ -29,7 +29,7 @@ fun LogInPage(navController: NavController){
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
-        Text(text = "Log In Page")
+        Text(text = "Log In Screen")
         Spacer(modifier = Modifier.height(20.dp))
         TextField(value = id, onValueChange = idValue)
         TextField(value = password, onValueChange = passwordValue)
