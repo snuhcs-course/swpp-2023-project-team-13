@@ -15,12 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(navController: NavController){
+fun SignUpScreen(){
     val (id, idValue) = remember { mutableStateOf("") }
     val (password, passwordValue) = remember { mutableStateOf("") }
     val (passwordCheck, passwordCheckValue) = remember { mutableStateOf("") }
@@ -40,7 +39,7 @@ fun SignUpScreen(navController: NavController){
         TextField(value = nickname, onValueChange = nicknameValue)
         TextField(value = phoneNumber, onValueChange = phoneNumberValue)
         Button(onClick = {
-            navController.navigate("login")
+            // TODO
         }) {
             Text("Sign Up")
         }

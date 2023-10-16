@@ -29,13 +29,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.team13.fooriend.R
-import com.team13.fooriend.ui.component.ScreenChangeBar
 
 
 @Composable
-fun MyPageScreen(navController: NavController){
+fun MyPageScreen(){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -52,7 +50,6 @@ fun MyPageScreen(navController: NavController){
         Spacer(modifier = Modifier.weight(1f))
 
     }
-    ScreenChangeBar(navController)
 }
 
 
