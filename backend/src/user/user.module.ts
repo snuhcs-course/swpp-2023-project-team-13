@@ -3,9 +3,10 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { TypeOrmExModule } from '../typeorm-ex/typeorm-ex.module';
 import { UserRepository } from './repostiories/user.repository';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [TypeOrmExModule.forCustomRepository([UserRepository])],
+  imports: [TypeOrmExModule.forCustomRepository([UserRepository]), JwtModule],
   controllers: [UserController],
   providers: [UserService],
 })

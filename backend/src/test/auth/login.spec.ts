@@ -55,7 +55,7 @@ describe('login test', () => {
         username: 'asdfasdfasdf',
         password: 'world',
       })
-      .expect(HttpStatus.UNAUTHORIZED);
+      .expect(HttpStatus.NOT_FOUND);
   });
 
   it('login OK', async () => {

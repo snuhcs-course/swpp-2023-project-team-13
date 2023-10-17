@@ -11,14 +11,14 @@ export class UserController {
     private readonly userRepository: UserRepository,
   ) {}
 
-  @Post('signup')
-  async signUp(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
+  @Post('/')
+  async signUp(@Body() createUserDto: CreateUserDto) {
     const existingUser = await this.userRepository.findByUsername(
       createUserDto.username,
     );
     if (existingUser) {
       throw new ConflictException('Username already exists');
     }
-    return this.userService.create(createUserDto);
+    await this.userService.create(createUserDto);
   }
 }

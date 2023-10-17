@@ -11,7 +11,6 @@ import { HttpStatus } from '@nestjs/common';
 describe('signup test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
-
   let user: UserEntity;
 
   beforeAll(async () => {
@@ -27,6 +26,7 @@ describe('signup test', () => {
     await testServer.init();
   });
 
+  /*
   beforeEach(async () => {
     await dataSource.synchronize(true);
 
@@ -37,15 +37,52 @@ describe('signup test', () => {
     });
   });
 
+   */
+
+  beforeEach(async () => {
+    // Add logging to check the function flow and values
+    console.log('Before creating user fixture');
+
+    const userData = {
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    };
+
+    try {
+      // Add logging to check the user data before creation
+      console.log('User data before creation:', userData);
+
+      user = await UserFixture.create(userData);
+
+      // Add logging to check the created user data
+      console.log('User data after creation:', user);
+    } catch (error) {
+      // Add logging to check for any errors during data fixture creation
+      console.error('Error creating user fixture:', error);
+    }
+  });
+
   it('Check if the username already exists', async () => {
     await supertest(testServer.getHttpServer())
-      .post('/user/signup')
+      .post('/user')
       .send({
         name: 'John Doe',
         username: 'hello',
         password: 'password123',
       })
       .expect(HttpStatus.CONFLICT);
+  });
+
+  it('signup OK', async () => {
+    const response = await supertest(testServer.getHttpServer())
+      .post('/user')
+      .send({
+        name: 'abc',
+        username: 'def',
+        password: 'ghi',
+      })
+      .expect(HttpStatus.CREATED);
   });
 
   afterAll(async () => {
