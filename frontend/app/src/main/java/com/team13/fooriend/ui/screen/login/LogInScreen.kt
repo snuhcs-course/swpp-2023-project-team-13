@@ -20,7 +20,11 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogInScreen(){
+fun LogInScreen(
+    onClick : () -> Unit = {},
+    onSignUpClick : () -> Unit = {},
+    onForgotClick : () -> Unit = {}
+){
     val (id, idValue) = remember { mutableStateOf("") }
     val (password, passwordValue) = remember { mutableStateOf("") }
 
@@ -35,13 +39,13 @@ fun LogInScreen(){
         TextField(value = password, onValueChange = passwordValue)
         Button(onClick = {
             if(id.isNotEmpty() && password.isNotEmpty()){
-                // TODO
+                onClick()
             }
         }) {
             Text("Log In")
         }
         Button(onClick = {
-            // TODO
+            onSignUpClick()
         }) {
             Text("Sign Up")
         }

@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpScreen(){
+fun SignUpScreen(
+    onSignUpClick : () -> Unit = {}
+){
     val (id, idValue) = remember { mutableStateOf("") }
     val (password, passwordValue) = remember { mutableStateOf("") }
     val (passwordCheck, passwordCheckValue) = remember { mutableStateOf("") }
@@ -40,7 +42,7 @@ fun SignUpScreen(){
         TextField(value = nickname, onValueChange = nicknameValue)
         TextField(value = phoneNumber, onValueChange = phoneNumberValue)
         Button(onClick = {
-            // TODO
+            onSignUpClick()
         }) {
             Text("Sign Up")
         }
