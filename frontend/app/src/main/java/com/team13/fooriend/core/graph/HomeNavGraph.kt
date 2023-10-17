@@ -10,7 +10,9 @@ import com.team13.fooriend.ui.screen.mypage.MyPageScreen
 import com.team13.fooriend.ui.screen.social.SocialScreen
 
 @Composable
-fun HomeNavGraph(navController: NavHostController) {
+fun HomeNavGraph(
+    navController: NavHostController,
+) {
     NavHost(
         navController = navController,
         route = Graph.HOME,

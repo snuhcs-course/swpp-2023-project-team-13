@@ -10,6 +10,5 @@ import com.team13.fooriend.core.graph.RootNavigationGraph
 @Composable
 fun FooriendApp() {
     val navController = rememberNavController()
-    //BottomBar(navController = navController)
     RootNavigationGraph(navController = navController)
 }
