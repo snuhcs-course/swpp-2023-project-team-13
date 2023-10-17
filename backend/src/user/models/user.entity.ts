@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, Entity, BaseEntity } from 'typeorm';
 import { IssuedAtMetaEntity } from '../../core/models/base.entity';
 import * as bcrypt from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import { JwtPayload, sign } from 'jsonwebtoken';
 import * as process from 'process';
 import { TokenDto } from '../../auth/controller/out-dtos/token.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -64,17 +64,12 @@ export class UserEntity extends IssuedAtMetaEntity {
       secret: process.env.REFRESH_SECRET,
     });
 
-    const user = await this.userRepository.findOne(decodedToken.id);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-
     //new access token
+    //create acccess token으로
     const accessToken = this.jwtService.sign(
-      { id: user.id, username: user.username },
+      { id: this.id, username: this.username },
       { secret: process.env.ACCESS_SECRET, expiresIn: '1d' },
     );
-
     return new TokenDto(accessToken, refreshToken);
   }
 }

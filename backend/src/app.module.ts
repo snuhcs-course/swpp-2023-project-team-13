@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as ormConfig from './core/ormconfig';
 import { getEnvFilePath } from './core/getEnvFilePath';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { getEnvFilePath } from './core/getEnvFilePath';
     }),
     TypeOrmModule.forRoot(ormConfig),
     UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

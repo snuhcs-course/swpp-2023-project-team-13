@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserEntity } from '../../user/models/user.entity';
@@ -16,8 +20,12 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       },
     });
 
-    if (user && user.checkPasswordMatches(password)) {
+    if (user == null) {
+      throw new NotFoundException();
+    } else if (user && user.checkPasswordMatches(password)) {
       return user;
-    } else throw new UnauthorizedException();
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 }
