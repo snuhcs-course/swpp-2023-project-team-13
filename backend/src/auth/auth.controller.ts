@@ -34,8 +34,4 @@ export class AuthController {
 
   //validate access token
   //
-
-  //validate refresh token
-  //@Post('refresh')
-  //@UseGuards(AuthGuard('jwt-refresh'))
 }

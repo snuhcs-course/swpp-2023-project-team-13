@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, Entity, BaseEntity } from 'typeorm';
+import { BeforeInsert, Column, Entity, BaseEntity, OneToMany } from 'typeorm';
 import { IssuedAtMetaEntity } from '../../core/models/base.entity';
 import * as bcrypt from 'bcrypt';
 import { sign } from 'jsonwebtoken';
@@ -7,6 +7,7 @@ import { TokenDto } from '../../auth/controller/out-dtos/token.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../repostiories/user.repository';
+import { ReviewEntity } from '../../review/models/review.entity';
 
 @Entity()
 export class UserEntity extends IssuedAtMetaEntity {
@@ -16,6 +17,8 @@ export class UserEntity extends IssuedAtMetaEntity {
   username: string;
   @Column({ type: 'varchar' })
   password: string;
+  @OneToMany(() => ReviewEntity, (review) => review.user)
+  reviews: ReviewEntity[];
 
   private jwtService: JwtService;
   private userRepository: UserRepository;
@@ -64,14 +67,9 @@ export class UserEntity extends IssuedAtMetaEntity {
       secret: process.env.REFRESH_SECRET,
     });
 
-    const user = await this.userRepository.findOne(decodedToken.id);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-
     //new access token
     const accessToken = this.jwtService.sign(
-      { id: user.id, username: user.username },
+      { id: this.id, username: this.username },
       { secret: process.env.ACCESS_SECRET, expiresIn: '1d' },
     );
 

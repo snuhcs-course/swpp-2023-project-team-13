@@ -5,7 +5,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from '../auth.service';
 import { JwtService } from '@nestjs/jwt';
 
-export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class AccessTokenStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-access',
+) {
   constructor(
     private authService: AuthService,
     private jwtService: JwtService,
@@ -15,6 +18,8 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
       secretOrKey: process.env.ACCESS_SECRET,
     });
   }
+
+  public validate(tokenPayload: { id: number; username: string }) {}
 
   public validateToken(token: string): any {
     const secretKey = process.env.ACCESS_SECRET;
