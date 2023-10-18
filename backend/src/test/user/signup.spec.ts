@@ -7,11 +7,13 @@ import * as supertest from 'supertest';
 import { UserEntity } from '../../user/models/user.entity';
 import { UserFixture } from '../fixture/user.fixture';
 import { HttpStatus } from '@nestjs/common';
+import { UserRepository } from '../../user/repostiories/user.repository';
 
 describe('signup test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
+  let userRepository: UserRepository;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -26,7 +28,6 @@ describe('signup test', () => {
     await testServer.init();
   });
 
-  /*
   beforeEach(async () => {
     await dataSource.synchronize(true);
 
@@ -36,42 +37,39 @@ describe('signup test', () => {
       password: 'world',
     });
   });
-
-   */
+  /*
 
   beforeEach(async () => {
-    // Add logging to check the function flow and values
+    await dataSource.synchronize(true);
+
     console.log('Before creating user fixture');
 
-    const userData = {
+    let userData = await UserFixture.create({
       name: 'hi',
       username: 'hello',
       password: 'world',
-    };
+    });
 
     try {
-      // Add logging to check the user data before creation
       console.log('User data before creation:', userData);
 
       user = await UserFixture.create(userData);
 
-      // Add logging to check the created user data
       console.log('User data after creation:', user);
     } catch (error) {
-      // Add logging to check for any errors during data fixture creation
       console.error('Error creating user fixture:', error);
     }
   });
-
+*/
   it('Check if the username already exists', async () => {
-    await supertest(testServer.getHttpServer())
-      .post('/user')
-      .send({
-        name: 'John Doe',
-        username: 'hello',
-        password: 'password123',
-      })
-      .expect(HttpStatus.CONFLICT);
+    await supertest(testServer.getHttpServer()).post('/user').send({
+      name: 'John Doe',
+      username: 'hello',
+      password: 'password123',
+    });
+    expect(HttpStatus.CONFLICT);
+
+    expect(await UserEntity.count()).toBe(1);
   });
 
   it('signup OK', async () => {
@@ -85,9 +83,22 @@ describe('signup test', () => {
       .expect(HttpStatus.CREATED);
   });
 
+  /*
   afterAll(async () => {
     await dataSource.synchronize(true);
 
     await testServer.close();
   });
+  /*
+
+  afterAll(async () => {
+    const createdUser = await userRepository.findByUsername('def');
+
+    if (createdUser) {
+      console.log('유저가 데이터베이스에 등록되었습니다:', createdUser);
+    } else {
+      console.error('유저 등록에 실패하였습니다.');
+    }
+  });
+   */
 });

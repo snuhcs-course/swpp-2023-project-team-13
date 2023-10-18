@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as ormConfig from './core/ormconfig';
 import { getEnvFilePath } from './core/getEnvFilePath';
 import { ReviewModule } from './review/review.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ReviewModule } from './review/review.module';
     TypeOrmModule.forRoot(ormConfig),
     UserModule,
     ReviewModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

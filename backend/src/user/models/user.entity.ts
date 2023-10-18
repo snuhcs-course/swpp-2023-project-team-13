@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, Entity, BaseEntity, OneToMany } from 'typeorm';
 import { IssuedAtMetaEntity } from '../../core/models/base.entity';
 import * as bcrypt from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import { JwtPayload, sign } from 'jsonwebtoken';
 import * as process from 'process';
 import { TokenDto } from '../../auth/controller/out-dtos/token.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -68,11 +68,11 @@ export class UserEntity extends IssuedAtMetaEntity {
     });
 
     //new access token
+    //create acccess token으로
     const accessToken = this.jwtService.sign(
       { id: this.id, username: this.username },
       { secret: process.env.ACCESS_SECRET, expiresIn: '1d' },
     );
-
     return new TokenDto(accessToken, refreshToken);
   }
 }

@@ -10,4 +10,13 @@ export class AuthService {
     private userRepository: UserRepository,
     private jwtService: JwtService,
   ) {}
+
+  async validateUserByToken(payload: JwtPayload) {
+    const { username } = payload;
+    const user = await this.userRepository.findByUsername(username);
+    if (!user) {
+      return null;
+    }
+    return user;
+  }
 }
