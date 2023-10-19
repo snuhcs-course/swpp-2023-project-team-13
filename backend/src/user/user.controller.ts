@@ -20,7 +20,9 @@ import { JwtAccessGuard } from '../auth/guards';
 import { UserRequest } from '../core/user-request';
 import { ChangePasswordDto } from './in-dtos/changePasswordDto';
 import { ApiOperation } from '@nestjs/swagger';
-import { UserInfoDto } from './out-dtos/user-info.dto';
+import { UserInfoDto } from './out-dtos/userInfo.dto';
+import { UserListDto } from './out-dtos/userList.dto';
+import stringSimilarity from 'string-similarity-js';
 
 @Controller('user')
 export class UserController {
@@ -84,5 +86,18 @@ export class UserController {
     const followingCount = await user.getFollowingCount();
 
     return new UserInfoDto(user, followerCount, followingCount);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/search/:name')
+  async search(@Param('name') name: string) {
+    const users = await this.userRepository.searchUserByUsernameSorted(name);
+
+    users.sort(
+      (a, b) =>
+        -stringSimilarity(a.name, name) + stringSimilarity(b.name, name),
+    );
+
+    return new UserListDto(users);
   }
 }

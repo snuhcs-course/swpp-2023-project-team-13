@@ -18,4 +18,10 @@ export class UserRepository extends Repository<UserEntity> {
     }
     return user;
   }
+
+  async searchUserByUsernameSorted(name: string) {
+    return await this.createQueryBuilder('user')
+      .where('user.name ILIKE :name', { name: `%${name}%` })
+      .getMany();
+  }
 }
