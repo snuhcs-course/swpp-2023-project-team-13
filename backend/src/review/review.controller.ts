@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
   Req,
@@ -22,6 +23,7 @@ import { JwtAccessGuard } from '../auth/guards';
 import { ReviewRepository } from './repositories/review.repository';
 import { ReviewListDto } from './dtos/out-dtos/reviewList.dto';
 import { ImageUploadDto } from './dtos/out-dtos/imageUpload.dto';
+import { ReviewDetailDto } from './dtos/out-dtos/reviewDetail.dto';
 
 @ApiTags('reviews')
 @Controller('reviews')
@@ -51,6 +53,18 @@ export class ReviewController {
       await this.reviewRepository.findOfRestaurantId(restaurantId);
 
     return new ReviewListDto(reviews);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/:reviewId')
+  async getReviewDetail(
+    @Req() { user }: UserRequest,
+    @Param('reviewId') reviewId: number,
+  ) {
+    const review = await this.reviewRepository.findOfReviewId(reviewId);
+
+    if (!review) throw new NotFoundException('리뷰를 찾을 수 없습니다.');
+    return new ReviewDetailDto(review, review.user);
   }
 
   @UseGuards(JwtAccessGuard)

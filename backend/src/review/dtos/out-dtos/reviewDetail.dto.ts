@@ -14,21 +14,17 @@ export class ReviewDetailDto {
   private user: UserSummaryDto;
 
   constructor(
-    {
-      id,
-      content,
-      images,
-      receiptImage,
-      getIssuedAt,
-      restaurant,
-    }: ReviewEntity,
+    review: ReviewEntity,
+
     user: UserEntity,
   ) {
+    const { id, content, images, receiptImage, restaurant } = review;
+
     this.id = id;
     this.content = content;
     this.images = images.map((image) => new ImageDto(image));
     this.receiptImage = receiptImage ? new ImageDto(receiptImage) : null;
-    this.issuedAt = getIssuedAt().toISO()!;
+    this.issuedAt = review.getIssuedAt().toString();
     this.restaurant = new RestaurantDto(restaurant);
     this.user = new UserSummaryDto(user);
   }

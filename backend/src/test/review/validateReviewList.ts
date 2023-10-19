@@ -2,9 +2,12 @@ import { validateDtoKeys } from '../utils';
 
 export function validateReviewList(body: any) {
   validateDtoKeys(body, ['reviewList']);
+  for (const review of body.reviewList) {
+    validateReview(review);
+  }
 }
 
-function validateReview(body: any) {
+export function validateReview(body: any) {
   validateDtoKeys(body, [
     'id',
     'content',

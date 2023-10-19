@@ -23,6 +23,6 @@ export class ReviewFixture {
       user,
       images: images ?? [],
       content: content ?? 'content',
-    });
+    }).save();
   }
 }
