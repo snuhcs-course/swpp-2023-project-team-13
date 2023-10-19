@@ -107,6 +107,7 @@ describe('update password test', () => {
 
     validateDtoKeys(body, ['userList']);
 
+    expect(body.userList.length).toBe(4);
     expect(body.userList[0].name).toBe('hi');
     expect(body.userList[1].name).toBe('hi123');
     expect(body.userList[2].name).toBe('hi1515');
