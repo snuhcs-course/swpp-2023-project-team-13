@@ -7,6 +7,7 @@ import { appSetting } from '../../main';
 import { UserFixture } from '../fixture/user.fixture';
 import * as supertest from 'supertest';
 import { HttpStatus } from '@nestjs/common';
+import { canReferenceNode } from '@nestjs/swagger/dist/plugin/utils/plugin-utils';
 
 describe('refresh test', () => {
   let testServer: NestExpressApplication;
@@ -35,7 +36,22 @@ describe('refresh test', () => {
     });
   });
 
-  it('should generate new access and refresh tokens with current refresh token', async () => {
+  it('should not generate new tokens with wrong refresh token', async () => {
+    const loginResponse = await supertest(testServer.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'hello',
+        password: 'world',
+      });
+    const refreshToken = 'wrongRefreshToken';
+
+    const refreshResponse = await supertest(testServer.getHttpServer())
+      .post('/auth/refresh')
+      .set('Authorization', `Bearer ${refreshToken}`)
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
+
+  it('should generate new tokens with current refresh token', async () => {
     const loginResponse = await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
