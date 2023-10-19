@@ -1,5 +1,12 @@
-import { IsArray, IsNumber, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { RestaurantDto } from './restaurant.dto';
+import { Type } from 'class-transformer';
 
 export class CreateReviewDto {
   @IsString()
@@ -10,8 +17,10 @@ export class CreateReviewDto {
   imageIds: number[];
 
   @IsNumber()
-  receiptImageId: number;
+  @IsOptional()
+  receiptImageId?: number;
 
   @ValidateNested()
+  @Type(() => RestaurantDto)
   restaurant: RestaurantDto;
 }

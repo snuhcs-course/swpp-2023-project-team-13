@@ -5,9 +5,6 @@ import { ReviewEntity } from './review.entity';
 @Entity()
 export class RestaurantEntity extends IssuedAtMetaEntity {
   @Column({ type: 'varchar' })
-  name: string;
-
-  @Column({ type: 'varchar' })
   googleMapPlaceId: string;
 
   @Column({ type: 'float8' })

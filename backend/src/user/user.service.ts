@@ -3,14 +3,10 @@ import { UserEntity } from './models/user.entity';
 import { CreateUserDto } from './in-dtos/createuser.dto';
 import { UserRepository } from './repostiories/user.repository';
 import { TokenDto } from '../auth/controller/out-dtos/token.dto';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private userRepository: UserRepository,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private userRepository: UserRepository) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const { name, username, password } = createUserDto;

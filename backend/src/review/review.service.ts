@@ -23,7 +23,7 @@ export class ReviewService {
     const restaurant =
       await this.restaurantRepository.findOrCreate(restaurantDto);
     const images = await this.imageRepository.findBy({
-      id: In(imageIds.concat([receiptImageId])),
+      id: In(imageIds.concat([receiptImageId ?? -1])),
     });
     const receiptImage = images.find((image) => image.id === receiptImageId);
     if (receiptImage) {
