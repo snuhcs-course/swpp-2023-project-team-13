@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.google.android.gms.maps.model.LatLng
+import com.team13.fooriend.ui.screen.home.MyMap
 import com.team13.fooriend.ui.util.LineType
 import com.team13.fooriend.ui.util.getCurrentLocation
 

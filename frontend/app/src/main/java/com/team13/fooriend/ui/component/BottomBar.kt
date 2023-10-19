@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.component
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,12 +21,12 @@ import com.team13.fooriend.ui.navigation.BottomNavItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(context: Context, navController: NavHostController) {
     Scaffold(
         bottomBar = { BottomNavigation(navController = navController) }
     ) {
         Box(Modifier.padding(it)){
-            HomeNavGraph(navController = navController)
+            HomeNavGraph(context = context, navController = navController)
         }
     }
 }

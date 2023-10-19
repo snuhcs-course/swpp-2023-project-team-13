@@ -11,8 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.team13.fooriend.ui.FooriendApp
 import com.team13.fooriend.ui.LocationPermissionScreen
-import com.team13.fooriend.ui.MapScreen
 import com.team13.fooriend.ui.theme.FooriendTheme
 import com.team13.fooriend.ui.util.checkForPermission
 
@@ -24,7 +24,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            // FooriendApp()
             FooriendTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (hasLocationPermission) {
-                        MapScreen(this)
+                        FooriendApp(this)
                     } else {
                         LocationPermissionScreen {
                             hasLocationPermission = true

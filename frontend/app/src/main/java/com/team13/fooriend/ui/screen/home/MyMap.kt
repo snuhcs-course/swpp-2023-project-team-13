@@ -1,4 +1,4 @@
-package com.team13.fooriend.ui
+package com.team13.fooriend.ui.screen.home
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box

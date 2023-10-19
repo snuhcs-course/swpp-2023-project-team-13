@@ -1,5 +1,6 @@
 package com.team13.fooriend.core.graph
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,6 +12,7 @@ import com.team13.fooriend.ui.screen.social.SocialScreen
 
 @Composable
 fun HomeNavGraph(
+    context: Context,
     navController: NavHostController,
 ) {
     NavHost(
@@ -19,7 +21,7 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         composable(route = BottomNavItem.Home.route) {
-            HomeScreen(nickname = "admin")
+            HomeScreen(nickname = "admin", context)
         }
         composable(route = BottomNavItem.Social.route) {
             SocialScreen()
