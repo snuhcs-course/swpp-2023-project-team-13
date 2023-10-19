@@ -8,7 +8,6 @@ import { UserEntity } from '../../user/models/user.entity';
 import { UserFixture } from '../fixture/user.fixture';
 import { HttpStatus } from '@nestjs/common';
 import { UserRepository } from '../../user/repostiories/user.repository';
-import * as console from 'console';
 import { ReviewEntity } from '../../review/models/review.entity';
 
 describe('signup test', () => {

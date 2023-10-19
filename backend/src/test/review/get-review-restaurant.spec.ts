@@ -64,7 +64,7 @@ describe('Review test', () => {
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/restaurant/${restaurant.id}`)
+      .get(`/reviews/restaurants/${restaurant.id}`)
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
@@ -90,6 +90,6 @@ describe('Review test', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    expect(body.images).toStrictEqual([]);
+    expect(body.reviewList).toStrictEqual([]);
   });
 });

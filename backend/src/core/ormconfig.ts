@@ -7,6 +7,7 @@ import { UserEntity } from '../user/models/user.entity';
 import { ReviewEntity } from '../review/models/review.entity';
 import { RestaurantEntity } from '../review/models/restaurant.entity';
 import { ImageEntity } from '../review/models/image.entity';
+import { FollowEntity } from '../user/models/follow.entity';
 
 const envFilePath = getEnvFilePath();
 config({ path: path.resolve(process.cwd(), envFilePath) });
@@ -18,7 +19,13 @@ const ormConfig: DataSourceOptions = {
   username: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DBNAME,
-  entities: [UserEntity, ReviewEntity, RestaurantEntity, ImageEntity],
+  entities: [
+    UserEntity,
+    ReviewEntity,
+    RestaurantEntity,
+    ImageEntity,
+    FollowEntity,
+  ],
   synchronize: true,
   migrationsTableName: 'migrations',
   migrations: ['dist/migrations/*.js'],

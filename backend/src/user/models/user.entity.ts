@@ -1,12 +1,12 @@
-import { BeforeInsert, Column, Entity, BaseEntity, OneToMany } from 'typeorm';
+import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import { IssuedAtMetaEntity } from '../../core/models/base.entity';
 import * as bcrypt from 'bcrypt';
-import { JwtPayload, sign } from 'jsonwebtoken';
+import { sign } from 'jsonwebtoken';
 import * as process from 'process';
-import { TokenDto } from '../../auth/controller/out-dtos/token.dto';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { UserRepository } from '../repostiories/user.repository';
 import { ReviewEntity } from '../../review/models/review.entity';
+import { FollowEntity } from './follow.entity';
 
 @Entity()
 export class UserEntity extends IssuedAtMetaEntity {
@@ -21,13 +21,19 @@ export class UserEntity extends IssuedAtMetaEntity {
 
   private userRepository: UserRepository;
 
+  @OneToMany(() => FollowEntity, (follow) => follow.user)
+  followers: FollowEntity[];
+
+  @OneToMany(() => FollowEntity, (follow) => follow.follower)
+  followings: FollowEntity[];
+
   checkPasswordMatches(password: string): boolean {
     return bcrypt.compareSync(password, this.password);
   }
 
   @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
+  async hashPasswordOnInsert() {
+    this.hashPassword(this.password);
   }
 
   createToken() {
@@ -57,5 +63,46 @@ export class UserEntity extends IssuedAtMetaEntity {
       id: this.id,
       username: this.username,
     };
+  }
+
+  async updatePassword(newPassword: string) {
+    this.hashPassword(newPassword);
+    await this.save();
+  }
+
+  private hashPassword(password: string) {
+    this.password = bcrypt.hashSync(password, 10);
+  }
+
+  async follow(user: UserEntity) {
+    return FollowEntity.create({
+      user: this,
+      follower: user,
+    }).save();
+  }
+
+  async unfollow(follow: FollowEntity) {
+    await follow.softRemove();
+  }
+
+  async findFollow(followUser: UserEntity) {
+    return await FollowEntity.findOne({
+      where: {
+        user: { id: this.id },
+        follower: { id: followUser.id },
+      },
+    });
+  }
+
+  getFollowerCount() {
+    return FollowEntity.countBy({
+      follower: { id: this.id },
+    });
+  }
+
+  getFollowingCount() {
+    return FollowEntity.countBy({
+      user: { id: this.id },
+    });
   }
 }
