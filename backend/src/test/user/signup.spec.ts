@@ -93,8 +93,6 @@ describe('signup test', () => {
       })
       .expect(HttpStatus.CREATED);
 
-    console.log(response.body.username);
-
     const userEntity = await UserEntity.findOneOrFail({
       where: {
         username: 'def',
