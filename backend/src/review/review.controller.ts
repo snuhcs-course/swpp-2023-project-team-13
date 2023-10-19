@@ -21,6 +21,7 @@ import { ReviewService } from './review.service';
 import { JwtAccessGuard } from '../auth/guards';
 import { ReviewRepository } from './repositories/review.repository';
 import { ReviewListDto } from './dtos/out-dtos/reviewList.dto';
+import { ImageUploadDto } from './dtos/out-dtos/imageUpload.dto';
 
 @ApiTags('reviews')
 @Controller('reviews')
@@ -57,6 +58,7 @@ export class ReviewController {
   @ApiBody({
     description: 'file 라는 이름으로 multipart/form-data 파일을 넣어주세요.',
   })
+  @Post('/images')
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const extension = file?.originalname.split('.').pop() ?? 'jpg';
 
@@ -68,6 +70,6 @@ export class ReviewController {
       url: cdnUrl,
     }).save();
 
-    return new ImageDto(image);
+    return new ImageUploadDto(image);
   }
 }

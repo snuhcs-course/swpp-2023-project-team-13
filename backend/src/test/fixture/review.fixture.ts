@@ -19,8 +19,7 @@ export class ReviewFixture {
     content,
   }: Partial<ReviewFixtureProps>) {
     return ReviewEntity.create({
-      restaurant:
-        restaurant ?? (await RestaurantFixture.create({ name: '홍길동' })),
+      restaurant: restaurant ?? (await RestaurantFixture.create({})),
       user,
       images: images ?? [],
       content: content ?? 'content',

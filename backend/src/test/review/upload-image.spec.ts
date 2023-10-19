@@ -13,6 +13,8 @@ import { ReviewEntity } from '../../review/models/review.entity';
 import { ReviewFixture } from '../fixture/review.fixture';
 import { ImageFixture } from '../fixture/image.fixture';
 import { validateReviewList } from './validateReviewList';
+import { ImageEntity } from '../../review/models/image.entity';
+import { validateDtoKeys } from '../utils';
 
 describe('Review test', () => {
   let testServer: NestExpressApplication;
@@ -62,34 +64,55 @@ describe('Review test', () => {
     });
   });
 
-  it('unauthorized', async () => {
-    await supertest(testServer.getHttpServer())
-      .get(`/reviews/restaurant/${restaurant.id}`)
-      .expect(HttpStatus.UNAUTHORIZED);
-  });
+  describe('image upload', () => {
+    it('Unauthorized', async () => {
+      await supertest(testServer.getHttpServer())
+        .post('/reviews/images')
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
 
-  it('OK', async () => {
-    await supertest(testServer.getHttpServer())
-      .get(`/reviews/restaurants/${restaurant.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-  });
+    it('파일은 한개만', async () => {
+      await supertest(testServer.getHttpServer())
+        .post('/reviews/images')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('file', 'src/test/static/test1.png')
+        .attach('file', 'src/test/static/test2.png')
+        .expect(HttpStatus.BAD_REQUEST);
+    });
 
-  it('DTO check', async () => {
-    const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/restaurants/${restaurant.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
+    it('SUCCESS', async () => {
+      await supertest(testServer.getHttpServer())
+        .post('/reviews/images')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('file', 'src/test/static/test1.png')
+        .expect(HttpStatus.CREATED);
+    });
 
-    validateReviewList(body);
-  });
+    it('DTO check', async () => {
+      const { body } = await supertest(testServer.getHttpServer())
+        .post('/reviews/images')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('file', 'src/test/static/test1.png')
+        .expect(HttpStatus.CREATED);
 
-  it('레스트랑 없으면 빈 배열 준다', async () => {
-    const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/restaurants/999999`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
+      validateDtoKeys(body, ['id', 'url', 'isReceiptVerified']);
+    });
 
-    expect(body.images).toStrictEqual([]);
+    it('Count', async () => {
+      await supertest(testServer.getHttpServer())
+        .post('/reviews/images')
+        .set('Authorization', `Bearer ${accessToken}`)
+
+        .attach('file', 'src/test/static/test1.png')
+        .expect(HttpStatus.CREATED);
+
+      await supertest(testServer.getHttpServer())
+        .post('/reviews/images')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .attach('file', 'src/test/static/test1.png')
+        .expect(HttpStatus.CREATED);
+
+      expect(await ImageEntity.count()).toBe(3);
+    });
   });
 });
