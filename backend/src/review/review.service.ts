@@ -5,6 +5,8 @@ import { RestaurantRepository } from './repositories/restaurant.repository';
 import { ImageRepository } from './repositories/image.repository';
 import { In } from 'typeorm';
 import { ReviewEntity } from './models/review.entity';
+import { ReviewAdjacentQueryDto } from './dtos/in-dtos/review-adjacent-query.dto';
+import { getDistance } from 'geolib';
 
 @Injectable()
 export class ReviewService {
@@ -36,5 +38,20 @@ export class ReviewService {
       restaurant,
       images,
     }).save();
+  }
+
+  async getAdjacentRestaurant(data: ReviewAdjacentQueryDto) {
+    const { longitude, latitude, distance } = data;
+    const restaurants = await this.restaurantRepository.find({});
+    const KILOMETER = 1000;
+
+    return restaurants.filter(
+      (restaurant) =>
+        getDistance(
+          { latitude, longitude },
+          { latitude: restaurant.latitude, longitude: restaurant.longitude },
+        ) <=
+        distance * KILOMETER,
+    );
   }
 }

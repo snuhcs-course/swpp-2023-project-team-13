@@ -23,6 +23,13 @@ export function validateReview(body: any) {
   validateImages(body.images);
 }
 
+export function validateRestaurantList(body: any) {
+  validateDtoKeys(body, ['restaurantList']);
+  for (const restaurant of body.restaurantList) {
+    validateRestaurant(restaurant);
+  }
+}
+
 export function validateRestaurant(body: any) {
   validateDtoKeys(body, ['id', 'googleMapPlaceId', 'longitude', 'latitude']);
 }
