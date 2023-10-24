@@ -35,7 +35,7 @@ export class ReviewRepository extends Repository<ReviewEntity> {
     return find[0];
   }
 
-  private findFull(options: FindOptionsWhere<ReviewEntity>) {
+  findFull(options: FindOptionsWhere<ReviewEntity>) {
     return this.find({
       where: options,
       relations: {
@@ -43,5 +43,21 @@ export class ReviewRepository extends Repository<ReviewEntity> {
         user: true,
       },
     });
+  }
+
+  findOfUserId(username: string) {
+    return this.findFull({
+      user: {
+        username: username,
+      },
+    });
+  }
+
+  findRandomReviews(limit: number) {
+    return this.createQueryBuilder()
+      .select()
+      .orderBy('RAND()') // for MySQL. Change this according to your database
+      .take(limit)
+      .getMany();
   }
 }
