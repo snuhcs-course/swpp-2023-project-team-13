@@ -12,9 +12,13 @@ import { RestaurantFixture } from '../fixture/restaurant.fixture';
 import { ReviewEntity } from '../../review/models/review.entity';
 import { ReviewFixture } from '../fixture/review.fixture';
 import { ImageFixture } from '../fixture/image.fixture';
-import { validateReview, validateReviewList } from './validateReviewList';
+import {
+  validateRestaurantList,
+  validateReview,
+  validateReviewList,
+} from './validateReviewList';
 
-describe('Get review detail test', () => {
+describe('Get adjacent restaurant test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
@@ -65,30 +69,58 @@ describe('Get review detail test', () => {
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/${review.id}`)
+      .get(
+        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
+      )
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/${review.id}`)
+      .get(
+        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
+      )
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
   });
 
   it('DTO check', async () => {
+    restaurant.longitude = 127.0;
+    restaurant.latitude = 37.0;
+    await restaurant.save();
+
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/${review.id}`)
+      .get(
+        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
+      )
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    validateReview(body);
+    validateRestaurantList(body);
   });
 
-  it('리뷰 없으면 404', async () => {
+  // TODO : unittest
+  it('멀리 떨어지면 안잡한다', async () => {
+    restaurant.longitude = 127.0;
+    restaurant.latitude = 37.018018;
+    await restaurant.save();
+
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/999999`)
+      .get(
+        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
+      )
       .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.NOT_FOUND);
+      .expect(HttpStatus.OK);
+
+    expect(body.restaurantList.length).toEqual(0);
+
+    const { body: body2 } = await supertest(testServer.getHttpServer())
+      .get(
+        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=3`,
+      )
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(body2.restaurantList.length).toEqual(1);
   });
 });

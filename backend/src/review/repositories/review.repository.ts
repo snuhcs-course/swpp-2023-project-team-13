@@ -3,6 +3,7 @@ import { ReviewEntity } from '../models/review.entity';
 import { Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
+import { UserEntity } from '../../user/models/user.entity';
 
 @CustomRepository(ReviewEntity)
 export class ReviewRepository extends Repository<ReviewEntity> {
@@ -35,13 +36,35 @@ export class ReviewRepository extends Repository<ReviewEntity> {
     return find[0];
   }
 
-  private findFull(options: FindOptionsWhere<ReviewEntity>) {
+  findFull(options: FindOptionsWhere<ReviewEntity>) {
     return this.find({
       where: options,
       relations: {
         images: true,
         user: true,
+        restaurant: true,
+      },
+      order: {
+        id: 'DESC',
       },
     });
+  }
+
+  findOfUser(user: UserEntity) {
+    return this.findFull({
+      user: {
+        id: user.id,
+      },
+    });
+  }
+
+  findRandomReviews(limit: number) {
+    return this.createQueryBuilder('review')
+      .leftJoinAndSelect('review.images', 'image')
+      .leftJoinAndSelect('review.user', 'user')
+      .leftJoinAndSelect('review.restaurant', 'restaurant')
+      .orderBy('RANDOM()')
+      .limit(limit)
+      .getMany();
   }
 }

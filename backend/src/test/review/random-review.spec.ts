@@ -14,7 +14,7 @@ import { ReviewFixture } from '../fixture/review.fixture';
 import { ImageFixture } from '../fixture/image.fixture';
 import { validateReview, validateReviewList } from './validateReviewList';
 
-describe('Get review detail test', () => {
+describe('Random Review test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
@@ -65,30 +65,84 @@ describe('Get review detail test', () => {
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/${review.id}`)
+      .get(`/reviews/random`)
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/${review.id}`)
+      .get(`/reviews/random`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
   });
 
   it('DTO check', async () => {
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/${review.id}`)
+      .get(`/reviews/random`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    validateReview(body);
+    validateReviewList(body);
   });
 
-  it('리뷰 없으면 404', async () => {
+  it('리뷰 없으면 빈 배열 준다', async () => {
+    await dataSource.synchronize(true);
+
+    user = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    });
+
+    const { body: authBody } = await supertest(testServer.getHttpServer())
+      .post('/auth/login')
+      .send({
+        username: 'hello',
+        password: 'world',
+      })
+      .expect(HttpStatus.CREATED);
+
+    accessToken = authBody.accessToken;
+
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/999999`)
+      .get(`/reviews/random`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.NOT_FOUND);
+      .expect(HttpStatus.OK);
+
+    expect(body.reviewList).toStrictEqual([]);
+  });
+
+  it('내가 쓰지 않은 리뷰도 잘 준다', async () => {
+    // Create multiple reviews for the user with different timestamps
+    const review1 = await ReviewFixture.create({
+      restaurant,
+      images: [await ImageFixture.create({})],
+      user,
+    });
+    const review2 = await ReviewFixture.create({
+      restaurant,
+      images: [await ImageFixture.create({})],
+      user,
+    });
+
+    const anotherUser = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    });
+
+    const review3 = await ReviewFixture.create({
+      restaurant,
+      images: [await ImageFixture.create({})],
+      user: anotherUser,
+    });
+
+    // Fetch the user's reviews
+    const { body } = await supertest(testServer.getHttpServer())
+      .get('/reviews/random')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(body.reviewList.length).toBe(4);
   });
 });

@@ -12,7 +12,7 @@ import { RestaurantEntity } from '../../review/models/restaurant.entity';
 import { RestaurantFixture } from '../fixture/restaurant.fixture';
 import { ReviewEntity } from '../../review/models/review.entity';
 
-describe('Review test', () => {
+describe('Create Review test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
