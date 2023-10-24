@@ -24,6 +24,8 @@ import { ReviewRepository } from './repositories/review.repository';
 import { ReviewListDto } from './dtos/out-dtos/reviewList.dto';
 import { ImageUploadDto } from './dtos/out-dtos/imageUpload.dto';
 import { ReviewDetailDto } from './dtos/out-dtos/reviewDetail.dto';
+import { UserEntity } from '../user/models/user.entity';
+import { UserRepository } from '../user/repostiories/user.repository';
 
 @ApiTags('reviews')
 @Controller('reviews')
@@ -85,5 +87,21 @@ export class ReviewController {
     }).save();
 
     return new ImageUploadDto(image);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/my')
+  async getMyReview(@Req() { user }: UserRequest) {
+    console.log(user);
+    const reviews = user.reviews;
+    return new ReviewListDto(reviews);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/random')
+  async getReviewRandom() {
+    const limit = 5; // Define the number of random reviews you want to retrieve
+    const randomReviews = await this.reviewRepository.findRandomReviews(limit);
+    return new ReviewListDto(randomReviews);
   }
 }
