@@ -58,6 +58,21 @@ export class ReviewController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @Get('/my')
+  async getMyReview(@Req() { user }: UserRequest) {
+    const reviews = await this.reviewRepository.findOfUser(user);
+    return new ReviewListDto(reviews);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/random')
+  async getReviewRandom() {
+    const limit = 5; // Define the number of random reviews you want to retrieve
+    const randomReviews = await this.reviewRepository.findRandomReviews(limit);
+    return new ReviewListDto(randomReviews);
+  }
+
+  @UseGuards(JwtAccessGuard)
   @Get('/:reviewId')
   async getReviewDetail(
     @Req() { user }: UserRequest,
@@ -87,21 +102,5 @@ export class ReviewController {
     }).save();
 
     return new ImageUploadDto(image);
-  }
-
-  @UseGuards(JwtAccessGuard)
-  @Get('/my')
-  async getMyReview(@Req() { user }: UserRequest) {
-    console.log(user);
-    const reviews = user.reviews;
-    return new ReviewListDto(reviews);
-  }
-
-  @UseGuards(JwtAccessGuard)
-  @Get('/random')
-  async getReviewRandom() {
-    const limit = 5; // Define the number of random reviews you want to retrieve
-    const randomReviews = await this.reviewRepository.findRandomReviews(limit);
-    return new ReviewListDto(randomReviews);
   }
 }

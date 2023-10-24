@@ -14,7 +14,7 @@ import { ReviewFixture } from '../fixture/review.fixture';
 import { ImageFixture } from '../fixture/image.fixture';
 import { validateReview, validateReviewList } from './validateReviewList';
 
-describe('My Review test', () => {
+describe('Random Review test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
@@ -65,20 +65,20 @@ describe('My Review test', () => {
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/my`)
+      .get(`/reviews/random`)
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/reviews/my`)
+      .get(`/reviews/random`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
   });
 
   it('DTO check', async () => {
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/my`)
+      .get(`/reviews/random`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
@@ -86,16 +86,18 @@ describe('My Review test', () => {
   });
 
   it('리뷰 없으면 빈 배열 준다', async () => {
-    const newUser = await UserFixture.create({
-      name: 'hinew',
-      username: 'hellonew',
+    await dataSource.synchronize(true);
+
+    user = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
       password: 'world',
     });
 
     const { body: authBody } = await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
-        username: 'hellonew',
+        username: 'hello',
         password: 'world',
       })
       .expect(HttpStatus.CREATED);
@@ -103,14 +105,14 @@ describe('My Review test', () => {
     accessToken = authBody.accessToken;
 
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/reviews/my`)
+      .get(`/reviews/random`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
     expect(body.reviewList).toStrictEqual([]);
   });
 
-  it('should fetch user reviews in time order', async () => {
+  it('내가 쓰지 않은 리뷰도 잘 준다', async () => {
     // Create multiple reviews for the user with different timestamps
     const review1 = await ReviewFixture.create({
       restaurant,
@@ -123,15 +125,24 @@ describe('My Review test', () => {
       user,
     });
 
+    const anotherUser = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    });
+
+    const review3 = await ReviewFixture.create({
+      restaurant,
+      images: [await ImageFixture.create({})],
+      user: anotherUser,
+    });
+
     // Fetch the user's reviews
     const { body } = await supertest(testServer.getHttpServer())
-      .get('/reviews/my')
+      .get('/reviews/random')
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    // Check that the reviews are in time order
-    expect(body.reviewList[0].id).toBe(review2.id);
-    expect(body.reviewList[1].id).toBe(review1.id);
-    expect(body.reviewList[2].id).toBe(review.id);
+    expect(body.reviewList.length).toBe(4);
   });
 });

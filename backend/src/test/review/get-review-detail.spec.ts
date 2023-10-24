@@ -14,7 +14,7 @@ import { ReviewFixture } from '../fixture/review.fixture';
 import { ImageFixture } from '../fixture/image.fixture';
 import { validateReview, validateReviewList } from './validateReviewList';
 
-describe('Review test', () => {
+describe('Get review detail test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;

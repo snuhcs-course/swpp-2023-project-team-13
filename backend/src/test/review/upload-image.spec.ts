@@ -16,7 +16,7 @@ import { validateReviewList } from './validateReviewList';
 import { ImageEntity } from '../../review/models/image.entity';
 import { validateDtoKeys } from '../utils';
 
-describe('Review test', () => {
+describe('upload-image test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
