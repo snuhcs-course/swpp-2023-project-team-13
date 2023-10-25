@@ -13,7 +13,7 @@ RUN npm install && npm run build
 
 RUN rm -r src
 
-EXPOSE 8765
+EXPOSE 80
 
 
 ENV NODE_ENV=production
