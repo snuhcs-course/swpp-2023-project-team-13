@@ -3,7 +3,7 @@ name: 배포
 on:
   push:
     branches:
-      - backend-deploy
+      - main
 
 jobs:
 
