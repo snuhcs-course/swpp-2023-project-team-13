@@ -51,4 +51,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Docker compose up
-        run: SHA=${GITHUB_SHA} docker-compose -f ~/docker-compose.yml up -d postgres fooriend-backend
+        run: sudo SHA=${GITHUB_SHA} docker compose -f ~/docker-compose.yml up -d fooriend-backend
