@@ -37,8 +37,8 @@ jobs:
       - name: Push image
         working-directory: ${{env.working-directory}}
         run: |
-          ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:${GITHUB_SHA}
-          ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:latest
+          docker push ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:${GITHUB_SHA}
+          docker push ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:latest
   deploy:
     needs: push
     name: 배포
