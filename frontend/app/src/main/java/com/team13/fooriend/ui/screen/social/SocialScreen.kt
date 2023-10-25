@@ -1,24 +1,54 @@
 package com.team13.fooriend.ui.screen.social
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.team13.fooriend.R
+import com.team13.fooriend.data.Review
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SocialScreen(){
+fun SocialScreen(
+    // reviews: List<Review>
+    onReviewClick : (Int) -> Unit,
+){
+    // review 예시 코드, 실제는 List에 있는 review들의 id 값을 가지고 서버에서 받아와야 함
+    var reviews = List<Review>(10) { index ->
+        Review(
+            id = index,
+            restaurantId = index,
+            writerId = index,
+            title = "title",
+            content = "content",
+            confirm = true,
+            image = listOf(R.drawable.profile_cat, R.drawable.profile_cat, R.drawable.profile_cat)
+        )
+    }
     val (search, searchValue) = remember { mutableStateOf("") }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -27,11 +57,44 @@ fun SocialScreen(){
     ){
         Spacer(modifier = Modifier.height(20.dp))
         TextField(value = search, onValueChange = searchValue)
+        Spacer(modifier = Modifier.height(20.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ){
+            items(
+                items = reviews,
+                key = { review -> review.id }
+            ){ review ->
+                ReviewCard(review, onClick = { onReviewClick(review.id) })
+            }
+        }
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SocialScreenPreview(){
-    SocialScreen()
+fun ReviewCard(
+    review: Review,
+    onClick: () -> Unit = {  },
+){
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+    ){
+        Box(
+            modifier = Modifier.height(200.dp),
+        ){
+            Image(
+                painter = painterResource(id = review.image[0]),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+
+
+        }
+    }
 }
