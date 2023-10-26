@@ -1,6 +1,6 @@
 import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import { IssuedAtMetaEntity } from '../../core/models/base.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import * as process from 'process';
 import { ForbiddenException } from '@nestjs/common';
