@@ -12,6 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.google.android.gms.maps.model.LatLng
 import com.team13.fooriend.ui.util.LineType
 import com.team13.fooriend.ui.util.getCurrentLocation
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -19,30 +21,32 @@ import com.team13.fooriend.ui.util.getCurrentLocation
 fun HomeScreen(nickname: String, context: Context) {
     var showMap by remember { mutableStateOf(false) }
     var location by remember { mutableStateOf(LatLng(0.0, 0.0)) }
-    var changeIcon by remember { mutableStateOf(false) }
-    var lineType by remember {
-        mutableStateOf<LineType?>(null)
-    }
 
     getCurrentLocation(context) {
         location = it
         showMap = true
     }
 
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://maps.googleapis.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val placesApiService = retrofit.create(PlacesApiService::class.java)
+
+
     if (showMap) {
         MyMap(
             context = context,
             latLng = location,
-            lineType = lineType,
-            changeIcon = changeIcon,
-            onChangeMarkerIcon = {
-                changeIcon = !changeIcon
-            }
+            placesApi = placesApiService,
+            apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0",
         )
     } else {
         Text(text = "Loading Map...")
     }
 }
+
 
 
 @Preview(showSystemUi = true, showBackground = true)
