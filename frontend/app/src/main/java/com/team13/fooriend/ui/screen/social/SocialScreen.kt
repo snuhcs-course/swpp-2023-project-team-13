@@ -34,7 +34,7 @@ import com.team13.fooriend.data.Review
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
-    // reviews: List<Review>
+    // reviews: List<Review> 파라미터로 받아야 하나?
     onReviewClick : (Int) -> Unit,
 ){
     // review 예시 코드, 실제는 List에 있는 review들의 id 값을 가지고 서버에서 받아와야 함
@@ -46,7 +46,7 @@ fun SocialScreen(
             title = "title",
             content = "content",
             confirm = true,
-            image = listOf(R.drawable.profile_cat, R.drawable.profile_cat, R.drawable.profile_cat)
+            image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.profile_cat)
         )
     }
     val (search, searchValue) = remember { mutableStateOf("") }
@@ -59,10 +59,11 @@ fun SocialScreen(
         TextField(value = search, onValueChange = searchValue)
         Spacer(modifier = Modifier.height(20.dp))
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(3),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ){
+            // review들이 사용자 위치기반으로 가까운 리뷰들 노출하는건 어떨까?
             items(
                 items = reviews,
                 key = { review -> review.id }
@@ -86,7 +87,7 @@ fun ReviewCard(
             .padding(16.dp),
     ){
         Box(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(150.dp),
         ){
             Image(
                 painter = painterResource(id = review.image[0]),
@@ -97,4 +98,10 @@ fun ReviewCard(
 
         }
     }
+}
+
+@Composable
+@Preview(showSystemUi = true, showBackground = true)
+fun SocialScreenPreview(){
+    SocialScreen(onReviewClick = {})
 }

@@ -11,9 +11,13 @@ import com.team13.fooriend.R
 import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.data.Review
 import com.team13.fooriend.ui.navigation.BottomNavItem
+import com.team13.fooriend.ui.screen.FooriendScreen
+import com.team13.fooriend.ui.screen.PostingScreen
 import com.team13.fooriend.ui.screen.RestaurantDetailScreen
 import com.team13.fooriend.ui.screen.ReviewDetailScreen
 import com.team13.fooriend.ui.screen.home.HomeScreen
+import com.team13.fooriend.ui.screen.mypage.ChangePwdScreen
+import com.team13.fooriend.ui.screen.mypage.ChangePwdScreenPreview
 import com.team13.fooriend.ui.screen.mypage.MyInformationScreen
 import com.team13.fooriend.ui.screen.mypage.MyPageScreen
 import com.team13.fooriend.ui.screen.social.SocialScreen
@@ -66,19 +70,29 @@ fun HomeNavGraph(
                 reviewId = backStackEntry.arguments?.getString("reviewId")?.toInt() ?: 0,
             )
         }
-        composable(route = "fooriend"){
-
+        composable(route = "fooriend/{userId}"){
+            FooriendScreen(
+                //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
+                onFollowClick = { navController.navigateUp() },
+            )
         }
         composable(route = "writeReview"){
-            // WriteReviewScreen(
-            //     onBackClick = { navController.navigateUp() },
-            // )
+            PostingScreen(
+                onCloseClick = { navController.navigateUp() },
+                // TODO : Post버튼을 누르면 review가 저장되어야 함
+                onPostClick = { navController.navigateUp() },
+            )
         }
         composable(route = "myInfo"){
             MyInformationScreen(
                 onBackClick = { navController.navigateUp() },
+                onChangePwd = { navController.navigate("changePwd") },
             )
         }
-
+        composable(route = "changePwd"){
+             ChangePwdScreen(
+                 onConfirmClick = { navController.navigateUp() },
+             )
+        }
     }
 }

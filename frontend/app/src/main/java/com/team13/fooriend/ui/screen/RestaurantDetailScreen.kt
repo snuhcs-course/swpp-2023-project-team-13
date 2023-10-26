@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -64,9 +66,6 @@ fun RestaurantDetailScreen(
             contentPadding = PaddingValues(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ){
-            item {
-                Text(text = "리뷰")
-            }
             items(restaurant.reviewList) { reviewId ->
                 ReviewItem(
                     reviewId = reviewId,
@@ -89,12 +88,13 @@ fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
         confirm = true,
         image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.hamburger)
     )
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(color = Color.White)
             .padding(10.dp, 5.dp)
+            .heightIn(min = 200.dp, max = 400.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
     ){
         LazyRow(){
@@ -120,8 +120,7 @@ fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp, 0.dp)
-                .align(Alignment.BottomStart)
+                .padding(10.dp, 0.dp, 0.dp, 10.dp),
         ){
             Text(text = review.title)
             Text(text = review.content)
@@ -168,4 +167,24 @@ fun TopRestaurantBar(
             }
         }
     }
+}
+
+@Composable
+@Preview(showSystemUi = true, showBackground = true)
+fun RestaurantDetailScreenPreview() {
+    RestaurantDetailScreen(
+        restaurant = Restaurant(
+            id = 0,
+            name = "음식점 이름",
+            good = 0,
+            bad = 0,
+            reviewList = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+            latitude = 0.0,
+            longitude = 0.0,
+            reviewCount = 10,
+        ),
+        onCloseClick = {},
+        onWriteReviewClick = {},
+        onWriterClick = {},
+    )
 }
