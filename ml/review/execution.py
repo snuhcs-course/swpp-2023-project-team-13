@@ -1,7 +1,7 @@
 import import_ipynb
 import torch
-from model import get_model
-from preprocessing import data_to_token_ids, token_ids_to_mask
+from review.model import get_model
+from review.preprocessing import data_to_token_ids, token_ids_to_mask
 from tokenization import KoBertTokenizer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
