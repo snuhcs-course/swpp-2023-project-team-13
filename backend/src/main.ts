@@ -12,7 +12,7 @@ async function bootstrap() {
   await setUpSwagger(app);
   await appSetting(app);
   if (process.env.NODE_ENV !== 'test') {
-    await app.listen(3000);
+    await app.listen(process.env.PORT ?? 3000);
   }
 }
 
