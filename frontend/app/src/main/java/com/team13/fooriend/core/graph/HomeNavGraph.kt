@@ -41,7 +41,11 @@ fun HomeNavGraph(
         startDestination = BottomNavItem.Home.route
     ) {
         composable(route = BottomNavItem.Home.route) {
-            HomeScreen(nickname = "admin", context)
+            HomeScreen(
+                nickname = "admin",
+                context,
+                onReviewClick = { navController.navigate("restaurant/${it}") },
+            )
         }
         composable(route = BottomNavItem.Social.route) {
             SocialScreen(

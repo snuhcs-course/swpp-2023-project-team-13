@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HomeScreen(nickname: String, context: Context) {
+fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit) {
     var showMap by remember { mutableStateOf(false) }
     var location by remember { mutableStateOf(LatLng(0.0, 0.0)) }
 
@@ -41,6 +41,7 @@ fun HomeScreen(nickname: String, context: Context) {
             latLng = location,
             placesApi = placesApiService,
             apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0",
+            onReviewClick = onReviewClick,
         )
     } else {
         Text(text = "Loading Map...")
@@ -52,5 +53,5 @@ fun HomeScreen(nickname: String, context: Context) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun HomeScreenPreview(){
-    HomeScreen("nickname", context = TODO())
+    HomeScreen("nickname", context = TODO(), onReviewClick = {TODO()})
 }

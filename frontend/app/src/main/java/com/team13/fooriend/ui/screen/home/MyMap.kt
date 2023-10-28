@@ -58,7 +58,8 @@ fun MyMap(
     context: Context,
     latLng: LatLng,
     placesApi: PlacesApiService,
-    apiKey: String
+    apiKey: String,
+    onReviewClick : (Int) -> Unit,
 ) {
 
     Places.initialize(context, apiKey)
@@ -102,32 +103,36 @@ fun MyMap(
                         googleMap.value = map
                         map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(latLng, 15f)))
 
-                        map.setOnPoiClickListener { poi ->
-                            lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
-                            val marker = map.addMarker(MarkerOptions().position(poi.latLng).title("POI"))
-                            lastAddedMarker.value = marker
-                            Log.d("MyMap", "POI Name: ${poi.name}")
-                        }
+//                        map.setOnPoiClickListener { poi ->
+//                            lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
+//                            val marker = map.addMarker(MarkerOptions().position(poi.latLng).title(poi.name))
+//                            lastAddedMarker.value = marker
+//                        }
+//
+//                        map.setOnMapClickListener { clickedLatLng ->
+//                            coroutineScope.launch {
+//                                lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
+//                                val marker = map.addMarker(MarkerOptions().position(clickedLatLng).title("Random"))
+//                                lastAddedMarker.value = marker
+//                                placeId = handleMapClick(context, clickedLatLng, placesApi, apiKey)
+//                                Log.d("MyMap", "placeId: $placeId")
+//                            }
+//                        }
+
                         val clusterManager = ClusterManager<MyItem>(context, map)
                         clusterManager.renderer = CustomMarkerRenderer(context, map, clusterManager)
-                        // Point the map's listeners at the listeners implemented by the cluster
-                        // manager.
+
+                        clusterManager.setOnClusterItemInfoWindowClickListener { item ->
+                            onReviewClick(1) // onReviewClick(item.place_id)
+                        }
                         map.setOnCameraIdleListener(clusterManager)
                         map.setOnMarkerClickListener(clusterManager)
                         markers.forEach { myItem ->
                             clusterManager.addItem(myItem)
                         }
+                        map.setOnInfoWindowClickListener(clusterManager)
                         clusterManager.cluster()
 
-                        map.setOnMapClickListener { clickedLatLng ->
-                            coroutineScope.launch {
-                                lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
-                                val marker = map.addMarker(MarkerOptions().position(clickedLatLng).title("Random"))
-                                lastAddedMarker.value = marker
-                                placeId = handleMapClick(context, clickedLatLng, placesApi, apiKey)
-                                Log.d("MyMap", "placeId: $placeId")
-                            }
-                        }
                     }
                 }
             },
@@ -143,6 +148,7 @@ fun MyMap(
 
 // 친구 식당 마커
 
+// need to add private val place_id : String
 class MyItem(private val position: LatLng, private val title: String) : ClusterItem {
     override fun getPosition(): LatLng {
         return position
