@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -44,14 +47,14 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 @Composable
 fun RestaurantDetailScreen(
     restaurant: Restaurant,
-    onCloseClick: () -> Unit,
+    onBackClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopRestaurantBar(
-                onCloseClick = onCloseClick,
+                onCloseClick = onBackClick,
                 onWriteReviewClick = onWriteReviewClick,
                 restaurant = restaurant,
             )
@@ -60,13 +63,11 @@ fun RestaurantDetailScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(16.dp),
             contentPadding = PaddingValues(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ){
-            item {
-                Text(text = "리뷰")
-            }
             items(restaurant.reviewList) { reviewId ->
                 ReviewItem(
                     reviewId = reviewId,
@@ -89,12 +90,13 @@ fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
         confirm = true,
         image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.hamburger)
     )
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(color = Color.White)
             .padding(10.dp, 5.dp)
+            .heightIn(min = 200.dp, max = 400.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
     ){
         LazyRow(){
@@ -120,8 +122,7 @@ fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp, 0.dp)
-                .align(Alignment.BottomStart)
+                .padding(10.dp, 0.dp, 0.dp, 10.dp),
         ){
             Text(text = review.title)
             Text(text = review.content)
@@ -139,23 +140,21 @@ fun TopRestaurantBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
-            .padding(10.dp, 5.dp)
+            .padding(16.dp, 16.dp, 16.dp, 0.dp)
     ){
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
+            horizontalArrangement = Arrangement.Start,
         ){
             IconButton(onClick = onCloseClick) {
                 Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "back",
                     tint = Color.Black
                 )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
         Text(text = restaurant.name)
-        Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -168,4 +167,24 @@ fun TopRestaurantBar(
             }
         }
     }
+}
+
+@Composable
+@Preview(showSystemUi = true, showBackground = true)
+fun RestaurantDetailScreenPreview() {
+    RestaurantDetailScreen(
+        restaurant = Restaurant(
+            id = 0,
+            name = "음식점 이름",
+            good = 0,
+            bad = 0,
+            reviewList = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+            latitude = 0.0,
+            longitude = 0.0,
+            reviewCount = 10,
+        ),
+        onBackClick = {},
+        onWriteReviewClick = {},
+        onWriterClick = {},
+    )
 }
