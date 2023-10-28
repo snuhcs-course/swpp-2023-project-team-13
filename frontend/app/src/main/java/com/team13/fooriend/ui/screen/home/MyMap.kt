@@ -127,10 +127,10 @@ fun MyMap(
                         }
                         map.setOnCameraIdleListener(clusterManager)
                         map.setOnMarkerClickListener(clusterManager)
+                        map.setOnInfoWindowClickListener(clusterManager)
                         markers.forEach { myItem ->
                             clusterManager.addItem(myItem)
                         }
-                        map.setOnInfoWindowClickListener(clusterManager)
                         clusterManager.cluster()
 
                     }

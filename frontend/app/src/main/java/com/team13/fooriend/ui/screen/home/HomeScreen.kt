@@ -40,7 +40,7 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
             context = context,
             latLng = location,
             placesApi = placesApiService,
-            apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0",
+            apiKey = "",
             onReviewClick = onReviewClick,
         )
     } else {
