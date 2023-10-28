@@ -47,6 +47,7 @@ fun HomeNavGraph(
             SocialScreen(
                 onReviewClick = {
                     navController.navigate("reviewDetail/${it}") },
+                onUserClick = { navController.navigate("fooriend/${it}") },
             )
         }
         composable(route = BottomNavItem.MyPage.route) {
