@@ -58,7 +58,7 @@ fun HomeNavGraph(
         composable(route = "restaurant/{restaurantId}"){
             RestaurantDetailScreen(
                 restaurant = restaurant,
-                onCloseClick = { navController.navigateUp() },
+                onBackClick = { navController.navigateUp() },
                 onWriteReviewClick = { navController.navigate("writeReview") },
                 onWriterClick = { navController.navigate("fooriend/${it}") },
             )
@@ -74,7 +74,8 @@ fun HomeNavGraph(
         composable(route = "fooriend/{userId}"){
             FooriendScreen(
                 //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
-                onFollowClick = { navController.navigateUp() },
+                onBackClick = { navController.navigateUp() },
+                onFollowClick = { },
             )
         }
         composable(route = "writeReview"){

@@ -5,4 +5,8 @@ data class User(
     val name: String,
     val email: String,
     val password: String,
-)
+){
+    fun doesMatchSearchQuery(query: String): Boolean {
+        return name.contains(query, ignoreCase = true)
+    }
+}

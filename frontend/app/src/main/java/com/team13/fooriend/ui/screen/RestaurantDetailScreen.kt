@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,14 +47,14 @@ import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 @Composable
 fun RestaurantDetailScreen(
     restaurant: Restaurant,
-    onCloseClick: () -> Unit,
+    onBackClick: () -> Unit,
     onWriteReviewClick: () -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopRestaurantBar(
-                onCloseClick = onCloseClick,
+                onCloseClick = onBackClick,
                 onWriteReviewClick = onWriteReviewClick,
                 restaurant = restaurant,
             )
@@ -62,7 +63,8 @@ fun RestaurantDetailScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(16.dp),
             contentPadding = PaddingValues(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ){
@@ -138,23 +140,21 @@ fun TopRestaurantBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.White)
-            .padding(10.dp, 5.dp)
+            .padding(16.dp, 16.dp, 16.dp, 0.dp)
     ){
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
+            horizontalArrangement = Arrangement.Start,
         ){
             IconButton(onClick = onCloseClick) {
                 Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "back",
                     tint = Color.Black
                 )
             }
         }
-        Spacer(modifier = Modifier.height(20.dp))
         Text(text = restaurant.name)
-        Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -183,7 +183,7 @@ fun RestaurantDetailScreenPreview() {
             longitude = 0.0,
             reviewCount = 10,
         ),
-        onCloseClick = {},
+        onBackClick = {},
         onWriteReviewClick = {},
         onWriterClick = {},
     )

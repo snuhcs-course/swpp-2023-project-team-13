@@ -53,7 +53,7 @@ fun ReviewDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp, 0.dp),
+            .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
     ) {
