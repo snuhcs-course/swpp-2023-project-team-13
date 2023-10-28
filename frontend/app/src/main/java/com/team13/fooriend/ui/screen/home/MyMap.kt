@@ -28,6 +28,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
@@ -37,6 +39,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
+import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -46,6 +49,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.util.LineType
 import com.team13.fooriend.ui.util.bitmapDescriptor
+import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,63 +61,88 @@ fun MyMap(
     placesApi: PlacesApiService,
     apiKey: String
 ) {
+
     Places.initialize(context, apiKey)
-    var markerPosition by remember { mutableStateOf<LatLng?>(latLng) }
     val coroutineScope = rememberCoroutineScope()
     var placeId by remember { mutableStateOf<String?>(null)}
 
     val googleMap = remember { mutableStateOf<GoogleMap?>(null) }
     val markers = listOf(
-        PlaceMarker(1, LatLng(37.47861054481183, 127.00040582567452), "Marker 1"),
-        PlaceMarker(2, LatLng(37.47921478418604, 127.00007289648055), "Marker 2"),
-        // ... 추가적인 마커들 ...
+        MyItem(LatLng(37.4773666, 126.9531265), "Taco Bueno"),
+        MyItem(LatLng(37.4784436, 126.9565545), "Tendong Yotsuya"),
+        MyItem(LatLng(37.4790055, 126.9537665), "순이네밥상"),
+        MyItem(LatLng(37.4790948, 126.95556), "멘쇼우라멘"),
+        MyItem(LatLng(37.4777708, 126.9573454), "누들하우스"),
+        MyItem(LatLng(37.4791105, 126.9537991), "Jeongsugseong"),
+        MyItem(LatLng(37.477904, 126.9524293), "Frank Burger"),
+        MyItem(LatLng(37.480378, 126.9534373), "Samcha"),
+        MyItem(LatLng(37.4788032, 126.9545337), "모다 모다"),
+        MyItem(LatLng(37.480606, 126.9515086), "Hanam Pig House Seoul National University Station"),
+        MyItem(LatLng(37.4806412, 126.9529295), "七里香刀削面"),
+        MyItem(LatLng(37.4798268, 126.9539257), "부엌우동집"),
+        MyItem(LatLng(37.4781838, 126.9530122), "Chamjag"),
+        MyItem(LatLng(37.47861054481183, 127.00040582567452), "Marker 1"),
+        MyItem(LatLng(37.47921478418604, 127.00007289648055), "Marker 2"),
+        MyItem(LatLng(37.477953218751, 127.0015639782424), "Marker 3"),
+        MyItem(LatLng(37.4801124123123, 127.002785610199), "Marker 4"),
+        MyItem(LatLng(37.4789341238123, 127.003456782312), "Marker 5"),
+        MyItem(LatLng(37.477123912312, 127.002312315678), "Marker 6")
     )
-    var clusterManager: ClusterManager<MyItem>
-    Log.d("Map", "reComposed $markerPosition")
+
+
+    val lastAddedMarker = remember { mutableStateOf<Marker?>(null) }
+    // var initialMarkersAdded by remember { mutableStateOf(false) } // 초기 마커들이 추가되었는지 여부
+
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
             factory = { innerContext ->
                 MapView(innerContext).apply {
                     onCreate(Bundle())
                     getMapAsync { map ->
+                        Log.d("factory", "Map loaded")
                         googleMap.value = map
                         map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(latLng, 15f)))
+
                         map.setOnPoiClickListener { poi ->
-                            markerPosition = poi.latLng
+                            lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
+                            val marker = map.addMarker(MarkerOptions().position(poi.latLng).title("POI"))
+                            lastAddedMarker.value = marker
                             Log.d("MyMap", "POI Name: ${poi.name}")
                         }
-                        clusterManager = ClusterManager(context, map)
-
+                        val clusterManager = ClusterManager<MyItem>(context, map)
+                        clusterManager.renderer = CustomMarkerRenderer(context, map, clusterManager)
                         // Point the map's listeners at the listeners implemented by the cluster
                         // manager.
                         map.setOnCameraIdleListener(clusterManager)
                         map.setOnMarkerClickListener(clusterManager)
-//                        map.setOnMapClickListener { clickedLatLng ->
-//                            coroutineScope.launch {
-//                                markerPosition = clickedLatLng
-//                                placeId = handleMapClick(context, clickedLatLng, placesApi, apiKey)
-//                                Log.d("MyMap", "placeId: $placeId")
-//                            }
-//                        }
+                        markers.forEach { myItem ->
+                            clusterManager.addItem(myItem)
+                        }
+                        clusterManager.cluster()
+
+                        map.setOnMapClickListener { clickedLatLng ->
+                            coroutineScope.launch {
+                                lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
+                                val marker = map.addMarker(MarkerOptions().position(clickedLatLng).title("Random"))
+                                lastAddedMarker.value = marker
+                                placeId = handleMapClick(context, clickedLatLng, placesApi, apiKey)
+                                Log.d("MyMap", "placeId: $placeId")
+                            }
+                        }
                     }
                 }
             },
             update = { mapView ->
                 googleMap.value?.let { map ->
-                    // 이미 추가된 마커는 제거합니다.
-                    map.clear()
-                    // 새로운 위치에 마커를 추가합니다.
-                    Log.d("MyMap", "markerPosition: $markerPosition")
-                    markerPosition?.let {
-                        map.addMarker(MarkerOptions().position(it).title("Selected Location"))
-                    }
+                    Log.d("update", "update")
                 }
             }
         )
     }
+    Log.d("MyMap", "Reload")
 }
 
-data class PlaceMarker(val id: Int, val latLng: LatLng, val title: String)
+// 친구 식당 마커
 
 class MyItem(private val position: LatLng, private val title: String) : ClusterItem {
     override fun getPosition(): LatLng {
@@ -129,46 +158,61 @@ class MyItem(private val position: LatLng, private val title: String) : ClusterI
     }
 
     override fun getZIndex(): Float {
-        return 1.0f  // 원하는 Z 인덱스 값을 반환합니다. 기본적으로 1.0f를 반환해도 됩니다.
+        return 1.0f // 마커의 z-index
     }
+
+}
+
+
+class CustomMarkerRenderer(
+    private val context: Context,
+    map: GoogleMap,
+    clusterManager: ClusterManager<MyItem>
+) : DefaultClusterRenderer<MyItem>(context, map, clusterManager) {
+
+    override fun onBeforeClusterItemRendered(item: MyItem, markerOptions: MarkerOptions) {
+        markerOptions.icon(getMarkerIconFromDrawable(context, R.drawable.panda, 100, 100))
+    }
+
+    // 필요하면 여기에 추가적인 로직을 추가할 수 있습니다.
 }
 
 
 
-//private suspend fun handleMapClick (
-//    context: Context,
-//    clickedLatLng: LatLng,
-//    placesApi: PlacesApiService,
-//    apiKey: String
-//): String{
-//    // nearbysearch API 요청
-//    val response = placesApi.searchNearbyPlaces(
-//        location = "${clickedLatLng.latitude},${clickedLatLng.longitude}",
-//        apiKey = apiKey
-//    )
-//    // 가장 가까운 장소 선택
-//    val nearestPlace = response.results.minByOrNull { place ->
-//        distanceBetween(clickedLatLng,  place)
-//    }
-//    // 로그
-//    val nearestPlaceName = nearestPlace?.name
-//    val placeId: String? = nearestPlace?.place_id
-//    if (nearestPlaceName != null) {
-//        Log.d("MyMap", "Nearest place: $nearestPlaceName")
-//    } else {
-//        Log.e("MyMap", "No nearby places found")
-//    }
-//    return placeId?:""
-//}
+private suspend fun handleMapClick (
+    context: Context,
+    clickedLatLng: LatLng,
+    placesApi: PlacesApiService,
+    apiKey: String
+): String{
+    // nearbysearch API 요청
+    val response = placesApi.searchNearbyPlaces(
+        location = "${clickedLatLng.latitude},${clickedLatLng.longitude}",
+        apiKey = apiKey
+    )
+    // 가장 가까운 장소 선택
+    val nearestPlace = response.results.minByOrNull { place ->
+        distanceBetween(clickedLatLng,  place)
+    }
+    // 로그
+    val nearestPlaceName = nearestPlace?.name
+    val placeId: String? = nearestPlace?.place_id
+    if (nearestPlaceName != null) {
+        Log.d("MyMap", "Nearest place: $nearestPlaceName")
+    } else {
+        Log.e("MyMap", "No nearby places found")
+    }
+    return placeId?:""
+}
 //
-//fun distanceBetween(latLng1: LatLng, placeResult: PlaceResult): Float {
-//    val results = FloatArray(1)
-//    val latLng2 = LatLng(placeResult.geometry.location["lat"]!!, placeResult.geometry.location["lng"]!!)
-//    android.location.Location.distanceBetween(
-//        latLng1.latitude, latLng1.longitude,
-//        latLng2.latitude, latLng2.longitude,
-//        results
-//    )
-//    Log.d("MyMap", "Distance between $latLng1 and ${placeResult.name} $latLng2: ${results[0]}")
-//    return results[0]
-//}
+fun distanceBetween(latLng1: LatLng, placeResult: PlaceResult): Float {
+    val results = FloatArray(1)
+    val latLng2 = LatLng(placeResult.geometry.location["lat"]!!, placeResult.geometry.location["lng"]!!)
+    android.location.Location.distanceBetween(
+        latLng1.latitude, latLng1.longitude,
+        latLng2.latitude, latLng2.longitude,
+        results
+    )
+    Log.d("MyMap", "Distance between $latLng1 and $latLng2 ${placeResult.name}: ${results[0]}")
+    return results[0]
+}

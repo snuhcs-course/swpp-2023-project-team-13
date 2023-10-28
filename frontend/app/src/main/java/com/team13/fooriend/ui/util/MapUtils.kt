@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -44,20 +45,13 @@ fun getCurrentLocation(context: Context, onLocationFetched: (location: LatLng) -
 
 }
 
-fun bitmapDescriptor(
-    context: Context,
-    resId: Int
-): BitmapDescriptor? {
+fun getMarkerIconFromDrawable(context: Context, drawableId: Int, width: Int, height: Int): BitmapDescriptor {
+    // drawable 리소스를 비트맵으로 변환
+    val originalBitmap = BitmapFactory.decodeResource(context.resources, drawableId)
 
-    val drawable = ContextCompat.getDrawable(context, resId) ?: return null
-    drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-    val bm = Bitmap.createBitmap(
-        drawable.intrinsicWidth,
-        drawable.intrinsicHeight,
-        Bitmap.Config.ARGB_8888
-    )
+    // 비트맵 크기 조절
+    val resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, false)
 
-    val canvas = android.graphics.Canvas(bm)
-    drawable.draw(canvas)
-    return BitmapDescriptorFactory.fromBitmap(bm)
+    // BitmapDescriptor로 변환
+    return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
 }
