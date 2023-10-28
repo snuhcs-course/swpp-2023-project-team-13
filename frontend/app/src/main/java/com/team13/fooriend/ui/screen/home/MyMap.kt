@@ -48,7 +48,6 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.util.LineType
-import com.team13.fooriend.ui.util.bitmapDescriptor
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -171,7 +170,7 @@ class CustomMarkerRenderer(
 ) : DefaultClusterRenderer<MyItem>(context, map, clusterManager) {
 
     override fun onBeforeClusterItemRendered(item: MyItem, markerOptions: MarkerOptions) {
-        markerOptions.icon(getMarkerIconFromDrawable(context, R.drawable.panda, 100, 100))
+        markerOptions.icon(getMarkerIconFromDrawable(context, R.drawable.chick, 100, 100))
     }
 
     // 필요하면 여기에 추가적인 로직을 추가할 수 있습니다.
