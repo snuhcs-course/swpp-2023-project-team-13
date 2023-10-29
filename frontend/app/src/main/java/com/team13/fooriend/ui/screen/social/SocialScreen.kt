@@ -55,6 +55,18 @@ fun SocialScreen(
     onReviewClick : (Int) -> Unit, // 리뷰 이미지를 클릭한 경우
     onUserClick : (Int) -> Unit, // search bar에서 검색한 유저를 클릭한 경우
 ){
+    // 예시 데이터
+    var _reviews = List<Review>(10) { index ->
+        Review(
+            id = index,
+            restaurantId = index,
+            writerId = index,
+            title = "title",
+            content = "content",
+            confirm = true,
+            image = listOf(R.drawable.tangsuyug, R.drawable.profile_cat, R.drawable.profile_cat)
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -63,7 +75,7 @@ fun SocialScreen(
     ){
         SocialSearchBar(onUserClick = onUserClick)
         Spacer(modifier = Modifier.height(16.dp))
-        ReviewLazyGrid(/* reviews = reviews, */ onReviewClick = onReviewClick)
+        ReviewLazyGrid(reviews = _reviews, onReviewClick = onReviewClick)
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)

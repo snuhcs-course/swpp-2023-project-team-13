@@ -21,22 +21,27 @@ import com.team13.fooriend.data.Review
 
 @Composable
 fun ReviewLazyGrid(
-    // reviews: List<Review>,
+    reviews: List<Review> = listOf(),
     onReviewClick : (Int) -> Unit, // 리뷰 이미지를 클릭한 경우
     verticalPadding : Int = 16,
     horizontalPadding : Int = 4,
 ) {
+    var _reviews = listOf<Review>()
     // review 예시 코드, 실제는 List에 있는 review들의 id 값을 가지고 서버에서 받아와야 함
-    var reviews = List<Review>(10) { index ->
-        Review(
-            id = index,
-            restaurantId = index,
-            writerId = index,
-            title = "title",
-            content = "content",
-            confirm = true,
-            image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.profile_cat)
-        )
+    if (reviews == listOf<Review>()) {
+        _reviews = List<Review>(10) { index ->
+            Review(
+                id = index,
+                restaurantId = index,
+                writerId = index,
+                title = "title",
+                content = "content",
+                confirm = true,
+                image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.profile_cat)
+            )
+        }
+    }else{
+        _reviews = reviews
     }
 
     LazyVerticalGrid(
@@ -46,7 +51,7 @@ fun ReviewLazyGrid(
     ){
         // review들이 사용자 위치기반으로 가까운 리뷰들 노출하는건 어떨까?
         items(
-            items = reviews,
+            items = _reviews,
             key = { review -> review.id }
         ){ review ->
             ReviewCard(review, onClick = { onReviewClick(review.id) })

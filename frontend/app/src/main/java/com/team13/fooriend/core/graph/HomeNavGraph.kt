@@ -28,11 +28,17 @@ fun HomeNavGraph(
     navController: NavHostController,
 ) {
     // example data
-    val review = Review(id = 1, writerId = 1, restaurantId = 1, content = "탕수육이 진짜 바삭!!, 여기 진짜 짬뽕 맛집이예요 별점 10개도 부족합니다.",
-        image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.hamburger),
+    val review1 = Review(id = 1, writerId = 1, restaurantId = 1, content = "탕수육이 진짜 바삭!!, 여기 진짜 짬뽕 맛집이예요 별점 10개도 부족합니다.",
+        image = listOf(R.drawable.tangsuyug, R.drawable.jjambbong, R.drawable.jjambbong),
+        confirm = true, title = "title")
+    val review2 = Review(id = 2, writerId = 1, restaurantId = 1, content = "이 집 짜장이 기가 막히네",
+        image = listOf(R.drawable.jjajangmyeon),
+        confirm = true, title = "title")
+    val review3 = Review(id = 3, writerId = 1, restaurantId = 1, content = "이 집 고양이 때문에 심장이 너무 아팠습니다.. ㅠㅠ",
+        image = listOf(R.drawable.profile_cat),
         confirm = true, title = "title")
     val restaurant = Restaurant(id = 1, name = "용찬반점", latitude = 1.0, longitude = 1.0,
-        reviewCount = 3, reviewList = listOf(review.id, review.id, review.id), good = 1, bad = 1)
+        reviewCount = 3, reviewList = listOf(review1.id, review2.id, review3.id), good = 2, bad = 1)
     val activity = (LocalContext.current as Activity)
 
     NavHost(
