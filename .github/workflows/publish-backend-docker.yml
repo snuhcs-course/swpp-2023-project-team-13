@@ -3,7 +3,7 @@ name: 배포
 on:
   push:
     branches:
-      - main
+      - ml-initialization
 
 jobs:
 
@@ -51,4 +51,4 @@ jobs:
           username: eldpswp99
           password: ${{ secrets.DOCKER_TOKEN }}
       - name: Docker compose up
-        run: SHA=${GITHUB_SHA} docker compose -f ~/docker-compose.yml up -d fooriend-backend
+        run: SHA=${GITHUB_SHA} docker compose -f ~/docker-compose.yml up -d
