@@ -41,6 +41,7 @@ fun ProfileSection(
     userProfileImageUrl : Int = R.drawable.profile_cat,
     isFooried : Boolean = false,
     onFollowClick : () -> Unit = {},
+    isMyPage : Boolean = false,
 ) {
     var isFollowed by remember { mutableStateOf(isFooried) }
     Row(
@@ -75,14 +76,14 @@ fun ProfileSection(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "$followersCount Followers", color = MaterialTheme.colorScheme.primary)
+                Text(text = "Followers \n $followersCount", color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "$followingCount Following", color = MaterialTheme.colorScheme.primary)
+                Text(text = "Following \n $followingCount", color = MaterialTheme.colorScheme.primary)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
             // 팔로우 버튼이 null이 아닌경우 == mypage에서 호출하지 않은 경우
-            if(onFollowClick != {}){
+            if(!isMyPage){
                 if(!isFollowed){
                     Button(onClick = onFollowClick) {
                         Text(text = "Follow")

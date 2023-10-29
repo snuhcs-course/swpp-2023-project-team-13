@@ -61,7 +61,7 @@ fun MyPageScreen(
             }
         }
         // 프로필 섹션
-        ProfileSection()
+        ProfileSection(isMyPage = true)
 
         Spacer(modifier = Modifier.height(16.dp))
 
