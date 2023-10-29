@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.team13.fooriend.R
 import com.team13.fooriend.data.Review
 import com.team13.fooriend.data.User
+import com.team13.fooriend.ui.component.ReviewLazyGrid
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -54,19 +55,6 @@ fun SocialScreen(
     onReviewClick : (Int) -> Unit, // 리뷰 이미지를 클릭한 경우
     onUserClick : (Int) -> Unit, // search bar에서 검색한 유저를 클릭한 경우
 ){
-    // review 예시 코드, 실제는 List에 있는 review들의 id 값을 가지고 서버에서 받아와야 함
-    var reviews = List<Review>(10) { index ->
-        Review(
-            id = index,
-            restaurantId = index,
-            writerId = index,
-            title = "title",
-            content = "content",
-            confirm = true,
-            image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.profile_cat)
-        )
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -75,45 +63,7 @@ fun SocialScreen(
     ){
         SocialSearchBar(onUserClick = onUserClick)
         Spacer(modifier = Modifier.height(16.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ){
-            // review들이 사용자 위치기반으로 가까운 리뷰들 노출하는건 어떨까?
-            items(
-                items = reviews,
-                key = { review -> review.id }
-            ){ review ->
-                ReviewCard(review, onClick = { onReviewClick(review.id) })
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReviewCard(
-    review: Review,
-    onClick: () -> Unit = {  },
-){
-    Card(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-    ){
-        Box(
-            modifier = Modifier.height(150.dp),
-        ){
-            Image(
-                painter = painterResource(id = review.image[0]),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-            )
-
-
-        }
+        ReviewLazyGrid(/* reviews = reviews, */ onReviewClick = onReviewClick)
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)
