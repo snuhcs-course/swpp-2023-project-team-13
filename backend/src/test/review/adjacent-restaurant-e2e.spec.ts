@@ -99,7 +99,6 @@ describe('Get adjacent restaurant test', () => {
     validateRestaurantList(body);
   });
 
-  // TODO : unittest
   it('멀리 떨어지면 안잡한다', async () => {
     restaurant.longitude = 127.0;
     restaurant.latitude = 37.018018;

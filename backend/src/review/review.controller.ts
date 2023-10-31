@@ -29,6 +29,7 @@ import { UserEntity } from '../user/models/user.entity';
 import { UserRepository } from '../user/repostiories/user.repository';
 import { ReviewAdjacentQueryDto } from './dtos/in-dtos/review-adjacent-query.dto';
 import { RestaurantListDto } from './dtos/out-dtos/restaurantList.dto';
+import { RestaurantRepository } from './repositories/restaurant.repository';
 
 @ApiTags('reviews')
 @Controller('reviews')
@@ -37,6 +38,7 @@ export class ReviewController {
     private s3ImageService: S3ImageService,
     private reviewService: ReviewService,
     private reviewRepository: ReviewRepository,
+    private restaurantRepository: RestaurantRepository,
   ) {}
 
   @UseGuards(JwtAccessGuard)
@@ -81,7 +83,12 @@ export class ReviewController {
     @Req() { user }: UserRequest,
     @Query() data: ReviewAdjacentQueryDto,
   ) {
-    const restaurants = await this.reviewService.getAdjacentRestaurant(data);
+    const allRestaurants = await this.restaurantRepository.find({});
+
+    const restaurants = this.reviewService.getAdjacentRestaurant(
+      data,
+      allRestaurants,
+    );
 
     return new RestaurantListDto(restaurants);
   }

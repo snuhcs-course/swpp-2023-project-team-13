@@ -7,6 +7,7 @@ import { In } from 'typeorm';
 import { ReviewEntity } from './models/review.entity';
 import { ReviewAdjacentQueryDto } from './dtos/in-dtos/review-adjacent-query.dto';
 import { getDistance } from 'geolib';
+import { RestaurantEntity } from './models/restaurant.entity';
 
 @Injectable()
 export class ReviewService {
@@ -40,9 +41,11 @@ export class ReviewService {
     }).save();
   }
 
-  async getAdjacentRestaurant(data: ReviewAdjacentQueryDto) {
+  getAdjacentRestaurant(
+    data: ReviewAdjacentQueryDto,
+    restaurants: RestaurantEntity[],
+  ) {
     const { longitude, latitude, distance } = data;
-    const restaurants = await this.restaurantRepository.find({});
     const KILOMETER = 1000;
 
     return restaurants.filter(
