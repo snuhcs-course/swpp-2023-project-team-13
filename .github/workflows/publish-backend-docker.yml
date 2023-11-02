@@ -1,0 +1,54 @@
+name: 배포
+
+on:
+  push:
+    branches:
+      - ml-initialization
+
+jobs:
+
+  push:
+    env:
+      working-directory: ./backend
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: create dotenv
+        working-directory: ${{env.working-directory}}
+        run: echo "${{ secrets.ENV }}" > .env
+
+      - name: Log into GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: eldpswp99
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build image
+        working-directory: ${{env.working-directory}}
+        run: |
+          docker build -f Dockerfile .\
+            -t ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:${GITHUB_SHA}\
+            -t ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:latest
+      - name: Push image
+        working-directory: ${{env.working-directory}}
+        run: |
+          docker push ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:${GITHUB_SHA}
+          docker push ghcr.io/snuhcs-course/swpp-2023-project-team-13/backend-image:latest
+  deploy:
+    needs: push
+    name: 배포
+    runs-on: [ self-hosted ]
+    steps:
+      - name: Log into GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: eldpswp99
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Docker compose up
+        run: SHA=${GITHUB_SHA} docker compose -f ~/docker-compose.yml up -d
