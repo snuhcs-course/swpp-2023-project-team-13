@@ -1,71 +1,49 @@
+import numpy as np
 import torch
 from torch import nn
-from transformers import (
-    BertConfig,
-    BertForSequenceClassification,
-    BertModel,
-    get_linear_schedule_with_warmup,
-)
+
+from review.tokenization import BERTSentenceTransform
 
 
-class BertClassifier(nn.Module):
-    def __init__(self, num_labels=7):
-        super(BertClassifier, self).__init__()
+class BERTClassifier(nn.Module):
+    def __init__(self, bert, hidden_size=768, num_classes=2, dr_rate=None, params=None):
+        super(BERTClassifier, self).__init__()
+        self.bert = bert
+        self.dr_rate = dr_rate
 
-        self.bert = BertModel.from_pretrained("monologg/kobert")
-        self.linear = nn.Linear(768, num_labels)
+        self.classifier = nn.Linear(hidden_size, num_classes)
+        if dr_rate:
+            self.dropout = nn.Dropout(p=dr_rate)
 
-    def forward(self, input_ids, attention_mask):
-        _, pooled_output = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        linear_output = self.linear(pooled_output)
+    def gen_attention_mask(self, token_ids, valid_length):
+        attention_mask = torch.zeros_like(token_ids)
+        for i, v in enumerate(valid_length):
+            attention_mask[i][:v] = 1
+        return attention_mask.float()
 
-        return linear_output
+    def forward(self, token_ids, valid_length, segment_ids):
+        attention_mask = self.gen_attention_mask(token_ids, valid_length)
 
-
-def BertModelInitialization():
-    PATH = "model.pt"
-    model = BertClassifier()
-
-    torch.save(model.state_dict(), PATH)
-
-
-def get_model(device, cuda_available):
-    PATH = "model.pt"
-
-    model = BertClassifier()
-
-    if cuda_available:
-        model.load_state_dict(torch.load(PATH), strict=False)
-
-        model = model.to(device)
-    else:
-        model.load_state_dict(torch.load(PATH, map_location=device), strict=False)
-
-    return model
+        _, pooler = self.bert(
+            input_ids=token_ids,
+            token_type_ids=segment_ids.long(),
+            attention_mask=attention_mask.float().to(token_ids.device),
+        )
+        if self.dr_rate:
+            out = self.dropout(pooler)
+        return self.classifier(out)
 
 
-def get_model_with_params(num_data, device, cuda_available):
-    model = get_model(device, cuda_available)
+class BERTDataset(Dataset):
+    def __init__(self, dataset, sent_idx, label_idx, bert_tokenizer, vocab, max_len, pad, pair):
+        transform = BERTSentenceTransform(
+            bert_tokenizer, max_seq_length=max_len, vocab=vocab, pad=pad, pair=pair
+        )
+        self.sentences = [transform([i[sent_idx]]) for i in dataset]
+        self.labels = [np.int32(i[label_idx]) for i in dataset]
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-5, eps=1e-8)
-    epochs = 5
+    def __getitem__(self, i):
+        return self.sentences[i] + (self.labels[i],)
 
-    total_steps = num_data * epochs
-
-    scheduler = get_linear_schedule_with_warmup(
-        optimizer, num_warmup_steps=0, num_training_steps=total_steps
-    )
-    criterion = nn.CrossEntropyLoss()
-
-    return model, optimizer, scheduler, epochs, criterion
-
-
-def main():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    BertModelInitialization()
-    print(get_model_with_params(34388, device, torch.cuda.is_available()))
-
-
-if __name__ == "__main__":
-    main()
+    def __len__(self):
+        return len(self.labels)
