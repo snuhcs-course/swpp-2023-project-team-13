@@ -14,268 +14,147 @@
 # limitations under the License.
 """ Tokenization classes for KoBERT model """
 
+import gluonnlp as nlp
+import numpy as np
+from kobert_tokenizer import KoBERTTokenizer
+from transformers import BertModel
 
-import logging
-import os
-import unicodedata
-from shutil import copyfile
-
-from transformers import PreTrainedTokenizer
-
-logger = logging.getLogger(__name__)
-
-VOCAB_FILES_NAMES = {
-    "vocab_file": "tokenizer_78b3253a26.model",
-    "vocab_txt": "vocab.txt",
-}
-
-PRETRAINED_VOCAB_FILES_MAP = {
-    "vocab_file": {
-        "monologg/kobert": "https://s3.amazonaws.com/models.huggingface.co/bert/monologg/kobert/tokenizer_78b3253a26.model",
-        "monologg/kobert-lm": "https://s3.amazonaws.com/models.huggingface.co/bert/monologg/kobert-lm/tokenizer_78b3253a26.model",
-        "monologg/distilkobert": "https://s3.amazonaws.com/models.huggingface.co/bert/monologg/distilkobert/tokenizer_78b3253a26.model",
-    },
-    "vocab_txt": {
-        "monologg/kobert": "https://s3.amazonaws.com/models.huggingface.co/bert/monologg/kobert/vocab.txt",
-        "monologg/kobert-lm": "https://s3.amazonaws.com/models.huggingface.co/bert/monologg/kobert-lm/vocab.txt",
-        "monologg/distilkobert": "https://s3.amazonaws.com/models.huggingface.co/bert/monologg/distilkobert/vocab.txt",
-    },
-}
-
-PRETRAINED_POSITIONAL_EMBEDDINGS_SIZES = {
-    "monologg/kobert": 512,
-    "monologg/kobert-lm": 512,
-    "monologg/distilkobert": 512,
-}
-
-PRETRAINED_INIT_CONFIGURATION = {
-    "monologg/kobert": {"do_lower_case": False},
-    "monologg/kobert-lm": {"do_lower_case": False},
-    "monologg/distilkobert": {"do_lower_case": False},
-}
-
-SPIECE_UNDERLINE = "▁"
+ko_tokenizer = KoBERTTokenizer.from_pretrained("skt/kobert-base-v1")
+ko_bertmodel = BertModel.from_pretrained("skt/kobert-base-v1", return_dict=False)
+ko_vocab = nlp.vocab.BERTVocab.from_sentencepiece(ko_tokenizer.vocab_file, padding_token="[PAD]")
 
 
-class KoBertTokenizer(PreTrainedTokenizer):
-    """
-    SentencePiece based tokenizer. Peculiarities:
-        - requires `SentencePiece <https://github.com/google/sentencepiece>`_
+class BERTSentenceTransform:
+    r"""BERT style data transformation.
+
+    Parameters
+    ----------
+    tokenizer : BERTTokenizer.
+        Tokenizer for the sentences.
+    max_seq_length : int.
+        Maximum sequence length of the sentences.
+    pad : bool, default True
+        Whether to pad the sentences to maximum length.
+    pair : bool, default True
+        Whether to transform sentences or sentence pairs.
     """
 
-    vocab_files_names = VOCAB_FILES_NAMES
-    pretrained_vocab_files_map = PRETRAINED_VOCAB_FILES_MAP
-    pretrained_init_configuration = PRETRAINED_INIT_CONFIGURATION
-    max_model_input_sizes = PRETRAINED_POSITIONAL_EMBEDDINGS_SIZES
+    def __init__(self, tokenizer, max_seq_length, vocab, pad=True, pair=True):
+        self._tokenizer = tokenizer
+        self._max_seq_length = max_seq_length
+        self._pad = pad
+        self._pair = pair
+        self._vocab = vocab
 
-    def __init__(
-        self,
-        vocab_file,
-        vocab_txt,
-        do_lower_case=False,
-        remove_space=True,
-        keep_accents=False,
-        unk_token="[UNK]",
-        sep_token="[SEP]",
-        pad_token="[PAD]",
-        cls_token="[CLS]",
-        mask_token="[MASK]",
-        **kwargs,
-    ):
-        super().__init__(
-            unk_token=unk_token,
-            sep_token=sep_token,
-            pad_token=pad_token,
-            cls_token=cls_token,
-            mask_token=mask_token,
-            **kwargs,
-        )
+    def __call__(self, line):
+        """Perform transformation for sequence pairs or single sequences.
 
-        # Build vocab
-        self.token2idx = dict()
-        self.idx2token = []
-        with open(vocab_txt, "r", encoding="utf-8") as f:
-            for idx, token in enumerate(f):
-                token = token.strip()
-                self.token2idx[token] = idx
-                self.idx2token.append(token)
+        The transformation is processed in the following steps:
+        - tokenize the input sequences
+        - insert [CLS], [SEP] as necessary
+        - generate type ids to indicate whether a token belongs to the first
+        sequence or the second sequence.
+        - generate valid length
 
-        try:
-            import sentencepiece as spm
-        except ImportError:
-            logger.warning(
-                "You need to install SentencePiece to use KoBertTokenizer: https://github.com/google/sentencepiece"
-                "pip install sentencepiece"
-            )
+        For sequence pairs, the input is a tuple of 2 strings:
+        text_a, text_b.
 
-        self.do_lower_case = do_lower_case
-        self.remove_space = remove_space
-        self.keep_accents = keep_accents
-        self.vocab_file = vocab_file
-        self.vocab_txt = vocab_txt
+        Inputs:
+            text_a: 'is this jacksonville ?'
+            text_b: 'no it is not'
+        Tokenization:
+            text_a: 'is this jack ##son ##ville ?'
+            text_b: 'no it is not .'
+        Processed:
+            tokens: '[CLS] is this jack ##son ##ville ? [SEP] no it is not . [SEP]'
+            type_ids: 0     0  0    0    0     0       0 0     1  1  1  1   1 1
+            valid_length: 14
 
-        self.sp_model = spm.SentencePieceProcessor()
-        self.sp_model.Load(vocab_file)
+        For single sequences, the input is a tuple of single string:
+        text_a.
 
-    @property
-    def vocab_size(self):
-        return len(self.idx2token)
+        Inputs:
+            text_a: 'the dog is hairy .'
+        Tokenization:
+            text_a: 'the dog is hairy .'
+        Processed:
+            text_a: '[CLS] the dog is hairy . [SEP]'
+            type_ids: 0     0   0   0  0     0 0
+            valid_length: 7
 
-    def get_vocab(self):
-        return dict(self.token2idx, **self.added_tokens_encoder)
+        Parameters
+        ----------
+        line: tuple of str
+            Input strings. For sequence pairs, the input is a tuple of 2 strings:
+            (text_a, text_b). For single sequences, the input is a tuple of single
+            string: (text_a,).
 
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        state["sp_model"] = None
-        return state
+        Returns
+        -------
+        np.array: input token ids in 'int32', shape (batch_size, seq_length)
+        np.array: valid length in 'int32', shape (batch_size,)
+        np.array: input token type ids in 'int32', shape (batch_size, seq_length)
 
-    def __setstate__(self, d):
-        self.__dict__ = d
-        try:
-            import sentencepiece as spm
-        except ImportError:
-            logger.warning(
-                "You need to install SentencePiece to use KoBertTokenizer: https://github.com/google/sentencepiece"
-                "pip install sentencepiece"
-            )
-        self.sp_model = spm.SentencePieceProcessor()
-        self.sp_model.Load(self.vocab_file)
+        """
 
-    def preprocess_text(self, inputs):
-        if self.remove_space:
-            outputs = " ".join(inputs.strip().split())
+        # convert to unicode
+        text_a = line[0]
+        if self._pair:
+            assert len(line) == 2
+            text_b = line[1]
+
+        tokens_a = self._tokenizer.tokenize(text_a)
+        tokens_b = None
+
+        if self._pair:
+            tokens_b = self._tokenizer(text_b)
+
+        if tokens_b:
+            # Modifies `tokens_a` and `tokens_b` in place so that the total
+            # length is less than the specified length.
+            # Account for [CLS], [SEP], [SEP] with "- 3"
+            self._truncate_seq_pair(tokens_a, tokens_b, self._max_seq_length - 3)
         else:
-            outputs = inputs
-        outputs = outputs.replace("``", '"').replace("''", '"')
+            # Account for [CLS] and [SEP] with "- 2"
+            if len(tokens_a) > self._max_seq_length - 2:
+                tokens_a = tokens_a[0 : (self._max_seq_length - 2)]
 
-        if not self.keep_accents:
-            outputs = unicodedata.normalize("NFKD", outputs)
-            outputs = "".join([c for c in outputs if not unicodedata.combining(c)])
-        if self.do_lower_case:
-            outputs = outputs.lower()
+        # The embedding vectors for `type=0` and `type=1` were learned during
+        # pre-training and are added to the wordpiece embedding vector
+        # (and position vector). This is not *strictly* necessary since
+        # the [SEP] token unambiguously separates the sequences, but it makes
+        # it easier for the model to learn the concept of sequences.
 
-        return outputs
+        # For classification tasks, the first vector (corresponding to [CLS]) is
+        # used as as the "sentence vector". Note that this only makes sense because
+        # the entire model is fine-tuned.
+        # vocab = self._tokenizer.vocab
+        vocab = self._vocab
+        tokens = []
+        tokens.append(vocab.cls_token)
+        tokens.extend(tokens_a)
+        tokens.append(vocab.sep_token)
+        segment_ids = [0] * len(tokens)
 
-    def _tokenize(self, text):
-        """Tokenize a string."""
-        text = self.preprocess_text(text)
-        pieces = self.sp_model.encode(text, out_type=str)
-        new_pieces = []
-        for piece in pieces:
-            if len(piece) > 1 and piece[-1] == str(",") and piece[-2].isdigit():
-                cur_pieces = self.sp_model.EncodeAsPieces(piece[:-1].replace(SPIECE_UNDERLINE, ""))
-                if piece[0] != SPIECE_UNDERLINE and cur_pieces[0][0] == SPIECE_UNDERLINE:
-                    if len(cur_pieces[0]) == 1:
-                        cur_pieces = cur_pieces[1:]
-                    else:
-                        cur_pieces[0] = cur_pieces[0][1:]
-                cur_pieces.append(piece[-1])
-                new_pieces.extend(cur_pieces)
-            else:
-                new_pieces.append(piece)
+        if tokens_b:
+            tokens.extend(tokens_b)
+            tokens.append(vocab.sep_token)
+            segment_ids.extend([1] * (len(tokens) - len(segment_ids)))
 
-        return new_pieces
+        input_ids = self._tokenizer.convert_tokens_to_ids(tokens)
 
-    def _convert_token_to_id(self, token):
-        """Converts a token (str/unicode) in an id using the vocab."""
-        return self.token2idx.get(token, self.token2idx[self.unk_token])
+        # The valid length of sentences. Only real  tokens are attended to.
+        valid_length = len(input_ids)
 
-    def _convert_id_to_token(self, index):
-        """Converts an index (integer) in a token (string/unicode) using the vocab."""
-        return self.idx2token[index]
+        if self._pad:
+            # Zero-pad up to the sequence length.
+            padding_length = self._max_seq_length - valid_length
+            # use padding tokens for the rest
+            input_ids.extend([vocab[vocab.padding_token]] * padding_length)
+            segment_ids.extend([0] * padding_length)
 
-    def convert_tokens_to_string(self, tokens):
-        """Converts a sequence of tokens (strings for sub-words) in a single string."""
-        out_string = "".join(tokens).replace(SPIECE_UNDERLINE, " ").strip()
-        return out_string
-
-    def build_inputs_with_special_tokens(self, token_ids_0, token_ids_1=None):
-        """
-        Build model inputs from a sequence or a pair of sequence for sequence classification tasks
-        by concatenating and adding special tokens.
-        A KoBERT sequence has the following format:
-            single sequence: [CLS] X [SEP]
-            pair of sequences: [CLS] A [SEP] B [SEP]
-        """
-        if token_ids_1 is None:
-            return [self.cls_token_id] + token_ids_0 + [self.sep_token_id]
-        cls = [self.cls_token_id]
-        sep = [self.sep_token_id]
-        return cls + token_ids_0 + sep + token_ids_1 + sep
-
-    def get_special_tokens_mask(
-        self, token_ids_0, token_ids_1=None, already_has_special_tokens=False
-    ):
-        """
-        Retrieves sequence ids from a token list that has no special tokens added. This method is called when adding
-        special tokens using the tokenizer ``prepare_for_model`` or ``encode_plus`` methods.
-        Args:
-            token_ids_0: list of ids (must not contain special tokens)
-            token_ids_1: Optional list of ids (must not contain special tokens), necessary when fetching sequence ids
-                for sequence pairs
-            already_has_special_tokens: (default False) Set to True if the token list is already formated with
-                special tokens for the model
-        Returns:
-            A list of integers in the range [0, 1]: 0 for a special token, 1 for a sequence token.
-        """
-
-        if already_has_special_tokens:
-            if token_ids_1 is not None:
-                raise ValueError(
-                    "You should not supply a second sequence if the provided sequence of "
-                    "ids is already formated with special tokens for the model."
-                )
-            return list(
-                map(
-                    lambda x: 1 if x in [self.sep_token_id, self.cls_token_id] else 0,
-                    token_ids_0,
-                )
-            )
-
-        if token_ids_1 is not None:
-            return [1] + ([0] * len(token_ids_0)) + [1] + ([0] * len(token_ids_1)) + [1]
-        return [1] + ([0] * len(token_ids_0)) + [1]
-
-    def create_token_type_ids_from_sequences(self, token_ids_0, token_ids_1=None):
-        """
-        Creates a mask from the two sequences passed to be used in a sequence-pair classification task.
-        A KoBERT sequence pair mask has the following format:
-        0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1
-        | first sequence    | second sequence
-        if token_ids_1 is None, only returns the first portion of the mask (0's).
-        """
-        sep = [self.sep_token_id]
-        cls = [self.cls_token_id]
-        if token_ids_1 is None:
-            return len(cls + token_ids_0 + sep) * [0]
-        return len(cls + token_ids_0 + sep) * [0] + len(token_ids_1 + sep) * [1]
-
-    def save_vocabulary(self, save_directory):
-        """Save the sentencepiece vocabulary (copy original file) and special tokens file
-        to a directory.
-        """
-        if not os.path.isdir(save_directory):
-            logger.error("Vocabulary path ({}) should be a directory".format(save_directory))
-            return
-
-        # 1. Save sentencepiece model
-        out_vocab_model = os.path.join(save_directory, VOCAB_FILES_NAMES["vocab_file"])
-
-        if os.path.abspath(self.vocab_file) != os.path.abspath(out_vocab_model):
-            copyfile(self.vocab_file, out_vocab_model)
-
-        # 2. Save vocab.txt
-        index = 0
-        out_vocab_txt = os.path.join(save_directory, VOCAB_FILES_NAMES["vocab_txt"])
-        with open(out_vocab_txt, "w", encoding="utf-8") as writer:
-            for token, token_index in sorted(self.token2idx.items(), key=lambda kv: kv[1]):
-                if index != token_index:
-                    logger.warning(
-                        "Saving vocabulary to {}: vocabulary indices are not consecutive."
-                        " Please check that the vocabulary is not corrupted!".format(out_vocab_txt)
-                    )
-                    index = token_index
-                writer.write(token + "\n")
-                index += 1
-
-        return out_vocab_model, out_vocab_txt
+        return (
+            np.array(input_ids, dtype="int32"),
+            np.array(valid_length, dtype="int32"),
+            np.array(segment_ids, dtype="int32"),
+        )

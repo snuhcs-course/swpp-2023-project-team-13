@@ -1,106 +1,120 @@
-import random
-import time
-
+import gluonnlp as nlp
 import numpy as np
 import pandas as pd
 import torch
-from model import BertModelInitialization, get_model, get_model_with_params
+from kobert_tokenizer import KoBERTTokenizer
 from preprocessing import preprocessing
+from torch import nn
 from tqdm.notebook import tqdm
+from transformers import AdamW, BertModel
+from transformers.optimization import get_cosine_schedule_with_warmup
 
+from review.model import BERTClassifier, BERTDataset
 
-def accuracy(preds, labels):
-    f_pred = np.argmax(preds, axis=1).flatten()
-    f_labels = labels.flatten()
-    return np.sum(f_pred == f_labels) / len(f_labels)
-
-
-seed_val = 2023
-
-random.seed(seed_val)
-np.random.seed(seed_val)
-torch.manual_seed(seed_val)
-torch.cuda.manual_seed_all(seed_val)
-
-from tokenization import KoBertTokenizer
-
-# whole_dataset =
-
-tokenizer = KoBertTokenizer.from_pretrained("monologg/kobert")
-
-train_dataloader, validation_dataloader = preprocessing(tokenizer, whole_dataset)
-
-# 초기 사용시에만 선언
-BertModelInitialization()
+data = pd.read_csv("review_data.csv")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model, optimizer, scheduler, epochs, criterion = get_model_with_params(
-    len(train_dataloader), device, torch.cuda.is_available()
-)
+PATH = ""
 
-model.zero_grad()
 
-for epoch_i in range(epochs):
-    print("")
-    print("========{:}번째 Epoch / 전체 {:}회 ========".format(epoch_i + 1, epochs))
-    print("훈련 중")
+def calc_accuracy(X, Y):
+    max_vals, max_indices = torch.max(X, 1)
+    train_acc = (max_indices == Y).sum().data.cpu().numpy() / max_indices.size()[0]
+    return train_acc
 
-    t0 = time.time()
-    total_loss = 0
-    sum_loss = 0
-    model.train()  # 훈련모드
 
-    for step, batch in enumerate(tqdm(train_dataloader)):
-        if step % 50 == 0:
-            print("{}번째 까지의 평균 loss : {}".format(step, sum_loss / 50))
-            sum_loss = 0
+max_len = 64
+batch_size = 64
+warmup_ratio = 0.1
+num_epochs = 5
+max_grad_norm = 1
+log_interval = 200
+learning_rate = 5e-5
 
-        batch = tuple(t.to(device) for t in batch)
-        b_input_ids, b_input_mask, b_labels = batch
+ko_tokenizer = KoBERTTokenizer.from_pretrained("skt/kobert-base-v1")
+ko_bertmodel = BertModel.from_pretrained("skt/kobert-base-v1", return_dict=False)
+ko_vocab = nlp.vocab.BERTVocab.from_sentencepiece(ko_tokenizer.vocab_file, padding_token="[PAD]")
 
-        outputs = model(b_input_ids, b_input_mask)
 
-        loss = criterion(outputs, b_labels.long())
-        total_loss += loss.item()
-        sum_loss += loss.item()
+def train(data):
+    dataset_train, dataset_test = preprocessing(data)
+    data_train = BERTDataset(dataset_train, 0, 1, ko_tokenizer, ko_vocab, max_len, True, False)
+    data_test = BERTDataset(dataset_test, 0, 1, ko_tokenizer, ko_vocab, max_len, True, False)
 
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        optimizer.step()
-        scheduler.step()
-        model.zero_grad()
+    train_dataloader = torch.utils.data.DataLoader(
+        data_train, batch_size=batch_size, num_workers=5
+    )
+    test_dataloader = torch.utils.data.DataLoader(data_test, batch_size=batch_size, num_workers=5)
 
-    avg_train_loss = total_loss / len(train_dataloader)
-    print("")
-    print("  Average training loss: {0:.2f}".format(avg_train_loss))
+    model = BERTClassifier(ko_bertmodel, dr_rate=0.5).to(device)
+    no_decay = ["bias", "LayerNorm.weight"]
+    optimizer_grouped_parameters = [
+        {
+            "params": [
+                p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)
+            ],
+            "weight_decay": 0.01,
+        },
+        {
+            "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
+            "weight_decay": 0.0,
+        },
+    ]
 
-    print("검증 중")
+    optimizer = AdamW(optimizer_grouped_parameters, lr=learning_rate)
+    loss_fn = nn.CrossEntropyLoss()
 
-    t0 = time.time()
-    model.eval()
+    t_total = len(train_dataloader) * num_epochs
+    warmup_step = int(t_total * warmup_ratio)
 
-    eval_loss, eval_accuracy = 0, 0
-    nb_eval_steps, nb_eval_examples = 0, 0
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer, num_warmup_steps=warmup_step, num_training_steps=t_total
+    )
 
-    for batch in validation_dataloader:
-        batch = tuple(t.to(device) for t in batch)
+    train_history = []
+    test_history = []
+    loss_history = []
 
-        b_input_ids, b_input_mask, b_labels = batch
+    for e in range(num_epochs):
+        train_acc = 0.0
+        test_acc = 0.0
+        model.train()
+        for batch_id, (token_ids, valid_length, segment_ids, label) in enumerate(
+            tqdm(train_dataloader)
+        ):
+            optimizer.zero_grad()
+            token_ids = token_ids.long().to(device)
+            segment_ids = segment_ids.long().to(device)
+            valid_length = valid_length
+            label = label.long().to(device)
+            out = model(token_ids, valid_length, segment_ids)
 
-        with torch.no_grad():
-            outputs = model(b_input_ids, attention_mask=b_input_mask)
-
-        outputs = outputs.detach().cpu().numpy()
-        label_ids = b_labels.to("cpu").numpy()
-
-        tmp_eval_accuracy = accuracy(outputs, label_ids)
-        eval_accuracy += tmp_eval_accuracy
-        nb_eval_steps += 1
-
-    print("  Accuracy: {0:.4f}".format(eval_accuracy / nb_eval_steps))
-
-PATH = "model.pt"
-torch.save(model.state_dict(), PATH)
-
-print("Training complete")
+            loss = loss_fn(out, label)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
+            optimizer.step()
+            scheduler.step()  # Update learning rate schedule
+            train_acc += calc_accuracy(out, label)
+            if batch_id % log_interval == 0:
+                print(
+                    "epoch {} batch id {} loss {} train acc {}".format(
+                        e + 1, batch_id + 1, loss.data.cpu().numpy(), train_acc / (batch_id + 1)
+                    )
+                )
+                train_history.append(train_acc / (batch_id + 1))
+                loss_history.append(loss.data.cpu().numpy())
+        print("epoch {} train acc {}".format(e + 1, train_acc / (batch_id + 1)))
+        model.eval()
+        for batch_id, (token_ids, valid_length, segment_ids, label) in enumerate(
+            tqdm(test_dataloader)
+        ):
+            token_ids = token_ids.long().to(device)
+            segment_ids = segment_ids.long().to(device)
+            valid_length = valid_length
+            label = label.long().to(device)
+            out = model(token_ids, valid_length, segment_ids)
+            test_acc += calc_accuracy(out, label)
+        print("epoch {} test acc {}".format(e + 1, test_acc / (batch_id + 1)))
+        test_history.append(test_acc / (batch_id + 1))
+    torch.save(model, PATH)
