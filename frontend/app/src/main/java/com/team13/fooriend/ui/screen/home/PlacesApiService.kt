@@ -17,28 +17,37 @@ interface PlacesApiService {
     suspend fun getPlaceDetails(
         @Query("place_id") placeId: String,
         @Query("key") apiKey: String
-    ): PlaceDetailsResponse
+    ): PlaceResults
 }
 
 data class NearbySearchResponse(
     val results: List<PlaceResult>
 )
 
+data class PlaceResults(
+    val result: PlaceResult
+)
+
 data class PlaceResult(
-    val place_id: String,
+    val placeId: String,
     val geometry: Geometry,
     val name: String,
 )
 
 data class Geometry(
-    val location: Map<String, out Double>
+    val location: Map<String, Double>
 )
 
-data class PlaceDetailsResponse(
-    val result: PlaceDetailsResult
-)
-
-data class PlaceDetailsResult(
-    val name: String  // 추가로 필요한 다른 정보들도 여기에 정의할 수 있습니다.
-)
+//data class PlaceDetailsResponse(
+//    val result: PlaceDetailsResult
+//)
+//
+//data class PlaceDetailsResult(
+//    val name: String  // 추가로 필요한 다른 정보들도 여기에 정의할 수 있습니다.
+//    val geometry: Geometry
+//)
+//
+//data class Geometry(
+//    val location: LatLng
+//)
 

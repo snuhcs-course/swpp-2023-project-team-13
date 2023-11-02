@@ -24,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.maps.android.clustering.ClusterItem
@@ -34,6 +35,7 @@ import com.team13.fooriend.ui.util.LineType
 import com.team13.fooriend.ui.util.getCurrentLocation
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 import com.team13.fooriend.ui.util.restaurants
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -56,7 +58,7 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val placesApiService = retrofit.create(PlacesApiService::class.java)
+    val placesApi = retrofit.create(PlacesApiService::class.java)
     val coroutineScope = rememberCoroutineScope()
     var placeId by remember { mutableStateOf<String?>(null)}
     val googleMap = remember { mutableStateOf<GoogleMap?>(null) }
@@ -64,16 +66,16 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
     var cameraZoom by rememberSaveable { mutableStateOf(15f) }
     var cameraTilt by rememberSaveable { mutableStateOf(0f) }
     var cameraBearing by rememberSaveable { mutableStateOf(0f) }
+    var isReturn by remember { mutableStateOf(false) }
     var selectedMarkerTitle by remember { mutableStateOf<String?>(null) }
 
     Log.d("MyMap", "cameraPosition: $cameraTarget")
-
-    Places.initialize(context, "AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY")
+    Places.initialize(context, "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
 
     val markers = restaurants
 
 
-    // val lastAddedMarker = remember { mutableStateOf<Marker?>(null) }
+    val lastAddedMarker = remember { mutableStateOf<Marker?>(null) }
     // var initialMarkersAdded by remember { mutableStateOf(false) } // 초기 마커들이 추가되었는지 여부
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -85,11 +87,31 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                         Log.d("factory", "Map loaded")
                         googleMap.value = map
 
-//                        map.setOnPoiClickListener { poi ->
-//                            lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
-//                            val marker = map.addMarker(MarkerOptions().position(poi.latLng).title(poi.name))
-//                            lastAddedMarker.value = marker
-//                        }
+                        map.setOnPoiClickListener { poi ->
+                            coroutineScope.launch {
+                                Log.d("MyMap", "Poi clicked: ${poi.placeId}")
+                                val response = placesApi.getPlaceDetails(
+                                    placeId = poi.placeId,
+                                    apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0"
+                                )
+                                Log.d("MyMap", "Place details: ${response.result.name}")
+                                // move map camera preserving zoom level
+
+                                cameraTarget = LatLng(
+                                    response.result.geometry.location["lat"]!!,
+                                    response.result.geometry.location["lng"]!!
+                                )
+                                cameraZoom = map.cameraPosition.zoom
+                                cameraTilt = map.cameraPosition.tilt
+                                cameraBearing = map.cameraPosition.bearing
+                                isReturn = true;
+                                lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
+                                val marker = map.addMarker(
+                                    MarkerOptions().position(cameraTarget).title(poi.name)
+                                )
+                                lastAddedMarker.value = marker
+                            }
+                        }
 //
 //                        map.setOnMapClickListener { clickedLatLng ->
 //                            coroutineScope.launch {
@@ -125,7 +147,10 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                 googleMap.value?.let { map ->
                     Log.d("update", "update")
                     if(cameraTarget != LatLng(0.0,0.0))
-                        map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(cameraTarget, cameraZoom, cameraTilt, cameraBearing)))
+                        if(isReturn)
+                            map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(cameraTarget, cameraZoom, cameraTilt, cameraBearing)))
+                        else
+                            map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(cameraTarget, cameraZoom, cameraTilt, cameraBearing)))
                     else
                         map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(myLocation, 15f)))
 
@@ -207,7 +232,7 @@ private suspend fun handleMapClick (
     }
     // 로그
     val nearestPlaceName = nearestPlace?.name
-    val placeId: String? = nearestPlace?.place_id
+    val placeId: String? = nearestPlace?.placeId
     if (nearestPlaceName != null) {
         Log.d("MyMap", "Nearest place: $nearestPlaceName")
     } else {
