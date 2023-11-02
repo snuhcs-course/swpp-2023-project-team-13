@@ -1,9 +1,10 @@
 import { CustomRepository } from '../../typeorm-ex/typeorm-ex.decorator';
 import { ReviewEntity } from '../models/review.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 import { UserEntity } from '../../user/models/user.entity';
+import { FollowEntity } from '../../user/models/follow.entity';
 
 @CustomRepository(ReviewEntity)
 export class ReviewRepository extends Repository<ReviewEntity> {
@@ -54,6 +55,27 @@ export class ReviewRepository extends Repository<ReviewEntity> {
     return this.findFull({
       user: {
         id: user.id,
+      },
+    });
+  }
+
+  async findReviewOfFriends(user: UserEntity) {
+    const friendsIds = (
+      await FollowEntity.find({
+        where: {
+          user: {
+            id: user.id,
+          },
+        },
+        relations: {
+          follower: true,
+        },
+      })
+    ).map((follow) => follow.follower.id);
+
+    return this.findFull({
+      user: {
+        id: In(friendsIds),
       },
     });
   }
