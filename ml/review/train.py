@@ -9,7 +9,7 @@ from tqdm.notebook import tqdm
 from transformers import AdamW, BertModel
 from transformers.optimization import get_cosine_schedule_with_warmup
 
-from review.model import BERTClassifier, BERTDataset
+from model import BERTClassifier, BERTDataset
 
 data = pd.read_csv("review_data.csv")
 

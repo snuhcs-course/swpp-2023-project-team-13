@@ -3,7 +3,7 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset
 
-from review.tokenization import BERTSentenceTransform
+from tokenization import BERTSentenceTransform
 
 
 class BERTClassifier(nn.Module):
