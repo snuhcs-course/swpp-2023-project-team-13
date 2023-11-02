@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import torch
 from kobert_tokenizer import KoBERTTokenizer
-from review.preprocessing import preprocessing
+from preprocessing import preprocessing
 from torch import nn
 from tqdm.notebook import tqdm
 from transformers import AdamW, BertModel
