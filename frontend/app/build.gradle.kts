@@ -104,7 +104,7 @@ dependencies {
     //Lifecycle
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.1")
-    
+
     // Testing Navigation
     androidTestImplementation ("androidx.navigation:navigation-testing:2.4.0-alpha10")
     // JUnit
