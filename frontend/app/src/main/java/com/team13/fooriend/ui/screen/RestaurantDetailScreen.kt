@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,15 +82,19 @@ fun RestaurantDetailScreen(
 @Composable
 fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
     // 실제로는 reviewId를 가지고 서버에서 받아와야 함
-    val review = Review(
-        id = reviewId,
-        restaurantId = 0,
-        writerId = 0,
-        title = "title",
-        content = "짜장면이 맛있어요!",
-        confirm = true,
-        image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.hamburger)
-    )
+    val review1 = Review(id = 1, writerId = 1, restaurantId = 1, content = "탕수육이 진짜 바삭!!, 여기 진짜 짬뽕 맛집이예요 별점 10개도 부족합니다.",
+        image = listOf(R.drawable.tangsuyug, R.drawable.jjambbong, R.drawable.jjambbong),
+        confirm = true, title = "title")
+    val review2 = Review(id = 2, writerId = 1, restaurantId = 1, content = "이 집 짜장이 기가 막히네",
+        image = listOf(R.drawable.jjajangmyeon),
+        confirm = true, title = "title")
+    val review3 = Review(id = 3, writerId = 1, restaurantId = 1, content = "이 집 고양이 때문에 심장이 너무 아팠습니다.. ㅠㅠ",
+        image = listOf(R.drawable.profile_cat),
+        confirm = true, title = "title")
+    var review: Review
+    if (reviewId == 1) review = review1
+    else if (reviewId == 2) review = review2
+    else review = review3
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -159,9 +164,14 @@ fun TopRestaurantBar(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ){
-            Text(text = "좋아요 ${restaurant.good}")
-            Spacer(modifier = Modifier.width(20.dp))
-            Text(text = "싫어요 ${restaurant.bad}")
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(text = "좋아요 ${restaurant.good}")
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(text = "싫어요 ${restaurant.bad}")
+            }
+            Spacer(modifier = Modifier.width(12.dp))
             Button(onClick = onWriteReviewClick) {
                 Text(text = "리뷰 작성")
             }

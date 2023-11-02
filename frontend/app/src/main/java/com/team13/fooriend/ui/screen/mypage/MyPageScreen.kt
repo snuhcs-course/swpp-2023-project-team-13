@@ -36,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.team13.fooriend.R
+import com.team13.fooriend.ui.component.ProfileSection
+import com.team13.fooriend.ui.component.ReviewLazyGrid
 
 
 @Composable
@@ -59,67 +61,15 @@ fun MyPageScreen(
             }
         }
         // 프로필 섹션
-        ProfileSection()
+        ProfileSection(isMyPage = true)
 
         Spacer(modifier = Modifier.height(16.dp))
 
 
         // 중앙의 음식 리스트
-        MyPage_foodpicList()
-
-        Spacer(modifier = Modifier.weight(1f))
-
+        ReviewLazyGrid(/* reviews = reviews, */onReviewClick = { })
     }
 }
-
-
-@Composable
-fun ProfileSection() {
-    val userProfileImageUrl = painterResource(id = R.drawable.profile_cat)
-    val username = "ozeeeno"
-    val followersCount = 100
-    val followingCount = 50
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        ) {
-            Image(
-                painter = userProfileImageUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = username,
-            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "$followersCount Followers", color = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "$followingCount Following", color = MaterialTheme.colorScheme.primary)
-        }
-    }
-}
-
 
 @Composable
 fun MyPage_foodpicList() {

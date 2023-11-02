@@ -39,15 +39,9 @@ fun ReviewDetailScreen(
     onRestaurantClick: (Int) -> Unit,
 ) {
     // review 예시 코드, 실제는 reviewId  값을 가지고 서버에서 받아와야 함
-    val review = Review(
-        id = reviewId,
-        restaurantId = 0,
-        writerId = 0,
-        title = "title",
-        content = "content",
-        confirm = true,
-        image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.hamburger)
-    )
+    val review = Review(id = 1, writerId = 1, restaurantId = 1, content = "탕수육이 진짜 바삭!!, 여기 진짜 짬뽕 맛집이예요 별점 10개도 부족합니다.",
+        image = listOf(R.drawable.tangsuyug, R.drawable.jjambbong, R.drawable.jjambbong),
+        confirm = true, title = "title")
     val scrollState = rememberScrollState()
 
     Column(

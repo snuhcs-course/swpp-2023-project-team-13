@@ -1,32 +1,25 @@
 package com.team13.fooriend.ui.screen.social
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,17 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.team13.fooriend.R
 import com.team13.fooriend.data.Review
 import com.team13.fooriend.data.User
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import com.team13.fooriend.ui.component.ReviewLazyGrid
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,8 +43,8 @@ fun SocialScreen(
     onReviewClick : (Int) -> Unit, // 리뷰 이미지를 클릭한 경우
     onUserClick : (Int) -> Unit, // search bar에서 검색한 유저를 클릭한 경우
 ){
-    // review 예시 코드, 실제는 List에 있는 review들의 id 값을 가지고 서버에서 받아와야 함
-    var reviews = List<Review>(10) { index ->
+    // 예시 데이터
+    var _reviews = List<Review>(10) { index ->
         Review(
             id = index,
             restaurantId = index,
@@ -63,10 +52,9 @@ fun SocialScreen(
             title = "title",
             content = "content",
             confirm = true,
-            image = listOf(R.drawable.hamburger, R.drawable.profile_cat, R.drawable.profile_cat)
+            image = listOf(R.drawable.tangsuyug, R.drawable.profile_cat, R.drawable.profile_cat)
         )
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -75,55 +63,36 @@ fun SocialScreen(
     ){
         SocialSearchBar(onUserClick = onUserClick)
         Spacer(modifier = Modifier.height(16.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-        ){
-            // review들이 사용자 위치기반으로 가까운 리뷰들 노출하는건 어떨까?
-            items(
-                items = reviews,
-                key = { review -> review.id }
-            ){ review ->
-                ReviewCard(review, onClick = { onReviewClick(review.id) })
-            }
-        }
+        ReviewLazyGrid(reviews = _reviews, onReviewClick = onReviewClick)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReviewCard(
-    review: Review,
-    onClick: () -> Unit = {  },
-){
-    Card(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-    ){
-        Box(
-            modifier = Modifier.height(150.dp),
-        ){
-            Image(
-                painter = painterResource(id = review.image[0]),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-            )
-
-
-        }
-    }
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialSearchBar(
-    onUserClick: (Int) -> Unit
+    onUserClick: (Int) -> Unit,
+    historyLog: List<String> = listOf("yongchan", "philipp", "apple"),
 ) {
-    var text by remember { mutableStateOf("Search") }
+    var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var items = remember{ mutableListOf("yongchan")}
+    var items = remember{ mutableListOf("yongchan")} // history log
+    // user는 db에 있는 전체 유저 데이터를 가져와야 한다
+    val users by remember{ mutableStateOf(
+        listOf(
+            User(1, "John Smith", "abc", "123"),
+            User(2, "Mary Johnson", "abc", "123"),
+            User(3, "David Davis", "abc", "123"),
+            User(4, "Linda Wilson", "abc", "123"),
+            User(5, "Michael Jones", "abc", "123"),
+            User(6, "Sarah Miller", "abc", "123"),
+            User(7, "Robert Brown", "abc", "123"),
+            User(8, "Karen Lee", "abc", "123"),
+            User(9, "William Clark", "abc", "123"),
+            User(10, "Jennifer Hall", "abc", "123"),
+
+
+        )
+    )}
     SearchBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -132,9 +101,9 @@ fun SocialSearchBar(
         onQueryChange = {
             text = it
         },
-        onSearch = {
-            items.add(text)
-            active = false
+        onSearch = {// 일반 검색을 통해서는 유저 프로필 검색 불가 like instagram
+//            items.add(text)
+//            active = false
         },
         active = active,
         onActiveChange = {
@@ -162,24 +131,56 @@ fun SocialSearchBar(
             }
         }
     ) {
-        items.forEach{
-            Row(modifier = Modifier.padding(all = 0.dp)){
-                Icon(
-                    modifier = Modifier.padding(all = 12.dp),
-                    imageVector = Icons.Default.History,
-                    contentDescription = "History Icon"
-                )
-                TextButton(
-                    onClick = { onUserClick(0) },
-                ) {// user id를 파라미터로 넘겨야 한다.
-                    Text(
-                        text = it,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Start,
+        // text가 empty인 경우 history를 보여준다.
+        if(text.isEmpty()) {
+            items.forEach {
+                Row(modifier = Modifier.padding(all = 0.dp)) {
+                    Icon(
+                        modifier = Modifier.padding(all = 12.dp),
+                        imageVector = Icons.Default.History,
+                        contentDescription = "History Icon"
                     )
+                    TextButton(
+                        onClick = { onUserClick(0) },
+                    ) {// user id를 파라미터로 넘겨야 한다.
+                        Text(
+                            text = it,
+                            modifier = Modifier.fillMaxWidth(0.85f),
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+                    IconButton(onClick = { items.remove(it)}) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "delete history")
+                    }
+                }
+            }
+        }else{
+            // text가 empty가 아닌 경우 검색 결과를 보여준다.
+            // users에서 filter를 통해 검색 결과를 보여준다.
+            val _users = users.filter { it.name.contains(text, ignoreCase = true) }
+            _users.forEach{
+                Row(modifier = Modifier.padding(all = 0.dp)) {
+                    Icon(
+                        modifier = Modifier.padding(all = 12.dp),
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Account Icon"
+                    )
+                    TextButton(
+                        onClick = {
+                            items.add(it.name) // add는 되는데 stack 이 구현되기 때문에 과거의 social screen으로 돌아온다.
+                            onUserClick(0)
+                        }
+                    ) {// user id를 파라미터로 넘겨야 한다.
+                        Text(
+                            text = it.name,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Start,
+                        )
+                    }
                 }
             }
         }
+
     }
 }
 
