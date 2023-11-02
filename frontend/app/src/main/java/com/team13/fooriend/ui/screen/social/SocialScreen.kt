@@ -79,9 +79,18 @@ fun SocialSearchBar(
     // user는 db에 있는 전체 유저 데이터를 가져와야 한다
     val users by remember{ mutableStateOf(
         listOf(
-            User(1, "philipp", "abc", "123"),
-            User(2, "yongchan", "abc", "123"),
-            User(3, "apple", "abc", "123"),
+            User(1, "John Smith", "abc", "123"),
+            User(2, "Mary Johnson", "abc", "123"),
+            User(3, "David Davis", "abc", "123"),
+            User(4, "Linda Wilson", "abc", "123"),
+            User(5, "Michael Jones", "abc", "123"),
+            User(6, "Sarah Miller", "abc", "123"),
+            User(7, "Robert Brown", "abc", "123"),
+            User(8, "Karen Lee", "abc", "123"),
+            User(9, "William Clark", "abc", "123"),
+            User(10, "Jennifer Hall", "abc", "123"),
+
+
         )
     )}
     SearchBar(
@@ -140,7 +149,7 @@ fun SocialSearchBar(
                             textAlign = TextAlign.Start,
                         )
                     }
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { items.remove(it)}) {
                         Icon(imageVector = Icons.Default.Close, contentDescription = "delete history")
                     }
                 }
