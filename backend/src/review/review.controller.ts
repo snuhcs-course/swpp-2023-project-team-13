@@ -30,6 +30,7 @@ import { UserRepository } from '../user/repostiories/user.repository';
 import { ReviewAdjacentQueryDto } from './dtos/in-dtos/review-adjacent-query.dto';
 import { RestaurantListDto } from './dtos/out-dtos/restaurantList.dto';
 import { RestaurantRepository } from './repositories/restaurant.repository';
+import { In } from 'typeorm';
 
 @ApiTags('reviews')
 @Controller('reviews')
@@ -89,6 +90,20 @@ export class ReviewController {
       data,
       allRestaurants,
     );
+
+    return new RestaurantListDto(restaurants);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/friends/restaurants')
+  async getReviewOfFriends(@Req() { user }: UserRequest) {
+    const reviewEntities =
+      await this.reviewRepository.findReviewOfFriends(user);
+
+    const restaurantIds = reviewEntities.map((review) => review.restaurant.id);
+    const restaurants = await this.restaurantRepository.findBy({
+      id: In(restaurantIds),
+    });
 
     return new RestaurantListDto(restaurants);
   }

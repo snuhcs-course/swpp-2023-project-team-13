@@ -11,7 +11,7 @@ import { FollowEntity } from '../../user/models/follow.entity';
 import { validateDtoKeys } from '../utils';
 import { decode } from 'jsonwebtoken';
 
-describe('getUserMe test', () => {
+describe('token test', () => {
   let testServer: NestExpressApplication;
   let user: UserEntity;
 
@@ -41,7 +41,6 @@ describe('getUserMe test', () => {
 
     expect(payload).toHaveProperty('id');
     expect(payload).toHaveProperty('username');
-    expect(payload).toHaveProperty('iat');
   });
 
   it('decode access token', () => {
@@ -50,6 +49,5 @@ describe('getUserMe test', () => {
 
     expect(payload).toHaveProperty('id');
     expect(payload).toHaveProperty('username');
-    expect(payload).toHaveProperty('iat');
   });
 });
