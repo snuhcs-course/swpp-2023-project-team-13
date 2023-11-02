@@ -4,6 +4,7 @@ import requests
 import uuid
 from PIL import Image
 from fastapi import FastAPI
+from review.predict import predict
 
 app = FastAPI()
 
@@ -29,8 +30,6 @@ async def receipt_ocr(url_uuid: str):
 
 @app.get("/review")
 async def review_classification(review_str: str):
-  # res = predict_sentence(review_str)
-  # return {"output": res}
-  pass
+  return predict(review_str)
 
 
