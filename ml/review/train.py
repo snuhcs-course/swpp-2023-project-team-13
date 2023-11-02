@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import torch
 from kobert_tokenizer import KoBERTTokenizer
-from preprocessing import preprocessing
+from review.preprocessing import preprocessing
 from torch import nn
 from tqdm.notebook import tqdm
 from transformers import AdamW, BertModel
@@ -15,7 +15,7 @@ data = pd.read_csv("review_data.csv")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-PATH = ""
+PATH = "../model"
 
 
 def calc_accuracy(X, Y):
