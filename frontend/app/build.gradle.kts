@@ -113,5 +113,6 @@ dependencies {
     testImplementation ("io.mockk:mockk:1.12.0")
 
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.7.0")
-
+    // coil: image upload
+    implementation ("io.coil-kt:coil-compose:1.4.0")
 }
