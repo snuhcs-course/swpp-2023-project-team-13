@@ -29,7 +29,7 @@ data class PlaceResults(
 )
 
 data class PlaceResult(
-    val placeId: String,
+    val place_id: String,
     val geometry: Geometry,
     val name: String,
 )
