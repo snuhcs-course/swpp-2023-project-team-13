@@ -59,13 +59,14 @@ fun getMarkerIconFromDrawable(context: Context, drawableId: Int, width: Int, hei
 
 val restaurants = listOf(
     MyItem(LatLng(37.4791436,126.9527075), "Dos Tacos", "ChIJAQBE7YmffDURbru0nMzSg-o"),
-    MyItem(LatLng(37.4797029,126.9527655), "Tendong Yotsuya", "ChIJKVMg64mffDURoCq9TTiKkJQ"),
-    MyItem(LatLng(37.4790055, 126.9537665), "순이네밥상", "ChIJ_cZuN8qffDURfLA2YJJAjL8"),
+    MyItem(LatLng(37.4788509,126.9541697), "동경산책", "ChIJJQ5EnD2hfDURp58ZApDTGCU"),
+    MyItem(LatLng(37.477349,126.955729), "철판구이 고쿠", "ChIJQ0cqkcyhfDURRzbIS7i3HYo"),
     MyItem(LatLng(37.4790948, 126.95556), "멘쇼우라멘", "ChIJsdJX1fqhfDURujEHz2D9I6k"),
-    MyItem(LatLng(37.4777708, 126.9573454), "누들하우스", "ChIJUWDMsbKhfDURO4BzQ0FW-hI"),
-    MyItem(LatLng(37.477904, 126.9524293), "Frank Burger", "ChIJ04GGWCaffDUR5BM2mwF5lFQ"),
+    MyItem(LatLng(37.4782239,126.9573202), "제일공간", "ChIJcWd1dn2hfDUR2_9ILmgwZ8Y"),
+    MyItem(LatLng(37.4774917,126.9527019), "정가네낙지마당", "ChIJfYEJQIqffDURl20P0VPFbbs"),
     MyItem(LatLng(37.480378, 126.9534373), "Samcha", "ChIJ1-zoz4mffDURWcPDWpCVVR0"),
     MyItem(LatLng(37.4782267,126.9564157), "Meat Grillers", "ChIJeS2ZISegfDUR7HHYw4A_sps"),
+    MyItem(LatLng(37.4777767,126.9568847), "나마라", "ChIJAVO_0tuhfDURi855uASAy9c"),
     MyItem(LatLng(37.47875099999999,126.9528016), "Hanoi Byeol", "ChIJf35IPIqffDURbn70T-Mun04"),
     MyItem(LatLng(37.4788394,126.9517714), "아띠 85도씨 베이커리", "ChIJWeB-KYqffDUROj36DHsB48Q"),
     MyItem(LatLng(37.4778999,126.9541072),"맨프롬오키나와","ChIJBdq8mh-ofDURQIkFvf5BkI4" )

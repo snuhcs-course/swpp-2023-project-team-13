@@ -3,12 +3,15 @@ package com.team13.fooriend.ui.screen.home
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.os.Looper
+import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,14 +20,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.compositionContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -33,22 +44,26 @@ import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.util.getCurrentLocation
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 import com.team13.fooriend.ui.util.restaurants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
-@SuppressLint("PotentialBehaviorOverride")
+@SuppressLint("PotentialBehaviorOverride", "MissingPermission")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit) {
     var showMap by remember { mutableStateOf(false) }
     var myLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+    var myLocationMarker by remember { mutableStateOf<Marker?>(null) }
 
     getCurrentLocation(context) {
         myLocation = it
@@ -77,9 +92,10 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
     var markerName by remember { mutableStateOf("") }
     val markers = restaurants
 
+    val locationRequest = LocationRequest.Builder(10000).build()
 
     val lastAddedMarker = remember { mutableStateOf<Marker?>(null) }
-    // var initialMarkersAdded by remember { mutableStateOf(false) } // 초기 마커들이 추가되었는지 여부
+    var lastMarkerUpdated by remember { mutableStateOf(false) } // 초기 마커들이 추가되었는지 여부
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -90,6 +106,7 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                         Log.d("factory", "Map loaded")
                         googleMap.value = map
                         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPositionState.position))
+
                         map.setOnPoiClickListener { poi ->
                             val matchingItem = restaurants.find { it.placeId == poi.placeId }
 
@@ -97,16 +114,17 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                             matchingItem?.let {
                                 // MyItem을 처리하는 코드, 예를 들어 로그 출력
                                 Log.d("MyMap", "Matching MyItem found: ${it.title}")
-                                map.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition(it.position, map.cameraPosition.zoom, map.cameraPosition.tilt, map.cameraPosition.bearing)))
                                 lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
                                 val marker = map.addMarker(
                                     MarkerOptions().position(it.position).title(it.title).icon(getMarkerIconFromDrawable(context, R.drawable.transparent, 100, 100)
                                     ).zIndex(2.0f)
                                 )
                                 lastAddedMarker.value = marker
+                                cameraPositionState.position = CameraPosition(it.position, map.cameraPosition.zoom, map.cameraPosition.tilt, map.cameraPosition.bearing)
                                 map.setOnInfoWindowClickListener { clickedMarker ->
                                     onReviewClick(1) // onReviewClick(clickedMarker.placeId)
                                 }
+                                lastMarkerUpdated = true
                                 return@setOnPoiClickListener // MyItem을 찾았으므로 여기서 리스너 작업을 종료
                             }
                             coroutineScope.launch {
@@ -128,18 +146,18 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                                     response.result.geometry.location["lng"]!!
                                 )
                                 cameraPositionState.position = CameraPosition(latLng, map.cameraPosition.zoom, map.cameraPosition.tilt, map.cameraPosition.bearing)
-                                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPositionState.position))
-                                lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
                                 val marker = map.addMarker(
                                     MarkerOptions().position(latLng).title(poi.name)
                                 )
-                                lastAddedMarker.value = marker
                                 map.setOnInfoWindowClickListener { clickedMarker ->
                                     if (clickedMarker.id == marker?.id) {
                                         onReviewClick(1) // onReviewClick(poi.placeId)
                                     }
                                     true
                                 }
+                                lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
+                                lastAddedMarker.value = marker
+                                lastMarkerUpdated = true
                             }
                         }
                         map.setOnMapClickListener { clickedLatLng ->
@@ -172,6 +190,12 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                             onReviewClick(1) // onReviewClick(item.placeId)
                         }
                         map.setOnCameraIdleListener(clusterManager)
+                        map.isMyLocationEnabled = true
+                        map.uiSettings.isMyLocationButtonEnabled = true
+                        map.setOnMyLocationButtonClickListener {
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15f))
+                            true
+                        }
                     }
                 }
             },
@@ -180,38 +204,20 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                     Log.d("update", "Map updated")
                     if(map.cameraPosition.target == LatLng(0.0, 0.0))
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15f))
-                        map.addMarker(
-                            MarkerOptions().position(myLocation).title("Current Location").icon(
-                            getMarkerIconFromDrawable(context, R.drawable.mypin, 100, 100)
-                        ))
-                    lastAddedMarker.value?.showInfoWindow()
+
+                    if(lastMarkerUpdated)
+                        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPositionState.position))
+                        lastAddedMarker.value?.showInfoWindow()
+                        lastMarkerUpdated = false
+
                 }
             }
         )
-//        if (isMarkerClicked) {
-//            // 여기에 새로 띄울 Composable 함수 호출
-//            NewComposable(markerName, placeId!!, context, onReviewClick)
-//        }
     }
     Log.d("MyMap", "Reload")
 }
-@Composable
-fun NewComposable(markerName: String, placeId: String, context: Context, onReviewClick : (Int) -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        Button(onClick = { onReviewClick(1) }) {
-            Text(text = markerName, fontSize = 20.sp)
-        }
-    }
-}
 
 
-//enum class RestaurantType {
-//    KOREAN, JAPANESE, CHINESE, WESTERN, FUSION, SEAFOOD, SALAD, DRINK, BRUNCH, MEET, WINE// ... 추가적인 종류들 ...
-//}
-// 친구 식당 마커
-
-// need to add private val place_id : String,
-// maybe private val restaurantType: RestaurantType
 class MyItem(private val position: LatLng, private val title: String, val placeId: String) : ClusterItem {
     override fun getPosition(): LatLng {
         return position
