@@ -106,6 +106,25 @@ fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit
                         Log.d("factory", "Map loaded")
                         googleMap.value = map
                         map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPositionState.position))
+                        val locationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+                        val locationRequest = LocationRequest.Builder(10000).build()
+                        val locationCallback = object : LocationCallback() {
+                            override fun onLocationResult(p0: LocationResult) {
+                                p0 ?: return
+                                for (location in p0.locations) {
+                                    // 새 위치로 미커 이동
+                                    Log.d("MyMap", "Location updated: ${location.latitude}, ${location.longitude}")
+                                    myLocationMarker?.remove()
+                                    myLocation = LatLng(location.latitude, location.longitude)
+                                    myLocationMarker = map.addMarker(
+                                        MarkerOptions().position(myLocation).title("Current Location").icon(
+                                            getMarkerIconFromDrawable(context, R.drawable.mypin, 100, 100)
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
 
                         map.setOnPoiClickListener { poi ->
                             val matchingItem = restaurants.find { it.placeId == poi.placeId }
