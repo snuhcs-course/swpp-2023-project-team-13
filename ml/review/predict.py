@@ -6,7 +6,7 @@ from kobert_tokenizer import KoBERTTokenizer
 from review.model import BERTDataset
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-PATH = ""
+PATH = "../model"
 
 
 def predict(predict_sentence):

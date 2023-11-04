@@ -5,6 +5,9 @@ import uuid
 from PIL import Image
 from fastapi import FastAPI
 
+from dto import OcrModel, ReviewModel
+from review.predict import predict
+
 app = FastAPI()
 
 
@@ -13,12 +16,9 @@ async def root():
   return {"message": "Hello World"}
 
 
-@app.get("/ocr")
-async def receipt_ocr(url_uuid: str):
-  url = "https://d2ghbk063u2bdn.cloudfront.net/" + url_uuid
-  print(url)
-
-  image_res = requests.get(url)
+@app.post("/ocr")
+async def receipt_ocr(data: OcrModel):
+  image_res = requests.get(data.image_url)
   image = Image.open(BytesIO(image_res.content))
   jpg_image = image.convert('RGB')
   uuid_string = uuid.uuid4()
@@ -27,10 +27,8 @@ async def receipt_ocr(url_uuid: str):
   return {"ocr": "통닭치킨"}
 
 
-@app.get("/review")
-async def review_classification(review_str: str):
-  # res = predict_sentence(review_str)
-  # return {"output": res}
-  pass
+@app.post("/review")
+async def review_classification(data: ReviewModel):
+  return predict(data.review)
 
 
