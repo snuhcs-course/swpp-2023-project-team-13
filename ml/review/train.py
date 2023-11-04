@@ -15,7 +15,7 @@ data = pd.read_csv("review_data.csv")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-PATH = ""
+PATH = "/review"
 
 
 def calc_accuracy(X, Y):

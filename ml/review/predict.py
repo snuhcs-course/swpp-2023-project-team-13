@@ -2,7 +2,8 @@ import gluonnlp as nlp
 import numpy as np
 import torch
 from kobert_tokenizer import KoBERTTokenizer
-from model import BERTDataset
+
+from review.model import BERTDataset
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 PATH = ""
