@@ -1,6 +1,7 @@
 import json
 import os
 import platform
+import re
 import time
 import uuid
 
@@ -17,100 +18,63 @@ api_url = os.environ.get("api_url")
 secret_key = os.environ.get("secret_key")
 
 
-def plt_imshow(title="image", img=None, figsize=(8, 5)):
-    plt.figure(figsize=figsize)
-
-    if type(img) == list:
-        if type(title) == list:
-            titles = title
-        else:
-            titles = []
-
-            for i in range(len(img)):
-                titles.append(title)
-
-        for i in range(len(img)):
-            if len(img[i].shape) <= 2:
-                rgbImg = cv2.cvtColor(img[i], cv2.COLOR_GRAY2RGB)
-            else:
-                rgbImg = cv2.cvtColor(img[i], cv2.COLOR_BGR2RGB)
-
-            plt.subplot(1, len(img), i + 1), plt.imshow(rgbImg)
-            plt.title(titles[i])
-            plt.xticks([]), plt.yticks([])
-
-        plt.show()
-    else:
-        if len(img.shape) < 3:
-            rgbImg = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-        else:
-            rgbImg = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-        plt.imshow(rgbImg)
-        plt.title(title)
-        plt.xticks([]), plt.yticks([])
-        plt.show()
+path = "assets/receipt.jpeg"
 
 
-def put_text(image, text, x, y, color=(0, 255, 0), font_size=22):
-    if type(image) == np.ndarray:
-        color_coverted = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = Image.fromarray(color_coverted)
+def ocr_receipt(path):
+    files = [("file", open(path, "rb"))]
 
-    if platform.system() == "Darwin":
-        font = "AppleGothic.ttf"
-    elif platform.system() == "Windows":
-        font = "malgun.ttf"
+    request_json = {
+        "images": [{"format": "jpg", "name": "demo"}],
+        "requestId": str(uuid.uuid4()),
+        "version": "V2",
+        "timestamp": int(round(time.time() * 1000)),
+    }
 
-    image_font = ImageFont.truetype(font, font_size)
-    font = ImageFont.load_default()
-    draw = ImageDraw.Draw(image)
+    payload = {"message": json.dumps(request_json).encode("UTF-8")}
 
-    draw.text((x, y), text, font=image_font, fill=color)
+    headers = {
+        "X-OCR-SECRET": secret_key,
+    }
 
-    numpy_image = np.array(image)
-    opencv_image = cv2.cvtColor(numpy_image, cv2.COLOR_RGB2BGR)
+    response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
 
-    return opencv_image
+    response_body = json.loads(response.text)
+
+    images = response_body["images"]
+    images_receipt = images[0].get("receipt")
+
+    receipt_title = images_receipt["result"]["storeInfo"]["name"]["text"]
+    receipt_address = images_receipt["result"]["storeInfo"]["addresses"][0]["text"]
+    receipt_date = images_receipt["result"]["paymentInfo"]["date"]["text"]
+
+    sub_results = images_receipt["result"]["subResults"]
+    receipt_menu = []
+    for sub_result in sub_results:
+        items = sub_result.get("items", [])
+        for item in items:
+            menu_name = item.get("name", {}).get("text", "")
+            receipt_menu.append(menu_name)
+
+    receipt_price = int(
+        float(
+            re.sub(
+                r"[^\uAC00-\uD7A30-9a-zA-Z\s]",
+                "",
+                images_receipt["result"]["totalPrice"]["price"]["text"],
+            )
+        )
+    )
+
+    receipt_data = {
+        "title": receipt_title,
+        "address": receipt_address,
+        "date": receipt_date,
+        "menu": receipt_menu,
+        "price": receipt_price,
+    }
+
+    return json.dumps(receipt_data, ensure_ascii=False)
 
 
-path = "assets/example.jpeg"
-files = [("file", open(path, "rb"))]
-
-request_json = {
-    "images": [{"format": "jpg", "name": "demo"}],
-    "requestId": str(uuid.uuid4()),
-    "version": "V2",
-    "timestamp": int(round(time.time() * 1000)),
-}
-
-payload = {"message": json.dumps(request_json).encode("UTF-8")}
-
-headers = {
-    "X-OCR-SECRET": secret_key,
-}
-
-response = requests.request("POST", api_url, headers=headers, data=payload, files=files)
-result = response.json()
-
-img = cv2.imread(path)
-roi_img = img.copy()
-
-for field in result["images"][0]["fields"]:
-    text = field["inferText"]
-    vertices_list = field["boundingPoly"]["vertices"]
-    pts = [tuple(vertice.values()) for vertice in vertices_list]
-    topLeft = [int(_) for _ in pts[0]]
-    topRight = [int(_) for _ in pts[1]]
-    bottomRight = [int(_) for _ in pts[2]]
-    bottomLeft = [int(_) for _ in pts[3]]
-
-    cv2.line(roi_img, topLeft, topRight, (0, 255, 0), 2)
-    cv2.line(roi_img, topRight, bottomRight, (0, 255, 0), 2)
-    cv2.line(roi_img, bottomRight, bottomLeft, (0, 255, 0), 2)
-    cv2.line(roi_img, bottomLeft, topLeft, (0, 255, 0), 2)
-    roi_img = put_text(roi_img, text, topLeft[0], topLeft[1] - 10, font_size=30)
-
-    print(text)
-
-plt_imshow(["Original", "ROI"], [img, roi_img], figsize=(16, 10))
+print(ocr_receipt(path))
