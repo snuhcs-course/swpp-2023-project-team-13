@@ -77,4 +77,4 @@ def ocr_receipt(path):
     return json.dumps(receipt_data, ensure_ascii=False)
 
 
-print(ocr_receipt(path))
+# print(ocr_receipt(path))
