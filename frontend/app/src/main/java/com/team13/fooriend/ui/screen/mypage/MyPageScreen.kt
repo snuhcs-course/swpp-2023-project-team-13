@@ -43,6 +43,7 @@ import com.team13.fooriend.ui.component.ReviewLazyGrid
 @Composable
 fun MyPageScreen(
     onMyInfoClick: () -> Unit,
+    onReviewClick: (Int) -> Unit
 ){
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -67,57 +68,12 @@ fun MyPageScreen(
 
 
         // 중앙의 음식 리스트
-        ReviewLazyGrid(/* reviews = reviews, */onReviewClick = { })
-    }
-}
-
-@Composable
-fun MyPage_foodpicList() {
-    val scrollState = rememberLazyListState()
-
-    LazyColumn(
-        state = scrollState,
-        contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(2) { rowIndex ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                repeat(3) { columnIndex ->
-                    val index = rowIndex * 3 + columnIndex
-                    if (index < 15) {
-                        Mypage_ImageListItem(index)
-                    } else {
-                        Spacer(modifier = Modifier.size(100.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Mypage_ImageListItem(index: Int) {
-    Box(
-        modifier = Modifier
-            .size(100.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.hamburger),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-
+        ReviewLazyGrid(/* reviews = reviews, */onReviewClick = onReviewClick)
     }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun MyPageScreenPreview(){
-    MyPageScreen( onMyInfoClick = {  })
+    MyPageScreen( onMyInfoClick = {  }, onReviewClick = {  })
 }

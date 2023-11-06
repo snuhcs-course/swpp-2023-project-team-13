@@ -63,6 +63,7 @@ fun HomeNavGraph(
         composable(route = BottomNavItem.MyPage.route) {
             MyPageScreen(
                 onMyInfoClick = { navController.navigate("myInfo") },
+                onReviewClick = { navController.navigate("reviewDetail/${it}") },
             )
         }
         composable(route = "restaurant/{restaurantId}"){
