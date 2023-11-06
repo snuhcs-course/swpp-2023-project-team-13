@@ -6,7 +6,8 @@ from PIL import Image
 from fastapi import FastAPI
 
 from dto import OcrModel, ReviewModel
-from review.predict import predict
+from ocr.execution import ocr_receipt
+from review.predict import predict_review
 
 app = FastAPI()
 
@@ -22,13 +23,15 @@ async def receipt_ocr(data: OcrModel):
   image = Image.open(BytesIO(image_res.content))
   jpg_image = image.convert('RGB')
   uuid_string = uuid.uuid4()
-  jpg_image.save('pictures/' + str(uuid_string) + '.jpg')
+  receipt_path = 'pictures/' + str(uuid_string) + '.jpg'
+  jpg_image.save(receipt_path)
+  response = ocr_receipt(receipt_path)
 
-  return {"ocr": "통닭치킨"}
+  return response
 
 
 @app.post("/review")
 async def review_classification(data: ReviewModel):
-  return predict(data.review)
+  return predict_review(data.review)
 
 
