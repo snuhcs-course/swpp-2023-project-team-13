@@ -74,7 +74,7 @@ def ocr_receipt(path):
         # "price": receipt_price,
     }
 
-    return json.dumps(receipt_data, ensure_ascii=False)
+    return receipt_data
 
 
 # print(ocr_receipt(path))
