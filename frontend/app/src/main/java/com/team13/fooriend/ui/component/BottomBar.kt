@@ -21,9 +21,9 @@ import com.team13.fooriend.ui.navigation.BottomNavItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomBar(context: Context, navController: NavHostController) {
+fun BottomBar(context: Context, navController: NavHostController, showBottomBar: Boolean) {
     Scaffold(
-        bottomBar = { BottomNavigation(navController = navController) }
+        bottomBar = { if(showBottomBar) BottomNavigation(navController = navController) }
     ) {
         Box(Modifier.padding(it)){
             HomeNavGraph(context = context, navController = navController)
