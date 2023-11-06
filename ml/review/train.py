@@ -3,17 +3,17 @@ import numpy as np
 import pandas as pd
 import torch
 from kobert_tokenizer import KoBERTTokenizer
+from model import BERTClassifier, BERTDataset
 from preprocessing import preprocessing
 from torch import nn
 from tqdm.notebook import tqdm
 from transformers import AdamW, BertModel
 from transformers.optimization import get_cosine_schedule_with_warmup
 
-from model import BERTClassifier, BERTDataset
-
 data = pd.read_csv("review_data.csv")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 PATH = "../model"
 
