@@ -18,7 +18,7 @@ api_url = os.environ.get("api_url")
 secret_key = os.environ.get("secret_key")
 
 
-path = "assets/receipt.jpeg"
+# path = "assets/receipt.jpeg"
 
 
 def ocr_receipt(path):
@@ -56,22 +56,22 @@ def ocr_receipt(path):
             menu_name = item.get("name", {}).get("text", "")
             receipt_menu.append(menu_name)
 
-    receipt_price = int(
-        float(
-            re.sub(
-                r"[^\uAC00-\uD7A30-9a-zA-Z\s]",
-                "",
-                images_receipt["result"]["totalPrice"]["price"]["text"],
-            )
-        )
-    )
+    # receipt_price = int(
+    #     float(
+    #         re.sub(
+    #             r"[^\uAC00-\uD7A30-9a-zA-Z\s]",
+    #             "",
+    #             images_receipt["result"]["totalPrice"]["price"]["text"],
+    #         )
+    #     )
+    # )
 
     receipt_data = {
         "title": receipt_title,
         "address": receipt_address,
         "date": receipt_date,
         "menu": receipt_menu,
-        "price": receipt_price,
+        # "price": receipt_price,
     }
 
     return json.dumps(receipt_data, ensure_ascii=False)
