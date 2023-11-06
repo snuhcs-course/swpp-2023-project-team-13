@@ -7,6 +7,7 @@ import { In } from 'typeorm';
 import { ReviewEntity } from './models/review.entity';
 import { ReviewAdjacentQueryDto } from './dtos/in-dtos/review-adjacent-query.dto';
 import { getDistance } from 'geolib';
+// import axios from 'axios';
 
 @Injectable()
 export class ReviewService {
@@ -30,13 +31,25 @@ export class ReviewService {
     const receiptImage = images.find((image) => image.id === receiptImageId);
     if (receiptImage) {
       await receiptImage.markAsReceipt();
+      // const receiptData = (
+      //   await axios.post(`${process.env.ML_URL}ocr`, {
+      //     review: content,
+      //   })
+      // ).data;
     }
+
+    // const isPositive = (
+    //   await axios.post(`${process.env.ML_URL}review`, {
+    //     review: content,
+    //   })
+    // ).data['result'];
 
     return await ReviewEntity.create({
       content,
       user,
       restaurant,
       images,
+      // isPositive,
     }).save();
   }
 
