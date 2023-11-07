@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserEntity } from '../user/models/user.entity';
 import { CreateReviewDto } from './dtos/in-dtos/createReview.dto';
 import { RestaurantRepository } from './repositories/restaurant.repository';
@@ -7,7 +7,7 @@ import { In } from 'typeorm';
 import { ReviewEntity } from './models/review.entity';
 import { ReviewAdjacentQueryDto } from './dtos/in-dtos/review-adjacent-query.dto';
 import { getDistance } from 'geolib';
-// import axios from 'axios';
+import { getReceiptOcr, getReviewIsPositive } from './ml-remote';
 
 @Injectable()
 export class ReviewService {
@@ -29,27 +29,31 @@ export class ReviewService {
       id: In(imageIds.concat([receiptImageId ?? -1])),
     });
     const receiptImage = images.find((image) => image.id === receiptImageId);
+    let menu = [];
     if (receiptImage) {
       await receiptImage.markAsReceipt();
-      // const receiptData = (
-      //   await axios.post(`${process.env.ML_URL}ocr`, {
-      //     review: content,
-      //   })
-      // ).data;
+      try {
+        const receiptData = await getReceiptOcr(receiptImage.url);
+        menu = receiptData['menu'];
+      } catch (e) {
+        throw new BadRequestException('잘못된 영수증입니다.');
+      }
     }
 
-    // const isPositive = (
-    //   await axios.post(`${process.env.ML_URL}review`, {
-    //     review: content,
-    //   })
-    // ).data['result'];
+    let isPositive = false;
+    try {
+      isPositive = await getReviewIsPositive(content);
+    } catch (e) {
+      throw new BadRequestException('리뷰 분석 중 오류가 발생했습니다.');
+    }
 
     return await ReviewEntity.create({
       content,
       user,
       restaurant,
       images,
-      // isPositive,
+      isPositive,
+      menu,
     }).save();
   }
 

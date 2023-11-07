@@ -21,6 +21,9 @@ export class ReviewEntity extends IssuedAtMetaEntity {
   @Column({ type: 'boolean', default: false })
   isPositive: boolean;
 
+  @Column('varchar', { array: true, default: [] })
+  menu: string[];
+
   get receiptImage() {
     return this.images.find((image) => image.isReceipt);
   }
