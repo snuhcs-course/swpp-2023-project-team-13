@@ -22,6 +22,7 @@ describe('Get adjacent restaurant test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
+  let anotherUser: UserEntity;
   let accessToken: string;
   let restaurant: RestaurantEntity;
   let review: ReviewEntity;
@@ -48,6 +49,12 @@ describe('Get adjacent restaurant test', () => {
       password: 'world',
     });
 
+    anotherUser = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    });
+
     const { body } = await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
@@ -63,64 +70,102 @@ describe('Get adjacent restaurant test', () => {
     review = await ReviewFixture.create({
       restaurant,
       images: [image],
+      user: anotherUser,
+    });
+
+    const anotherRestaurant = await RestaurantFixture.create({});
+    review = await ReviewFixture.create({
+      restaurant: anotherRestaurant,
+      images: [image],
       user,
     });
+
+    await user.follow(anotherUser);
   });
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get(
-        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
-      )
+      .get(`/reviews/friends/restaurants`)
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get(
-        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
-      )
+      .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
   });
 
   it('DTO check', async () => {
-    restaurant.longitude = 127.0;
-    restaurant.latitude = 37.0;
-    await restaurant.save();
-
     const { body } = await supertest(testServer.getHttpServer())
-      .get(
-        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
-      )
+      .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
     validateRestaurantList(body);
+    expect(body.restaurantList.length).toBe(1);
   });
 
-  // TODO : unittest
-  it('멀리 떨어지면 안잡한다', async () => {
-    restaurant.longitude = 127.0;
-    restaurant.latitude = 37.018018;
-    await restaurant.save();
+  it('친구 끊으면 나오지 않는다', async () => {
+    const follow = await user.findFollow(anotherUser);
+    await user.unfollow(follow!);
+    const { body } = await supertest(testServer.getHttpServer())
+      .get(`/reviews/friends/restaurants`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+
+    expect(body.restaurantList.length).toBe(0);
+  });
+
+  it('제 3의 유저의 리뷰 레스토랑은 나오지 않는다', async () => {
+    const newUser = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    });
+
+    const newRestaurant = await RestaurantFixture.create({});
+    const image = await ImageFixture.create({});
+    review = await ReviewFixture.create({
+      restaurant: newRestaurant,
+      images: [image],
+      user: newUser,
+    });
 
     const { body } = await supertest(testServer.getHttpServer())
-      .get(
-        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=1`,
-      )
+      .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
+    expect(body.restaurantList.length).toBe(1);
+  });
 
-    expect(body.restaurantList.length).toEqual(0);
+  it('제 3의 유저의 리뷰 레스토랑은 나오지 않는다 - 친구하면 나온다', async () => {
+    const newUser = await UserFixture.create({
+      name: 'hi',
+      username: 'hello',
+      password: 'world',
+    });
 
-    const { body: body2 } = await supertest(testServer.getHttpServer())
-      .get(
-        `/reviews/adjacent/restaurants?longitude=127.0&latitude=37.0&distance=3`,
-      )
+    const newRestaurant = await RestaurantFixture.create({});
+    const image = await ImageFixture.create({});
+    review = await ReviewFixture.create({
+      restaurant: newRestaurant,
+      images: [image],
+      user: newUser,
+    });
+
+    const { body } = await supertest(testServer.getHttpServer())
+      .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
+    expect(body.restaurantList.length).toBe(1);
 
-    expect(body2.restaurantList.length).toEqual(1);
+    await user.follow(newUser);
+
+    const { body: newBody } = await supertest(testServer.getHttpServer())
+      .get(`/reviews/friends/restaurants`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(HttpStatus.OK);
+    expect(newBody.restaurantList.length).toBe(2);
   });
 });
