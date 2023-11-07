@@ -13,6 +13,9 @@ export class RestaurantEntity extends IssuedAtMetaEntity {
   @Column({ type: 'float8' })
   longitude: number;
 
+  @Column({ type: 'varchar', default: '' })
+  name: string;
+
   @OneToMany(() => ReviewEntity, (review) => review.restaurant)
   reviews: ReviewEntity[];
 }
