@@ -31,7 +31,13 @@ export function validateRestaurantList(body: any) {
 }
 
 export function validateRestaurant(body: any) {
-  validateDtoKeys(body, ['id', 'googleMapPlaceId', 'longitude', 'latitude']);
+  validateDtoKeys(body, [
+    'id',
+    'googleMapPlaceId',
+    'longitude',
+    'latitude',
+    'name',
+  ]);
 }
 
 export function validateUserSummary(body: any) {

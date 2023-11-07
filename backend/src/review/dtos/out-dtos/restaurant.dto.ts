@@ -5,11 +5,19 @@ export class RestaurantDto {
   private googleMapPlaceId: string;
   private longitude: number;
   private latitude: number;
+  private name: string;
 
-  constructor({ id, googleMapPlaceId, longitude, latitude }: RestaurantEntity) {
+  constructor({
+    id,
+    googleMapPlaceId,
+    longitude,
+    latitude,
+    name,
+  }: RestaurantEntity) {
     this.id = id;
     this.googleMapPlaceId = googleMapPlaceId;
     this.longitude = longitude;
     this.latitude = latitude;
+    this.name = name;
   }
 }

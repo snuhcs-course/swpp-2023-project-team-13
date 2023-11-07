@@ -4,6 +4,9 @@ export class RestaurantDto {
   @IsString()
   googleMapPlaceId: string;
 
+  @IsString()
+  name: string;
+
   @IsNumber()
   latitude: number;
 

@@ -75,6 +75,7 @@ describe('Create Review test', () => {
           googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           latitude: 37.4224764,
           longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
         },
         content: 'content',
       })
@@ -89,6 +90,7 @@ describe('Create Review test', () => {
           googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           latitude: 37.4224764,
           longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
         },
         content: 'content',
         imageIds: [],
@@ -128,6 +130,7 @@ describe('Create Review test', () => {
           googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           latitude: 37.4224764,
           longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
         },
         content: 'content',
         imageIds: [image.id],
@@ -173,6 +176,7 @@ describe('Create Review test', () => {
           googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           latitude: 37.4224764,
           longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
         },
         content: 'content',
         imageIds: [image.id],
@@ -197,6 +201,7 @@ describe('Create Review test', () => {
           googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           latitude: 37.4224764,
           longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
         },
         content: 'content',
         imageIds: [image.id],
@@ -215,6 +220,7 @@ describe('Create Review test', () => {
           googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
           latitude: 37.4224764,
           longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
         },
         content: 'content',
         imageIds: [],
@@ -235,6 +241,7 @@ describe('Create Review test', () => {
         restaurant: {
           googleMapPlaceId: restaurant.googleMapPlaceId,
           latitude: restaurant.latitude,
+          name: '두근두근쭈꾸미',
           longitude: restaurant.longitude,
         },
         content: 'content',
@@ -250,6 +257,7 @@ describe('Create Review test', () => {
     {
       restaurant: {
         googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
+        name: '두근두근쭈꾸미',
         latitude: 37.4224764,
       },
       content: 'content',
@@ -259,9 +267,19 @@ describe('Create Review test', () => {
       restaurant: {
         googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
         latitude: 37.4224764,
+        name: '두근두근쭈꾸미',
         longitude: -122.0842499,
       },
       imageIds: [],
+    },
+    {
+      restaurant: {
+        googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
+        name: '두근두근쭈꾸미',
+        latitude: 37.4224764,
+        longitude: -122.0842499,
+      },
+      content: 'content',
     },
     {
       restaurant: {
@@ -270,6 +288,7 @@ describe('Create Review test', () => {
         longitude: -122.0842499,
       },
       content: 'content',
+      imageIds: [1, 2, 3],
     },
   ])('input validation', async (requestBody) => {
     await supertest(testServer.getHttpServer())

@@ -6,7 +6,7 @@ import { RestaurantDto } from '../dtos/in-dtos/restaurant.dto';
 @CustomRepository(RestaurantEntity)
 export class RestaurantRepository extends Repository<RestaurantEntity> {
   async findOrCreate(data: RestaurantDto) {
-    const { googleMapPlaceId, longitude, latitude } = data;
+    const { googleMapPlaceId, longitude, latitude, name } = data;
     const restaurant = await this.findOne({
       where: { googleMapPlaceId },
     });
@@ -17,6 +17,7 @@ export class RestaurantRepository extends Repository<RestaurantEntity> {
       googleMapPlaceId,
       longitude,
       latitude,
+      name,
     }).save();
   }
 }
