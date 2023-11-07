@@ -29,12 +29,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.team13.fooriend.R
 
 @Composable
 fun ProfileSection(
+    // default value는 추후에 모두 지우자
     username : String = "ozeeeno",
     followersCount : Int = 100,
     followingCount : Int = 50,
@@ -43,7 +45,7 @@ fun ProfileSection(
     onFollowClick : () -> Unit = {},
     isMyPage : Boolean = false,
 ) {
-    var isFollowed by remember { mutableStateOf(isFooried) }
+    var isFollowed by remember { mutableStateOf(isFooried) } // 팔로우 여부 <- 서버에서 관리해야 함
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,16 +87,23 @@ fun ProfileSection(
             // 팔로우 버튼이 null이 아닌경우 == mypage에서 호출하지 않은 경우
             if(!isMyPage){
                 if(!isFollowed){
-                    Button(onClick = onFollowClick) {
+                    Button(onClick = onFollowClick) {// 팔로우 되어 있지 않은 친구의 경우
                         Text(text = "Follow")
                     }
                 }
                 else{
-                    Button(onClick = onFollowClick) {
+                    Button(onClick = onFollowClick) {// 팔로우 되어 있던 친구의 경우
                         Text(text = "Unfollow")
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+@Preview(showSystemUi = true, showBackground = true)
+fun ProfileSectionPreview(){
+    ProfileSection("조용찬", 10, 20, R.drawable.profile_cat,
+        isFooried = false, onFollowClick = {}, isMyPage = false)
 }

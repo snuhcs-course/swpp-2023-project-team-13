@@ -25,5 +25,5 @@ fun LoginSuccess(context: Context, navController: NavHostController = rememberNa
         "myInfo" -> false
         else -> true // in all other cases show the bottom bar
     }
-    BottomBar(context, navController = navController, showBottomBar = showBottomBar)
+    BottomBar(context, navController = navController, showBottomBar = showBottomBar) // bottom bar를 보여줄지 말지 결정
 }

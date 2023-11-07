@@ -89,8 +89,6 @@ fun SocialSearchBar(
             User(8, "Karen Lee", "abc", "123"),
             User(9, "William Clark", "abc", "123"),
             User(10, "Jennifer Hall", "abc", "123"),
-
-
         )
     )}
     SearchBar(

@@ -53,6 +53,7 @@ fun RestaurantDetailScreen(
     onWriterClick: (Int) -> Unit,
 ) {
     Scaffold(
+        // top bar를 설정하면서 top bar 영역은 scroll의 영향을 받지 않도록 한다.
         topBar = {
             TopRestaurantBar(
                 onCloseClick = onBackClick,
@@ -69,7 +70,7 @@ fun RestaurantDetailScreen(
             contentPadding = PaddingValues(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ){
-            items(restaurant.reviewList) { reviewId ->
+            items(restaurant.reviewList) { reviewId -> // restaurant에 있는 reveiwList를 가져온다.
                 ReviewItem(
                     reviewId = reviewId,
                     onWriterClick = onWriterClick,
@@ -91,6 +92,7 @@ fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
     val review3 = Review(id = 3, writerId = 1, restaurantId = 1, content = "이 집 고양이 때문에 심장이 너무 아팠습니다.. ㅠㅠ",
         image = listOf(R.drawable.profile_cat),
         confirm = true, title = "title")
+    // reviewId에 따라 다른 review를 가져온다.
     var review: Review
     if (reviewId == 1) review = review1
     else if (reviewId == 2) review = review2
@@ -119,7 +121,7 @@ fun ReviewItem(reviewId: Int, onWriterClick: (Int) -> Unit) {
         }
         IconButton(onClick = { onWriterClick(review.writerId) }) {
             Icon(
-                imageVector = Icons.Default.AccountBox,
+                imageVector = Icons.Default.AccountBox, // Default image가 아니라 user profile 이미지를 삽입해야 한다.
                 contentDescription = "Writer",
                 tint = Color.Black
             )
@@ -164,11 +166,11 @@ fun TopRestaurantBar(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ){
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ }) {// 좋아요 버튼 누르면 긍정 리뷰만 뜨도록
                 Text(text = "좋아요 ${restaurant.good}")
             }
             Spacer(modifier = Modifier.width(8.dp))
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { /*TODO*/ }) {// 싫어요 버튼 누르면 부정 리뷰만 뜨도록
                 Text(text = "싫어요 ${restaurant.bad}")
             }
             Spacer(modifier = Modifier.width(12.dp))

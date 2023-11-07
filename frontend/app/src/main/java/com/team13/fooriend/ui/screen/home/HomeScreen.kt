@@ -60,7 +60,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 @SuppressLint("PotentialBehaviorOverride", "MissingPermission")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun HomeScreen(nickname: String, context: Context, onReviewClick : (Int) -> Unit) {
+fun HomeScreen(
+    nickname: String,
+    context: Context,
+    onReviewClick : (Int) -> Unit
+) {
     var showMap by remember { mutableStateOf(false) }
     var myLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
     var myLocationMarker by remember { mutableStateOf<Marker?>(null) }
@@ -312,5 +316,5 @@ fun distanceBetween(latLng1: LatLng, placeResult: PlaceResult): Float {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun HomeScreenPreview(){
-    HomeScreen("nickname", context = TODO(), onReviewClick = {TODO()})
+    HomeScreen("nickname", context = TODO(), onReviewClick = { })
 }

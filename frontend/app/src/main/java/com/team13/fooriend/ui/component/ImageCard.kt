@@ -18,7 +18,7 @@ import com.team13.fooriend.data.Review
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageCard(
-    uri: Uri,
+    uri: Uri, // 스마트폰 갤러리에 있는 사진들은 uri format으로 저장되어 있다
     onClick: () -> Unit = {  },
 ){
     Card(

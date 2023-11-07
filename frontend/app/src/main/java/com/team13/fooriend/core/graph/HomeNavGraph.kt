@@ -39,61 +39,58 @@ fun HomeNavGraph(
         confirm = true, title = "title")
     val restaurant = Restaurant(id = 1, name = "용찬반점", latitude = 1.0, longitude = 1.0,
         reviewCount = 3, reviewList = listOf(review1.id, review2.id, review3.id), good = 2, bad = 1)
-    val activity = (LocalContext.current as Activity)
 
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = BottomNavItem.Home.route
+        startDestination = BottomNavItem.Home.route // login이 성공하면 home 화면으로 이동
     ) {
         composable(route = BottomNavItem.Home.route) {
             HomeScreen(
                 nickname = "admin",
                 context,
-                onReviewClick = { navController.navigate("restaurant/${it}") },
+                onReviewClick = { navController.navigate("restaurant/${it}") }, // 지도에서 restaurant를 클릭한 경우
             )
         }
         composable(route = BottomNavItem.Social.route) {
             SocialScreen(
                 onReviewClick = {
-                    navController.navigate("reviewDetail/${it}") },
-                onUserClick = { navController.navigate("fooriend/${it}") },
+                    navController.navigate("reviewDetail/${it}") }, //  리뷰 이미지를 클릭한 경우
+                onUserClick = { navController.navigate("fooriend/${it}") }, // search bar에서 검색한 유저를 클릭한 경우
             )
         }
         composable(route = BottomNavItem.MyPage.route) {
             MyPageScreen(
                 onMyInfoClick = { navController.navigate("myInfo") },
-                onReviewClick = { navController.navigate("reviewDetail/${it}") },
+                onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
             )
         }
         composable(route = "restaurant/{restaurantId}"){
             RestaurantDetailScreen(
                 restaurant = restaurant,
-                onBackClick = { navController.navigateUp() },
-                onWriteReviewClick = { navController.navigate("writeReview") },
-                onWriterClick = { navController.navigate("fooriend/${it}") },
+                onBackClick = { navController.navigateUp() }, // 뒤로가기 버튼을 누른 경우
+                onWriteReviewClick = { navController.navigate("writeReview") }, // 리뷰 작성 버튼을 누른 경우
+                onWriterClick = { navController.navigate("fooriend/${it}") }, // 리뷰에 있는 작성자 프로필 이미지를 누른 경우
             )
         }
         composable("reviewDetail/{reviewId}"){backStackEntry ->
             ReviewDetailScreen(
                 onBackClick = { navController.navigateUp() },
-                onWriterClick = { navController.navigate("fooriend/${it}") },
-                onRestaurantClick = { navController.navigate("restaurant/${it}") },
+                onWriterClick = { navController.navigate("fooriend/${it}") }, // 작성자를 클릭한 경우
+                onRestaurantClick = { navController.navigate("restaurant/${it}") }, // 식당을 클릭한 경우
                 reviewId = backStackEntry.arguments?.getString("reviewId")?.toInt() ?: 0,
             )
         }
         composable(route = "fooriend/{userId}"){
             FooriendScreen(
-                //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
                 onBackClick = { navController.navigateUp() },
-                onFollowClick = { },
+                onFollowClick = { }, //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
             )
         }
         composable(route = "writeReview"){
             PostingScreen(
                 onCloseClick = { navController.navigateUp() },
-                // TODO : Post버튼을 누르면 review가 저장되어야 함
-                onPostClick = { navController.navigateUp() },
+                onPostClick = { navController.navigateUp() }, // TODO : Post버튼을 누르면 review가 저장되어야 함
             )
         }
         composable(route = "myInfo"){

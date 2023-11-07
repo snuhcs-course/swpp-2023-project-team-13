@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
-sealed class BottomNavItem(
+sealed class BottomNavItem( // Bottom Navigation Bar에 들어갈 아이템들
     val title: String,
     val icon: ImageVector,
     val route: String

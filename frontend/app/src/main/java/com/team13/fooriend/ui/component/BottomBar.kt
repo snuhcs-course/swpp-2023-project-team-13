@@ -23,10 +23,11 @@ import com.team13.fooriend.ui.navigation.BottomNavItem
 @Composable
 fun BottomBar(context: Context, navController: NavHostController, showBottomBar: Boolean) {
     Scaffold(
+        // bottom bar를 화면에 먼저 생성
         bottomBar = { if(showBottomBar) BottomNavigation(navController = navController) }
     ) {
-        Box(Modifier.padding(it)){
-            HomeNavGraph(context = context, navController = navController)
+        Box(Modifier.padding(it)){// bottom bar를 제외한 나머지 화면을 생성
+            HomeNavGraph(context = context, navController = navController) // 나머지 화면은 HomeNavGraph에 던져준다.
         }
     }
 }

@@ -12,11 +12,11 @@ fun RootNavigationGraph(navController: NavHostController, context: Context) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.AUTHENTICATION
+        startDestination = Graph.AUTHENTICATION // 앱이 시작하면 authNavGraph 먼저 시작
     ) {
         authNavGraph(navController = navController)
         composable(route = Graph.HOME) {
-            LoginSuccess(context)
+            LoginSuccess(context) // 로그인 성공하면 Graph.Home 라우터 호출 -> LoginSuccess로 이동 (util package)
         }
     }
 }
