@@ -17,12 +17,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -31,124 +36,44 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.team13.fooriend.R
+import com.team13.fooriend.ui.component.ProfileSection
+import com.team13.fooriend.ui.component.ReviewLazyGrid
 
 
 @Composable
-fun MyPageScreen(){
+fun MyPageScreen(
+    onMyInfoClick: () -> Unit,
+    onReviewClick: (Int) -> Unit
+){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+        ){
+            IconButton(onClick = onMyInfoClick){
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Back",
+                    tint = Color.Black,
+                )
+            }
+        }
         // 프로필 섹션
-        ProfileSection()
+        ProfileSection(isMyPage = true)
 
         Spacer(modifier = Modifier.height(16.dp))
 
 
         // 중앙의 음식 리스트
-        MyPage_foodpicList()
-
-        Spacer(modifier = Modifier.weight(1f))
-
-    }
-}
-
-
-@Composable
-fun ProfileSection() {
-    val userProfileImageUrl = painterResource(id = R.drawable.profile_cat)
-    val username = "ozeeeno"
-    val followersCount = 100
-    val followingCount = 50
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-        ) {
-            Image(
-                painter = userProfileImageUrl,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = username,
-            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "$followersCount Followers", color = MaterialTheme.colorScheme.primary)
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "$followingCount Following", color = MaterialTheme.colorScheme.primary)
-        }
-    }
-}
-
-
-@Composable
-fun MyPage_foodpicList() {
-    val scrollState = rememberLazyListState()
-
-    LazyColumn(
-        state = scrollState,
-        contentPadding = PaddingValues(8.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        items(2) { rowIndex ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                repeat(3) { columnIndex ->
-                    val index = rowIndex * 3 + columnIndex
-                    if (index < 15) {
-                        Mypage_ImageListItem(index)
-                    } else {
-                        Spacer(modifier = Modifier.size(100.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Mypage_ImageListItem(index: Int) {
-    Box(
-        modifier = Modifier
-            .size(100.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.hamburger),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-
-
+        ReviewLazyGrid(/* reviews = reviews, */onReviewClick = onReviewClick)
     }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun MyPageScreenPreview(){
-    MyPageScreen()
+    MyPageScreen( onMyInfoClick = {  }, onReviewClick = {  })
 }
