@@ -91,12 +91,16 @@ export class UserController {
   @UseGuards(JwtAccessGuard)
   @Get('/search/:name')
   async search(@Param('name') name: string) {
-    const users = await this.userRepository.searchUserByUsernameSorted(name);
+    let users = await this.userRepository.searchUserByUsernameSorted(name);
 
     users.sort(
       (a, b) =>
         -stringSimilarity(a.name, name) + stringSimilarity(b.name, name),
     );
+
+    if (users.length === 0) {
+      users = await this.userRepository.getRandomFiveUsers();
+    }
 
     return new UserListDto(users);
   }

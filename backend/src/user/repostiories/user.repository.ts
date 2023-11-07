@@ -15,4 +15,11 @@ export class UserRepository extends Repository<UserEntity> {
       .where('user.name ILIKE :name', { name: `%${name}%` })
       .getMany();
   }
+
+  async getRandomFiveUsers() {
+    return await this.createQueryBuilder('user')
+      .orderBy('RANDOM()')
+      .limit(5)
+      .getMany();
+  }
 }

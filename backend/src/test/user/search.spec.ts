@@ -62,6 +62,12 @@ describe('update password test', () => {
       password: 'world',
     });
 
+    await UserFixture.create({
+      name: 'hiasdfasasdfsdfa',
+      username: 'hellof',
+      password: 'world',
+    });
+
     const { body } = await supertest(testServer.getHttpServer())
       .post('/auth/login')
       .send({
@@ -84,6 +90,15 @@ describe('update password test', () => {
       .get('/user/search/hello')
       .set('Authorization', 'Bearer ' + accessToken)
       .expect(HttpStatus.OK);
+  });
+
+  it('안찾아지면 랜덤 5개', async () => {
+    const { body } = await supertest(testServer.getHttpServer())
+      .get('/user/search/hell123123213o')
+      .set('Authorization', 'Bearer ' + accessToken)
+      .expect(HttpStatus.OK);
+
+    expect(body.userList.length).toBe(5);
   });
 
   it('DTO check', async () => {
