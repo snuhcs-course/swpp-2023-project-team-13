@@ -30,6 +30,7 @@ fun FooriendScreen(
     onBackClick : () -> Unit = {},
     onFollowClick : () -> Unit = {},
     userId : Int = 0,
+    onReviewClick : (Int) -> Unit = {},
 ){
     val retrofit = Retrofit.Builder()
         .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
@@ -60,10 +61,13 @@ fun FooriendScreen(
         }
 
         // profile section
-        ProfileSection(username = reviews[0].user.name,  onFollowClick = onFollowClick)
-
+        if(isLoading) {
+            Text(text = "Loading...")
+        } else {
+            ProfileSection(username = reviews[0].user.name, onFollowClick = onFollowClick)
+        }
         // review lazy grid
-        ReviewLazyGrid(reviews = reviews, onReviewClick = { })
+        ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
     }
 }
 

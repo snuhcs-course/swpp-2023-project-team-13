@@ -16,6 +16,11 @@ interface ApiService {
     suspend fun getUserDetail(
         @Path("userId") userId: Int
     ): UserDetailResponse
+
+    @GET("/reviews/{reviewId}")
+    suspend fun getReviewDetail(
+        @Path("reviewId") reviewId: Int
+    ): Review
 }
 
 data class RestaurantsResponse(
