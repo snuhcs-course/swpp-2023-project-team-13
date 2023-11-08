@@ -66,6 +66,7 @@ export class ReviewController {
   @UseGuards(JwtAccessGuard)
   @Get('/my')
   async getMyReview(@Req() { user }: UserRequest) {
+    console.log(user);
     const reviews = await this.reviewRepository.findOfUser(user);
     return new ReviewListDto(reviews);
   }
@@ -118,6 +119,23 @@ export class ReviewController {
 
     if (!review) throw new NotFoundException('리뷰를 찾을 수 없습니다.');
     return new ReviewDetailDto(review, review.user);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/users/:userId')
+  async getReviewOfUser(
+    @Req() { user }: UserRequest,
+    @Param('userId') userId: number,
+  ) {
+    const userEntity = await UserEntity.findOneBy({
+      id: userId,
+    });
+
+    if (!userEntity) throw new NotFoundException('유저를 찾을 수 없습니다.');
+
+    const reviews = await this.reviewRepository.findOfUser(userEntity);
+
+    return new ReviewListDto(reviews);
   }
 
   @UseGuards(JwtAccessGuard)
