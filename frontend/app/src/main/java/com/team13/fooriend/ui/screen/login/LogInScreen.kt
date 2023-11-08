@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.team13.fooriend.ui.theme.BaseGreen
+import com.team13.fooriend.ui.theme.BaseGrey
 import com.team13.fooriend.ui.theme.CDarkGreen
 import com.team13.fooriend.ui.theme.CIvory
 import com.team13.fooriend.ui.theme.CLightGreen
@@ -44,12 +47,12 @@ fun LogInScreen(
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val color = if (isPressed) CRed else CDarkGreen
+    val color = if (isPressed) CRed else Color.Black//CDarkGreen
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CMidGreen),
+            .background(BaseGreen),//CMidGreen),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
@@ -59,22 +62,30 @@ fun LogInScreen(
             value = id,
             onValueChange = idValue,
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = CLightGreen,
-                unfocusedContainerColor = CIvory,
+                Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+//                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = BaseGrey,//CLightGreen,
+                unfocusedContainerColor = BaseGrey,//CIvory,
             ),
-            placeholder = { Text("ID")}
+            placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
+            shape = RoundedCornerShape(15.dp),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = password,
             onValueChange = passwordValue,
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = CLightGreen,
-                unfocusedContainerColor = CIvory,
+                Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+//                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = BaseGrey,//CLightGreen,
+                unfocusedContainerColor = BaseGrey,//CIvory,
             ),
-            placeholder = { Text("PASSWORD")}
+            placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
+            shape = RoundedCornerShape(15.dp),
         )
         Spacer(modifier = Modifier.height(20.dp))
         Button(
@@ -83,7 +94,7 @@ fun LogInScreen(
             } },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                CMidGreen,
+                BaseGreen,//CMidGreen,
                 contentColor = color )) {
             Text(
                 "LOGIN",
@@ -92,15 +103,17 @@ fun LogInScreen(
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
+        Text("Don't have a Fooriend account?")
         Button(onClick = {
             onSignUpClick()
         },
             colors = ButtonDefaults.buttonColors(
-                CMidGreen,
-                contentColor = CDarkGreen )) {
+                Color.Transparent,//CMidGreen,
+                contentColor = Color.Black//CDarkGreen
+                         )) {
             Text(
                 "SIGN UP",
-                fontSize = 30.sp,
+                fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
         }

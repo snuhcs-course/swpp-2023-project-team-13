@@ -7,3 +7,6 @@ val CMidGreen = Color(0xFF6a994e)
 val CLightGreen = Color(0xFFa7c957)
 val CIvory = Color(0xFFf2e8cf)
 val CRed = Color(0xFFbc4749)
+
+val BaseGreen = Color(0xFF32B768)
+val BaseGrey = Color(0xFFD9D9D9)

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -34,6 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.team13.fooriend.ui.theme.BaseGreen
+import com.team13.fooriend.ui.theme.BaseGrey
 import com.team13.fooriend.ui.theme.CDarkGreen
 import com.team13.fooriend.ui.theme.CIvory
 import com.team13.fooriend.ui.theme.CLightGreen
@@ -53,14 +56,14 @@ fun SignUpScreen(
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val color = if (isPressed) CRed else CDarkGreen
+    val color = if (isPressed) CRed else Color.Black//CDarkGreen
 //    val (nickname, nicknameValue) = remember { mutableStateOf("") }
 //    val (phoneNumber, phoneNumberValue) = remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(CMidGreen),
+            .background(BaseGreen),//CMidGreen),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
@@ -71,33 +74,45 @@ fun SignUpScreen(
             value = id,
             onValueChange = idValue,
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = CLightGreen,
-                unfocusedContainerColor = CIvory,
+                Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+//                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = BaseGrey,//CLightGreen,
+                unfocusedContainerColor = BaseGrey,//CIvory,
             ),
-            placeholder = { Text("ID")},
+            placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
+            shape = RoundedCornerShape(15.dp),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = password,
             onValueChange = passwordValue,
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = CLightGreen,
-                unfocusedContainerColor = CIvory,
+                Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+//                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = BaseGrey,//CLightGreen,
+                unfocusedContainerColor = BaseGrey,//CIvory,
             ),
-            placeholder = { Text("PASSWORD")}
+            placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
+            shape = RoundedCornerShape(15.dp),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
             value = passwordCheck,
             onValueChange = passwordCheckValue,
             colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = CLightGreen,
-                unfocusedContainerColor = CIvory,
+                Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+//                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = BaseGrey,//CLightGreen,
+                unfocusedContainerColor = BaseGrey,//CIvory,
             ),
-            placeholder = { Text("PASSWORD CONFIRM")},
+            placeholder = { Text("PASSWORD CONFIRM", fontWeight = FontWeight.SemiBold)},
+            shape = RoundedCornerShape(15.dp),
         )
 //        TODO("keyboard hide")
         Spacer(modifier = Modifier.height(20.dp))
@@ -107,7 +122,7 @@ fun SignUpScreen(
             onClick = { onSignUpClick() },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                CMidGreen,
+                Color.Transparent,//CMidGreen,
                 contentColor = color )) {
             Text(
                 "SIGN UP",
