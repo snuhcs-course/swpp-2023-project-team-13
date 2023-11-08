@@ -185,21 +185,22 @@ fun HomeScreen(
                                         Log.e("MyMap", "No place details found")
                                         Toast.makeText(
                                             context,
-                                            "정보를 불러오지 못 했어요",
+                                            "정보를 불러오지 못 했습니다",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                         return@launch
                                     }
+                                    Log.d("MyMap", "Place details: ${response.result.types}")
                                     // check if "food" is in the place types
-                                    if (!response.result.types.contains("food")) {
-                                        Log.e("MyMap", "Place is not a restaurant")
-                                        Toast.makeText(
-                                            context,
-                                            "Place is not a restaurant",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        return@launch
-                                    }
+//                                    if (!response.result.types.contains("food")) {
+//                                        Log.e("MyMap", "Place is not a restaurant")
+//                                        Toast.makeText(
+//                                            context,
+//                                            "Place is not a restaurant",
+//                                            Toast.LENGTH_SHORT
+//                                        ).show()
+//                                        return@launch
+//                                    }
 
                                     Log.d("MyMap", "Place details: ${response.result.name}")
                                     // move map camera preserving zoom level
@@ -215,14 +216,28 @@ fun HomeScreen(
                                         map.cameraPosition.bearing
                                     )
                                     val marker = map.addMarker(
-                                        MarkerOptions().position(latLng).title(poi.name)
+                                        MarkerOptions().position(latLng).title(poi.name.lines()[0])
                                     )
-                                    map.setOnInfoWindowClickListener { clickedMarker ->
-                                        if (clickedMarker.id == marker?.id) {
-                                            onReviewClick("000${poi.name}") // onReviewClick(poi.placeId)
+                                    if(response.result.types.contains("food") || response.result.types.contains("bar")){
+                                        map.setOnInfoWindowClickListener { clickedMarker ->
+                                            if (clickedMarker.id == marker?.id) {
+                                                onReviewClick("000${poi.name.lines()[0]}") // onReviewClick(poi.placeId)
+                                            }
+                                            true
                                         }
-                                        true
+                                    } else{
+                                        map.setOnInfoWindowClickListener { clickedMarker ->
+                                            if (clickedMarker.id == marker?.id) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "리뷰를 작성할 수 없습니다",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                            true
+                                        }
                                     }
+
                                     lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
                                     lastAddedMarker.value = marker
                                     lastMarkerUpdated = true

@@ -147,7 +147,7 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit) {
             }
         }
         Row() {
-            IconButton(onClick = { onWriterClick(review.user.id) }) { // writerId
+            IconButton(onClick = { onWriterClick(1) }) { // review.user.id
                 Icon(
                     imageVector = Icons.Default.AccountBox, // Default image가 아니라 user profile 이미지를 삽입해야 한다.
                     contentDescription = "Writer",
