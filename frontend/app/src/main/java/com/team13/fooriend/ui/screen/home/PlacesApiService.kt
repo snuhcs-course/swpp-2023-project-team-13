@@ -32,6 +32,7 @@ data class PlaceResult(
     val place_id: String,
     val geometry: Geometry,
     val name: String,
+    val types: List<String>,
 )
 
 data class Geometry(

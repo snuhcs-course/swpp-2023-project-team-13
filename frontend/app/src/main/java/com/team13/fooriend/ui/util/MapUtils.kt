@@ -26,26 +26,6 @@ fun checkForPermission(context: Context): Boolean {
     ) != PackageManager.PERMISSION_GRANTED)
 }
 
-@SuppressLint("MissingPermission")
-fun getCurrentLocation(context: Context, onLocationFetched: (location: LatLng) -> Unit) {
-    var loc: LatLng
-    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
-    fusedLocationClient.lastLocation
-        .addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                val latitude = location.latitude
-                val longitude = location.longitude
-                loc = LatLng(latitude,longitude)
-                onLocationFetched(loc)
-            }
-        }
-        .addOnFailureListener { exception: Exception ->
-            Log.d("MAP-EXCEPTION",exception.message.toString())
-        }
-
-}
-
 fun getMarkerIconFromDrawable(context: Context, drawableId: Int, width: Int, height: Int): BitmapDescriptor {
     // drawable 리소스를 비트맵으로 변환
     val originalBitmap = BitmapFactory.decodeResource(context.resources, drawableId)

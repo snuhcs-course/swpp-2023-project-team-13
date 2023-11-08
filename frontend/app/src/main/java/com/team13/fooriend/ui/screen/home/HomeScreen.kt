@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -37,7 +38,6 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
-import com.team13.fooriend.ui.util.getCurrentLocation
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 //import com.team13.fooriend.ui.util.restaurants
 import kotlinx.coroutines.launch
@@ -52,14 +52,9 @@ fun HomeScreen(
     context: Context,
     onReviewClick : (String) -> Unit
 ) {
-    var showMap by remember { mutableStateOf(false) }
     var myLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
     var myLocationMarker by remember { mutableStateOf<Marker?>(null) }
 
-    getCurrentLocation(context) {
-        myLocation = it
-        showMap = true
-    }
     Log.d("MyMap", "myLocation: $myLocation")
 
     val retrofit = Retrofit.Builder()
@@ -174,7 +169,7 @@ fun HomeScreen(
                                         map.cameraPosition.bearing
                                     )
                                     map.setOnInfoWindowClickListener { clickedMarker ->
-                                        onReviewClick("1") // onReviewClick(clickedMarker.placeId)
+                                        onReviewClick(poi.placeId) // onReviewClick(clickedMarker.placeId)
                                     }
                                     lastMarkerUpdated = true
                                     return@setOnPoiClickListener // MyItem을 찾았으므로 여기서 리스너 작업을 종료
@@ -188,8 +183,24 @@ fun HomeScreen(
 
                                     if (response.result == null) {
                                         Log.e("MyMap", "No place details found")
+                                        Toast.makeText(
+                                            context,
+                                            "정보를 불러오지 못 했어요",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         return@launch
                                     }
+                                    // check if "food" is in the place types
+                                    if (!response.result.types.contains("food")) {
+                                        Log.e("MyMap", "Place is not a restaurant")
+                                        Toast.makeText(
+                                            context,
+                                            "Place is not a restaurant",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@launch
+                                    }
+
                                     Log.d("MyMap", "Place details: ${response.result.name}")
                                     // move map camera preserving zoom level
 
@@ -208,7 +219,7 @@ fun HomeScreen(
                                     )
                                     map.setOnInfoWindowClickListener { clickedMarker ->
                                         if (clickedMarker.id == marker?.id) {
-                                            onReviewClick("1") // onReviewClick(poi.placeId)
+                                            onReviewClick("000${poi.name}") // onReviewClick(poi.placeId)
                                         }
                                         true
                                     }

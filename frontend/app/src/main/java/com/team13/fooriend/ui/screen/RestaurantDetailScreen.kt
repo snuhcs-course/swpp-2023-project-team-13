@@ -43,9 +43,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.team13.fooriend.R
 import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.screen.home.Review
@@ -74,16 +76,24 @@ fun RestaurantDetailScreen(
         .build()
 
     val apiService = retrofit.create(ApiService::class.java)
+    var restaurantName by remember { mutableStateOf("") }
+    var restaurantGood by remember { mutableStateOf(0) }
+    var restaurantBad by remember { mutableStateOf(0) }
 
     // LaunchedEffect를 사용하여 Composable이 처음 구성될 때 데이터 로드
     LaunchedEffect(Unit) {
-        isLoading = true
-        try {
-            // API 호출하여 데이터 가져오기
-            val response = apiService.getRestaurantDetail(restaurantPlaceId = restaurantPlaceId)
-            reviews = response.reviewList
-        } catch (e: Exception) {
-            // 예외 처리
+        // if prefix 0~2 of restaurantPlaceId == "000"
+        if(restaurantPlaceId.substring(0, 3) == "000"){
+            restaurantName = restaurantPlaceId.substring(3)
+        }else {
+            try {
+                // API 호출하여 데이터 가져오기
+                val response = apiService.getRestaurantDetail(restaurantPlaceId = restaurantPlaceId)
+                reviews = response.reviewList
+            } catch (e: Exception) {
+                Log.d("RestaurantDetailScreen", "error: $e")
+            }
+            restaurantName = reviews[0].restaurant.name
         }
         isLoading = false
     }
@@ -94,9 +104,9 @@ fun RestaurantDetailScreen(
                 TopRestaurantBar(
                     onCloseClick = onBackClick,
                     onWriteReviewClick = onWriteReviewClick,
-                    restaurantName = reviews[0].restaurant.name,
-                    restaurantGood = 1,
-                    restaurantBad = 1,
+                    restaurantName = restaurantName,
+                    restaurantGood = restaurantGood,
+                    restaurantBad = restaurantBad,
                 )
             }
         ) { innerPadding ->
@@ -108,7 +118,7 @@ fun RestaurantDetailScreen(
                 contentPadding = PaddingValues(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items(reviews) { review -> // restaurant에 있는 reveiwList를 가져온다.
+                items(reviews) { review -> // restaurant에 있는 reveiwList를 가져옴
                     ReviewItem(
                         review = review,
                         onWriterClick = onWriterClick,
@@ -121,18 +131,7 @@ fun RestaurantDetailScreen(
 
 @Composable
 fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit) {
-    // 실제로는 reviewId를 가지고 서버에서 받아와야 함
-//    val review1 = Review(id = 1, writerId = 1, restaurantId = 1, content = "탕수육이 진짜 바삭!!, 여기 진짜 짬뽕 맛집이예요 별점 10개도 부족합니다.",
-//        image = listOf(R.drawable.tangsuyug, R.drawable.jjambbong, R.drawable.jjambbong),
-//        confirm = true, title = "title")
-//    val review2 = Review(id = 2, writerId = 1, restaurantId = 1, content = "이 집 짜장이 기가 막히네",
-//        image = listOf(R.drawable.jjajangmyeon),
-//        confirm = true, title = "title")
-//    val review3 = Review(id = 3, writerId = 1, restaurantId = 1, content = "이 집 고양이 때문에 심장이 너무 아팠습니다.. ㅠㅠ",
-//        image = listOf(R.drawable.profile_cat),
-//        confirm = true, title = "title")
-    // reviewId에 따라 다른 review를 가져온다.
-    val image = listOf(R.drawable.tangsuyug, R.drawable.jjambbong, R.drawable.jjambbong)
+    val image = review.images
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,33 +143,51 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit) {
     ){
         LazyRow(){
             items(image){// review.image
-                Image(
-                    painter = painterResource(id = it),
-                    contentDescription = "review image",
-                    modifier = Modifier
-                        .height(200.dp)
-                        .width(200.dp)
-                        .padding(5.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                )
+                LoadImageFromUrl(url = it.url)
             }
         }
-        IconButton(onClick = { onWriterClick(1) }) { // writerId
-            Icon(
-                imageVector = Icons.Default.AccountBox, // Default image가 아니라 user profile 이미지를 삽입해야 한다.
-                contentDescription = "Writer",
-                tint = Color.Black
-            )
+        Row() {
+            IconButton(onClick = { onWriterClick(review.user.id) }) { // writerId
+                Icon(
+                    imageVector = Icons.Default.AccountBox, // Default image가 아니라 user profile 이미지를 삽입해야 한다.
+                    contentDescription = "Writer",
+                    tint = Color.Black
+                )
+            }
+            // at the middle of the row
+            Text(text = review.user.name, modifier = Modifier.align(Alignment.CenterVertically))
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp, 0.dp, 0.dp, 10.dp),
         ){
-            Text(text = "title")
             Text(text = review.content)
         }
     }
+}
+
+@Composable
+fun LoadImageFromUrl(url: String) {
+    Image(
+        painter = rememberImagePainter(
+            data = url,
+            builder = {
+                crossfade(true)
+                // 이곳에 더 많은 Coil 설정을 추가할 수 있습니다.
+                // 예: placeholder(R.drawable.placeholder), error(R.drawable.error)
+            },
+
+        ),
+        contentDescription = "Loaded image",
+        modifier = Modifier
+            .height(200.dp)
+            .width(200.dp)
+            .padding(5.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        contentScale = ContentScale.Crop // 이미지를 어떻게 맞출지 정하는 옵션
+    )
 }
 
 @Composable
