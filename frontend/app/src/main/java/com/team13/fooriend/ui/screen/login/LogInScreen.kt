@@ -1,21 +1,35 @@
 package com.team13.fooriend.ui.screen.login
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.team13.fooriend.ui.theme.CDarkGreen
+import com.team13.fooriend.ui.theme.CIvory
+import com.team13.fooriend.ui.theme.CLightGreen
+import com.team13.fooriend.ui.theme.CMidGreen
+import com.team13.fooriend.ui.theme.CRed
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,26 +42,67 @@ fun LogInScreen(
     val (id, idValue) = remember { mutableStateOf("") }
     val (password, passwordValue) = remember { mutableStateOf("") }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val color = if (isPressed) CRed else CDarkGreen
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CMidGreen),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
-        Text(text = "Log In Screen")
+        //Text(text = "Log In Screen")
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(value = id, onValueChange = idValue)
-        TextField(value = password, onValueChange = passwordValue)
-        Button(onClick = {
-            if(id.isNotEmpty() && password.isNotEmpty()){
+        TextField(
+            value = id,
+            onValueChange = idValue,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = CLightGreen,
+                unfocusedContainerColor = CIvory,
+            ),
+            placeholder = { Text("ID")}
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        TextField(
+            value = password,
+            onValueChange = passwordValue,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.DarkGray,
+                focusedContainerColor = CLightGreen,
+                unfocusedContainerColor = CIvory,
+            ),
+            placeholder = { Text("PASSWORD")}
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Button(
+            onClick = { if(id.isNotEmpty() && password.isNotEmpty()){
                 onClick()
-            }
-        }) {
-            Text("Log In")
+            } },
+            interactionSource = interactionSource,
+            colors = ButtonDefaults.buttonColors(
+                CMidGreen,
+                contentColor = color )) {
+            Text(
+                "LOGIN",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
+        Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = {
             onSignUpClick()
-        }) {
-            Text("Sign Up")
+        },
+            colors = ButtonDefaults.buttonColors(
+                CMidGreen,
+                contentColor = CDarkGreen )) {
+            Text(
+                "SIGN UP",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
