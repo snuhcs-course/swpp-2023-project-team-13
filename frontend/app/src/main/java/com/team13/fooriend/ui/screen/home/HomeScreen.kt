@@ -4,28 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
-import android.provider.ContactsContract.CommonDataKinds.Nickname
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.compositionContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -35,7 +26,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -44,15 +34,11 @@ import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.ClusterManager
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.util.getCurrentLocation
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
-import com.team13.fooriend.ui.util.restaurants
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+//import com.team13.fooriend.ui.util.restaurants
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -81,6 +67,14 @@ fun HomeScreen(
         .build()
 
     val placesApi = retrofit.create(PlacesApiService::class.java)
+
+    val retrofit2 = Retrofit.Builder()
+        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com") // 기본 URL 설정
+        .addConverterFactory(GsonConverterFactory.create()) // Gson 변환기 사용
+        .build()
+
+    val apiService = retrofit2.create(ApiService::class.java)
+
     val coroutineScope = rememberCoroutineScope()
     var placeId by remember { mutableStateOf<String?>(null)}
     val googleMap = remember { mutableStateOf<GoogleMap?>(null) }
@@ -94,12 +88,12 @@ fun HomeScreen(
     Places.initialize(context, "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
 //    var isMarkerClicked by remember { mutableStateOf(false) }
     var markerName by remember { mutableStateOf("") }
-    val markers = restaurants
 
     val locationRequest = LocationRequest.Builder(10000).build()
 
     val lastAddedMarker = remember { mutableStateOf<Marker?>(null) }
     var lastMarkerUpdated by remember { mutableStateOf(false) } // 초기 마커들이 추가되었는지 여부
+    val markers by remember { mutableStateOf<List<MyItem>>(emptyList()) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -117,7 +111,7 @@ fun HomeScreen(
                                 p0 ?: return
                                 for (location in p0.locations) {
                                     // 새 위치로 미커 이동
-                                    Log.d("MyMap", "Location updated: ${location.latitude}, ${location.longitude}")
+//                                    Log.d("MyMap", "Location updated: ${location.latitude}, ${location.longitude}")
                                     myLocationMarker?.remove()
                                     myLocation = LatLng(location.latitude, location.longitude)
                                     myLocationMarker = map.addMarker(
@@ -131,7 +125,7 @@ fun HomeScreen(
                         locationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
 
                         map.setOnPoiClickListener { poi ->
-                            val matchingItem = restaurants.find { it.placeId == poi.placeId }
+                            val matchingItem = markers.find { it.placeId == poi.placeId }
 
                             // 일치하는 MyItem이 있으면 로그를 찍거나 원하는 다른 작업을 수행
                             matchingItem?.let {
@@ -194,13 +188,24 @@ fun HomeScreen(
                             lastAddedMarker.value?.remove()
                         }
                         val clusterManager = ClusterManager<MyItem>(context, map)
-                        markers.forEach { myItem ->
-                            clusterManager.addItem(myItem)
+                        coroutineScope.launch {
+                            val markers = apiService.getFriendsRestaurants().restaurantList.map { restaurant ->
+                                MyItem(
+                                    position = LatLng(restaurant.latitude, restaurant.longitude),
+                                    title = restaurant.name,
+                                    placeId = restaurant.googleMapPlaceId,
+                                    id = restaurant.id
+                                )
+                            }
+                            markers.forEach { myItem ->
+                                clusterManager.addItem(myItem)
+                            }
+                            clusterManager.renderer = CustomMarkerRenderer(context, map, clusterManager)
+                            val defaultClusterRenderer = clusterManager.renderer as DefaultClusterRenderer
+                            defaultClusterRenderer.minClusterSize = 10
+                            clusterManager.cluster()
                         }
-                        clusterManager.renderer = CustomMarkerRenderer(context, map, clusterManager)
-                        val defaultClusterRenderer = clusterManager.renderer as DefaultClusterRenderer
-                        defaultClusterRenderer.minClusterSize = 10
-                        clusterManager.cluster()
+
                         Log.d("MyMap", "marker collection count: ${clusterManager.clusterMarkerCollection.markers}")
                         clusterManager.setOnClusterItemClickListener {
                             lastAddedMarker.value?.remove()
@@ -210,7 +215,7 @@ fun HomeScreen(
                         clusterManager.setOnClusterItemInfoWindowClickListener { item ->
                             map.setOnInfoWindowClickListener(clusterManager)
                             cameraPositionState.position = map.cameraPosition
-                            onReviewClick(1) // onReviewClick(item.placeId)
+                            onReviewClick(item.id) // onReviewClick(item.placeId)
                         }
                         map.setOnCameraIdleListener(clusterManager)
                         map.isMyLocationEnabled = true
@@ -241,7 +246,7 @@ fun HomeScreen(
 }
 
 
-class MyItem(private val position: LatLng, private val title: String, val placeId: String) : ClusterItem {
+class MyItem(private val position: LatLng, private val title: String, val placeId: String, val id: Int) : ClusterItem {
     override fun getPosition(): LatLng {
         return position
     }
