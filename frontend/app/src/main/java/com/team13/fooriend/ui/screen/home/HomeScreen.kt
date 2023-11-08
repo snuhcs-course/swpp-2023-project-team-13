@@ -49,7 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 fun HomeScreen(
     nickname: String,
     context: Context,
-    onReviewClick : (Int) -> Unit
+    onReviewClick : (String) -> Unit
 ) {
     var showMap by remember { mutableStateOf(false) }
     var myLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
@@ -139,7 +139,7 @@ fun HomeScreen(
                                 lastAddedMarker.value = marker
                                 cameraPositionState.position = CameraPosition(it.position, map.cameraPosition.zoom, map.cameraPosition.tilt, map.cameraPosition.bearing)
                                 map.setOnInfoWindowClickListener { clickedMarker ->
-                                    onReviewClick(1) // onReviewClick(clickedMarker.placeId)
+                                    onReviewClick("1") // onReviewClick(clickedMarker.placeId)
                                 }
                                 lastMarkerUpdated = true
                                 return@setOnPoiClickListener // MyItem을 찾았으므로 여기서 리스너 작업을 종료
@@ -168,7 +168,7 @@ fun HomeScreen(
                                 )
                                 map.setOnInfoWindowClickListener { clickedMarker ->
                                     if (clickedMarker.id == marker?.id) {
-                                        onReviewClick(1) // onReviewClick(poi.placeId)
+                                        onReviewClick("1") // onReviewClick(poi.placeId)
                                     }
                                     true
                                 }
@@ -204,19 +204,21 @@ fun HomeScreen(
                             val defaultClusterRenderer = clusterManager.renderer as DefaultClusterRenderer
                             defaultClusterRenderer.minClusterSize = 10
                             clusterManager.cluster()
+                            clusterManager.setOnClusterItemClickListener {
+                                lastAddedMarker.value?.remove()
+                                map.setOnInfoWindowClickListener(clusterManager)
+                                false
+                            }
+                            clusterManager.setOnClusterItemInfoWindowClickListener { item ->
+                                map.setOnInfoWindowClickListener(clusterManager)
+                                cameraPositionState.position = map.cameraPosition
+                                onReviewClick(item.placeId) // onReviewClick(item.placeId)
+                            }
+                            Log.d("MyMap", "marker collection count: ${clusterManager.clusterMarkerCollection.markers}")
                         }
 
-                        Log.d("MyMap", "marker collection count: ${clusterManager.clusterMarkerCollection.markers}")
-                        clusterManager.setOnClusterItemClickListener {
-                            lastAddedMarker.value?.remove()
-                            map.setOnInfoWindowClickListener(clusterManager)
-                            false
-                        }
-                        clusterManager.setOnClusterItemInfoWindowClickListener { item ->
-                            map.setOnInfoWindowClickListener(clusterManager)
-                            cameraPositionState.position = map.cameraPosition
-                            onReviewClick(item.id) // onReviewClick(item.placeId)
-                        }
+
+
                         map.setOnCameraIdleListener(clusterManager)
                         map.isMyLocationEnabled = true
                         map.uiSettings.isMyLocationButtonEnabled = true
@@ -232,6 +234,8 @@ fun HomeScreen(
                     Log.d("update", "Map updated")
                     if(map.cameraPosition.target == LatLng(0.0, 0.0))
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15f))
+//                    else
+//                        map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPositionState.position))
 
                     if(lastMarkerUpdated)
                         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPositionState.position))

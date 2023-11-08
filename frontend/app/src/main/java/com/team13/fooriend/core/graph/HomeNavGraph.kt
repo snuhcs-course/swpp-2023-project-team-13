@@ -67,7 +67,7 @@ fun HomeNavGraph(
         }
         composable(route = "restaurant/{restaurantId}"){
             RestaurantDetailScreen(
-                restaurant = restaurant,
+                restaurantPlaceId = it.arguments?.getString("restaurantId")?:"",
                 onBackClick = { navController.navigateUp() }, // 뒤로가기 버튼을 누른 경우
                 onWriteReviewClick = { navController.navigate("writeReview") }, // 리뷰 작성 버튼을 누른 경우
                 onWriterClick = { navController.navigate("fooriend/${it}") }, // 리뷰에 있는 작성자 프로필 이미지를 누른 경우
