@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,6 +37,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
+import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 //import com.team13.fooriend.ui.util.restaurants
 import kotlinx.coroutines.launch
@@ -262,7 +262,7 @@ fun HomeScreen(
                                 CustomMarkerRenderer(context, map, clusterManager)
                             val defaultClusterRenderer =
                                 clusterManager.renderer as DefaultClusterRenderer<MyItem>
-                            defaultClusterRenderer.minClusterSize = 10
+                            defaultClusterRenderer.minClusterSize = 3
                             clusterManager.cluster()
 
                             defaultClusterRenderer.setOnClusterItemClickListener {

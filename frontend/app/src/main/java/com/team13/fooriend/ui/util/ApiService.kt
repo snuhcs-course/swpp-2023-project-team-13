@@ -1,18 +1,21 @@
-package com.team13.fooriend.ui.screen.home
+package com.team13.fooriend.ui.util
 
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface ApiService {
     @GET("/reviews/friends/restaurants")
-    suspend fun getFriendsRestaurants():RestaurantsResponse
+    suspend fun getFriendsRestaurants(): RestaurantsResponse
 
     @GET("/reviews/restaurants/{restaurantId}")
     suspend fun getRestaurantDetail(
         @Path("restaurantId") restaurantPlaceId: String
-    ):RestaurantDetailResponse
+    ): RestaurantDetailResponse
+
+    @GET("/reviews/users/{userId}")
+    suspend fun getUserDetail(
+        @Path("userId") userId: Int
+    ): UserDetailResponse
 }
 
 data class RestaurantsResponse(
@@ -50,4 +53,8 @@ data class Image(
 data class User(
     val id: Int,
     val name: String
+)
+
+data class UserDetailResponse(
+    val reviewList: List<Review>
 )

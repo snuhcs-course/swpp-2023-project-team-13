@@ -85,6 +85,7 @@ fun HomeNavGraph(
             FooriendScreen(
                 onBackClick = { navController.navigateUp() },
                 onFollowClick = { }, //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
+                userId = it.arguments?.getString("userId")?.toInt() ?: 0,
             )
         }
         composable(route = "writeReview"){
