@@ -99,7 +99,7 @@ fun SignUpScreen(
             ),
             placeholder = { Text("PASSWORD CONFIRM")},
         )
-        TODO("keyboard hide")
+//        TODO("keyboard hide")
         Spacer(modifier = Modifier.height(20.dp))
 //        TextField(value = nickname, onValueChange = nicknameValue)
 //        TextField(value = phoneNumber, onValueChange = phoneNumberValue)

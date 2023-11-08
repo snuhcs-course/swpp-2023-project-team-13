@@ -21,6 +21,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        configurations.all {
+            resolutionStrategy {
+                force("androidx.emoji2:emoji2-views-helper:1.3.0")
+                force("androidx.emoji2:emoji2:1.3.0")
+            }
+        }
     }
 
     buildTypes {
@@ -116,4 +122,7 @@ dependencies {
     androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.7.0")
     // coil: image upload
     implementation ("io.coil-kt:coil-compose:1.4.0")
+
+    //design system bar
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 }
