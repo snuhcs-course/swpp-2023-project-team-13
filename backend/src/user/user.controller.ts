@@ -89,6 +89,24 @@ export class UserController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @Get('/:userId')
+  async getUserInfo(
+    @Req() { user }: UserRequest,
+    @Param('userId') userId: number,
+  ) {
+    const findUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!findUser) throw new NotFoundException('존재하지 않는 유저입니다.');
+
+    const followerCount = await findUser.getFollowerCount();
+    const followingCount = await findUser.getFollowingCount();
+
+    return new UserInfoDto(findUser, followerCount, followingCount);
+  }
+
+  @UseGuards(JwtAccessGuard)
   @Get('/search/:name')
   async search(@Param('name') name: string) {
     let users = await this.userRepository.searchUserByUsernameSorted(name);
