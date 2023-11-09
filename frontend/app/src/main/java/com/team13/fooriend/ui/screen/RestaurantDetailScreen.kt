@@ -56,7 +56,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 fun RestaurantDetailScreen(
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
+    onWriteReviewClick: (String) -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -98,6 +98,7 @@ fun RestaurantDetailScreen(
                 TopRestaurantBar(
                     onCloseClick = onBackClick,
                     onWriteReviewClick = onWriteReviewClick,
+                    restaurantPlaceId = restaurantPlaceId,
                     restaurantName = restaurantName,
                     restaurantGood = restaurantGood,
                     restaurantBad = restaurantBad,
@@ -187,7 +188,8 @@ fun LoadImageFromUrl(url: String) {
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
+    onWriteReviewClick: (String) -> Unit,
+    restaurantPlaceId: String,
     restaurantName: String,
     restaurantGood: Int,
     restaurantBad: Int,
@@ -223,7 +225,7 @@ fun TopRestaurantBar(
                 Text(text = "싫어요 $restaurantBad")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = onWriteReviewClick) {
+            Button(onClick = { onWriteReviewClick(restaurantPlaceId) }) {
                 Text(text = "리뷰 작성")
             }
         }

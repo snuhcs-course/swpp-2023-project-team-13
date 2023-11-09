@@ -56,9 +56,11 @@ import com.team13.fooriend.ui.component.ImageCard
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostingScreen(
+    restaurantPlaceId: String = "",
     onCloseClick: () -> Unit = {},
     onPostClick: () -> Unit = {},
 ){
+
     val state = rememberScrollState()
     val (content, contentValue) = remember { mutableStateOf("") }
     var selectImages by remember { mutableStateOf(listOf<Uri>()) }

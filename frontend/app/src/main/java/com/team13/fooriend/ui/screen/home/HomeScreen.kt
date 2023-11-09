@@ -218,7 +218,7 @@ fun HomeScreen(
                                     val marker = map.addMarker(
                                         MarkerOptions().position(latLng).title(poi.name.lines()[0])
                                     )
-                                    if(response.result.types.contains("food") || response.result.types.contains("bar")){
+                                    if(response.result.types.contains("restaurant") || response.result.types.contains("bar") || response.result.types.contains("cafe")){
                                         map.setOnInfoWindowClickListener { clickedMarker ->
                                             if (clickedMarker.id == marker?.id) {
                                                 onReviewClick("000${poi.name.lines()[0]}") // onReviewClick(poi.placeId)

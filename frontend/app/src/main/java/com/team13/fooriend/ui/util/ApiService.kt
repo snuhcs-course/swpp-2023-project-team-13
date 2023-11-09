@@ -13,9 +13,14 @@ interface ApiService {
     ): RestaurantDetailResponse
 
     @GET("/reviews/users/{userId}")
-    suspend fun getUserDetail(
+    suspend fun getUserReviews(
         @Path("userId") userId: Int
     ): UserDetailResponse
+
+    @GET("/user/{userId}")
+    suspend fun getUserDetail(
+        @Path("userId") userId: Int
+    ): User
 
     @GET("/reviews/{reviewId}")
     suspend fun getReviewDetail(
@@ -24,6 +29,12 @@ interface ApiService {
 
     @GET("/reviews/random")
     suspend fun getRandomReviews(): RandomReviews
+
+    @GET("/reviews/my")
+    suspend fun getMyReviews(): MyReviews
+
+    @GET("/user/me")
+    suspend fun getMyInfo(): User
 }
 
 data class RestaurantsResponse(
@@ -61,7 +72,11 @@ data class Image(
 
 data class User(
     val id: Int,
-    val name: String
+    val profileImage: String,
+    val name: String,
+    val username: String,
+    val followerCount: Int,
+    val followingCount: Int,
 )
 
 data class UserDetailResponse(
@@ -69,5 +84,9 @@ data class UserDetailResponse(
 )
 
 data class RandomReviews(
+    val reviewList: List<Review>
+)
+
+data class MyReviews(
     val reviewList: List<Review>
 )

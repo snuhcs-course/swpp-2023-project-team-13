@@ -56,7 +56,7 @@ fun HomeNavGraph(
             RestaurantDetailScreen(
                 restaurantPlaceId = it.arguments?.getString("restaurantId")?:"",
                 onBackClick = { navController.navigateUp() }, // 뒤로가기 버튼을 누른 경우
-                onWriteReviewClick = { navController.navigate("writeReview") }, // 리뷰 작성 버튼을 누른 경우
+                onWriteReviewClick = { navController.navigate("writeReview/${it}") }, // 리뷰 작성 버튼을 누른 경우
                 onWriterClick = { navController.navigate("fooriend/${it}") }, // 리뷰에 있는 작성자 프로필 이미지를 누른 경우
             )
         }
@@ -76,8 +76,9 @@ fun HomeNavGraph(
                 onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
             )
         }
-        composable(route = "writeReview"){
+        composable(route = "writeReview/{restaurantPlaceId}"){
             PostingScreen(
+                restaurantPlaceId = it.arguments?.getString("restaurantPlaceId")?:"",
                 onCloseClick = { navController.navigateUp() },
                 onPostClick = { navController.navigateUp() }, // TODO : Post버튼을 누르면 review가 저장되어야 함
             )
