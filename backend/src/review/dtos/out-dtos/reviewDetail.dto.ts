@@ -8,6 +8,7 @@ export class ReviewDetailDto {
   private id: number;
   private content: string;
   private images: ImageDto[];
+  private isPositive: boolean;
   private receiptImage: ImageDto | null;
   private issuedAt: string;
   private restaurant: RestaurantDto;
@@ -26,6 +27,7 @@ export class ReviewDetailDto {
     this.receiptImage = receiptImage ? new ImageDto(receiptImage) : null;
     this.issuedAt = review.getIssuedAt().toString();
     this.restaurant = new RestaurantDto(restaurant);
+    this.isPositive = review.isPositive;
     this.user = new UserSummaryDto(user);
   }
 }
