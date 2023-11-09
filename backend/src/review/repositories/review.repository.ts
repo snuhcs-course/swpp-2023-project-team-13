@@ -75,7 +75,7 @@ export class ReviewRepository extends Repository<ReviewEntity> {
 
     return this.findFull({
       user: {
-        id: In(friendsIds),
+        id: In([...friendsIds, user.id]),
       },
     });
   }
