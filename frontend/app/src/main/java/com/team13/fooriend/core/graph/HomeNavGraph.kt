@@ -27,19 +27,6 @@ fun HomeNavGraph(
     context: Context,
     navController: NavHostController,
 ) {
-    // example data
-    val review1 = Review(id = 1, writerId = 1, restaurantId = 1, content = "탕수육이 진짜 바삭!!, 여기 진짜 짬뽕 맛집이예요 별점 10개도 부족합니다.",
-        image = listOf(R.drawable.tangsuyug, R.drawable.jjambbong, R.drawable.jjambbong),
-        confirm = true, title = "title")
-    val review2 = Review(id = 2, writerId = 1, restaurantId = 1, content = "이 집 짜장이 기가 막히네",
-        image = listOf(R.drawable.jjajangmyeon),
-        confirm = true, title = "title")
-    val review3 = Review(id = 3, writerId = 1, restaurantId = 1, content = "이 집 고양이 때문에 심장이 너무 아팠습니다.. ㅠㅠ",
-        image = listOf(R.drawable.profile_cat),
-        confirm = true, title = "title")
-    val restaurant = Restaurant(id = 1, name = "용찬반점", latitude = 1.0, longitude = 1.0,
-        reviewCount = 3, reviewList = listOf(review1.id, review2.id, review3.id), good = 2, bad = 1)
-
     NavHost(
         navController = navController,
         route = Graph.HOME,
@@ -67,7 +54,7 @@ fun HomeNavGraph(
         }
         composable(route = "restaurant/{restaurantId}"){
             RestaurantDetailScreen(
-                restaurant = restaurant,
+                restaurantPlaceId = it.arguments?.getString("restaurantId")?:"",
                 onBackClick = { navController.navigateUp() }, // 뒤로가기 버튼을 누른 경우
                 onWriteReviewClick = { navController.navigate("writeReview") }, // 리뷰 작성 버튼을 누른 경우
                 onWriterClick = { navController.navigate("fooriend/${it}") }, // 리뷰에 있는 작성자 프로필 이미지를 누른 경우
@@ -85,6 +72,8 @@ fun HomeNavGraph(
             FooriendScreen(
                 onBackClick = { navController.navigateUp() },
                 onFollowClick = { }, //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
+                userId = it.arguments?.getString("userId")?.toInt() ?: 0,
+                onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
             )
         }
         composable(route = "writeReview"){
