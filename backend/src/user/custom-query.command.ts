@@ -29,41 +29,31 @@ export class CustomQueryCommand extends CommandRunner {
     //     MyItem(LatLng(37.4778999,126.9541072),"맨프롬오키나와","ChIJBdq8mh-ofDURQIkFvf5BkI4" )
 
     const restaurant = await RestaurantEntity.findOneByOrFail({
-      googleMapPlaceId: 'ChIJQ0cqkcyhfDURRzbIS7i3HYo',
+      googleMapPlaceId: 'ChIJsdJX1fqhfDURujEHz2D9I6k',
     });
 
     const images = [
       await ImageEntity.create({
-        url: 'https://d2ghbk063u2bdn.cloudfront.net/goku1.jpg',
+        url: 'https://d2ghbk063u2bdn.cloudfront.net/mensyo1.jpg',
       }).save(),
       await ImageEntity.create({
-        url: 'https://d2ghbk063u2bdn.cloudfront.net/goku2.jpg',
+        url: 'https://d2ghbk063u2bdn.cloudfront.net/mensyo2.jpg',
       }).save(),
       await ImageEntity.create({
-        url: 'https://d2ghbk063u2bdn.cloudfront.net/goku3.jpg',
+        url: 'https://d2ghbk063u2bdn.cloudfront.net/mensyo3.jpg',
       }).save(),
     ];
 
     const user1 = await UserEntity.findOneByOrFail({
-      name: '박명훈',
-    });
-    const user2 = await UserEntity.findOneByOrFail({
-      name: '조용찬',
-    });
-    const user3 = await UserEntity.findOneByOrFail({
-      name: '이미르',
+      name: '황승준',
     });
 
     const reviews = [
       await ReviewEntity.create({
         restaurant,
-        user: user2,
+        user: user1,
         content:
-          '고쿠 철판구이 집에서의 식사 경험은 일본의 정취를 그대로 느낄 수 있었던 소중한 시간이었습니다. 직원들은 손님을 맞이할 때부터 따뜻한 미소와 함께 정중한 일본식 인사로 분위기를 한층 더 일본스럽게 만들었습니다.\n' +
-          '\n' +
-          '식사는 철판 위에서 직접 요리하는 공연과도 같았어요. 셰프의 숙련된 손놀림은 단순한 식사를 넘어서 한 편의 예술작품을 보는 듯 했습니다. 고기는 바깥은 바삭하고 안은 육즙이 가득하여, 철판 위에서 구워지는 모습만으로도 입맛을 자극했습니다. 갓 구운 고기와 야채의 조화가 완벽했고, 집에서 만든 듯한 소스는 그 맛을 더욱 풍부하게 해주었습니다.\n' +
-          '\n' +
-          '가게 내부는 깔끔하고 정돈된 일본의 전통적인 분위기를 간직하고 있어, 음식과 함께 문화적 체험도 가능했습니다. 가격대가 다소 높은 편이지만, 그만큼의 가치는 충분히 제공하는 것 같습니다. 특별한 날, 또는 일본 철판구이를 정갈하게 즐기고 싶을 때 추천하고 싶은 장소입니다.',
+          '멘쇼우 라멘의 깊은 맛에 반했습니다! 육수의 풍미가 일품이었고, 면발도 적절한 식감을 자랑했어요. 토핑도 신선했고, 서비스도 친절해서 다음에 또 방문하고 싶은 맛집이에요.',
         images: [images[0], images[1]],
         isPositive: true,
       }).save(),
@@ -71,7 +61,7 @@ export class CustomQueryCommand extends CommandRunner {
         restaurant,
         user: user1,
         content:
-          '고쿠 철판구이에서의 경험은 기대에 못 미쳤습니다. 서비스는 무뚝뚝했고, 고기는 탄 맛이 강해 실망스러웠습니다. 분위기와 인테리어는 멋졌지만, 철판 요리의 맛과 질은 가격대비 만족스럽지 않았어요. 셰프의 요리 과정은 볼거리였으나, 기다린 시간에 비해 음식은 평범했습니다. 다른 곳에 비해 차별화된 맛이나 서비스를 제공받지 못한 것 같아 아쉬움이 크게 남는 방문이었습니다.',
+          '멘쇼우 라멘은 기대 이하였습니다. 육수가 너무 짜고 면도 다소 퍼진 느낌이었어요. 또한, 토핑도 아쉬운 부분이 많았고, 가격 대비 만족도가 떨어지네요. 서비스도 개선이 필요한 것 같습니다.',
         images: [images[2]],
         isPositive: false,
       }).save(),

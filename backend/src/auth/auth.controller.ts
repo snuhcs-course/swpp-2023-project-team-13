@@ -17,6 +17,7 @@ export class AuthController {
     const { accessToken, refreshToken } = user.createToken();
     return new TokenDto(accessToken, refreshToken);
   }
+
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   async refresh(@Req() { user }: UserRequest) {
