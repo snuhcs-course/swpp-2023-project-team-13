@@ -21,6 +21,9 @@ interface ApiService {
     suspend fun getReviewDetail(
         @Path("reviewId") reviewId: Int
     ): Review
+
+    @GET("/reviews/random")
+    suspend fun getRandomReviews(): RandomReviews
 }
 
 data class RestaurantsResponse(
@@ -45,6 +48,7 @@ data class Review(
     val receiptImage: Image?,
     val issuedAt: String,
     val restaurant: Restaurant,
+    val isPositive: Boolean,
     val user: User
 )
 
@@ -61,5 +65,9 @@ data class User(
 )
 
 data class UserDetailResponse(
+    val reviewList: List<Review>
+)
+
+data class RandomReviews(
     val reviewList: List<Review>
 )

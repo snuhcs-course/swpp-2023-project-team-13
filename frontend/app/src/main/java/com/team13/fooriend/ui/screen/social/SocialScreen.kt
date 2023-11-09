@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,17 +57,18 @@ fun SocialScreen(
 
     val apiService = retrofit.create(ApiService::class.java)
 
-    var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) {
-        try {
-            // API 호출하여 데이터 가져오기
-            val response = apiService.getUserDetail(userId = 1)
-            reviews = response.reviewList
-        } catch (e: Exception) {
-            Log.d("RestaurantDetailScreen", "error: $e")
+    var reviews by rememberSaveable { mutableStateOf<List<Review>>(emptyList()) }
+    var isLoading by rememberSaveable { mutableStateOf(true) }
+    if(isLoading) {
+        LaunchedEffect(Unit) {
+            try {
+                // API 호출하여 데이터 가져오기
+                reviews = apiService.getRandomReviews().reviewList
+            } catch (e: Exception) {
+                Log.d("RestaurantDetailScreen", "error: $e")
+            }
+            isLoading = false
         }
-        isLoading = false
     }
     Column(
         modifier = Modifier
