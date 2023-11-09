@@ -1,6 +1,13 @@
 package com.team13.fooriend.ui.util
 
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiService {
@@ -35,7 +42,34 @@ interface ApiService {
 
     @GET("/user/me")
     suspend fun getMyInfo(): User
+
+    @POST("/reviews")
+    suspend fun postReview(@Body reviewPostBody: ReviewPostBody): Response<ResponseBody>
+
+    @Multipart
+    @POST("/reviews/images")
+    suspend fun uploadImage(@Part file: MultipartBody.Part): ImageResponse
 }
+
+data class ImageResponse(
+    val id: Int,
+    val url: String,
+    val isReceiptVerified: Boolean
+)
+
+data class ReviewPostBody(
+    val content: String,
+    val imageIds: List<Int>,
+    val receiptImageId: Int,
+    val restaurant: RestaurantInfo
+)
+
+data class RestaurantInfo(
+    val googleMapPlaceId: String,
+    val name: String,
+    val latitude: Double,
+    val longitude: Double
+)
 
 data class RestaurantsResponse(
     val restaurantList: List<Restaurant>

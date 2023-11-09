@@ -146,13 +146,13 @@ fun HomeScreen(
                             map.setOnPoiClickListener { poi ->
                                 val matchingItem = markers.find { it.placeId == poi.placeId }
 
-                                // 일치하는 MyItem이 있으면 로그를 찍거나 원하는 다른 작업을 수행
+                                // 일치하는 MyItem이 있으면 투명 마커를 추가하고 카메라를 이동시킴
                                 matchingItem?.let {
                                     // MyItem을 처리하는 코드, 예를 들어 로그 출력
                                     Log.d("MyMap", "Matching MyItem found: ${it.title}")
                                     lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
                                     val marker = map.addMarker(
-                                        MarkerOptions().position(it.position).title(it.title).icon(
+                                        MarkerOptions().position(it.position).title(it.title!!.lines()[0]).icon(
                                             getMarkerIconFromDrawable(
                                                 context,
                                                 R.drawable.transparent,
@@ -169,7 +169,7 @@ fun HomeScreen(
                                         map.cameraPosition.bearing
                                     )
                                     map.setOnInfoWindowClickListener { clickedMarker ->
-                                        onReviewClick(poi.placeId) // onReviewClick(clickedMarker.placeId)
+                                        onReviewClick(poi.placeId + poi.name.lines()[0]) // onReviewClick(clickedMarker.placeId)
                                     }
                                     lastMarkerUpdated = true
                                     return@setOnPoiClickListener // MyItem을 찾았으므로 여기서 리스너 작업을 종료
@@ -221,7 +221,7 @@ fun HomeScreen(
                                     if(response.result.types.contains("restaurant") || response.result.types.contains("bar") || response.result.types.contains("cafe")){
                                         map.setOnInfoWindowClickListener { clickedMarker ->
                                             if (clickedMarker.id == marker?.id) {
-                                                onReviewClick("000${poi.name.lines()[0]}") // onReviewClick(poi.placeId)
+                                                onReviewClick(poi.placeId + poi.name.lines()[0]) // onReviewClick(poi.placeId)
                                             }
                                             true
                                         }
@@ -277,7 +277,7 @@ fun HomeScreen(
                             defaultClusterRenderer.setOnClusterItemInfoWindowClickListener { item ->
                                 map.setOnInfoWindowClickListener(clusterManager)
                                 cameraPositionState.position = map.cameraPosition
-                                onReviewClick(item.placeId) // onReviewClick(item.placeId)
+                                onReviewClick(item.placeId + item.title) // onReviewClick(item.placeId)
                             }
                             Log.d(
                                 "MyMap",

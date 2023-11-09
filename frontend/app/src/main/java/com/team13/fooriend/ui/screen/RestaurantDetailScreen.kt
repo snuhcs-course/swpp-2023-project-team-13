@@ -70,24 +70,19 @@ fun RestaurantDetailScreen(
         .build()
 
     val apiService = retrofit.create(ApiService::class.java)
-    var restaurantName by remember { mutableStateOf("") }
+    var resPlaceId = restaurantPlaceId.substring(0,27)
+    var restaurantName  = restaurantPlaceId.substring(27)
     var restaurantGood by remember { mutableStateOf(0) }
     var restaurantBad by remember { mutableStateOf(0) }
 
     // LaunchedEffect를 사용하여 Composable이 처음 구성될 때 데이터 로드
     LaunchedEffect(Unit) {
-        // if prefix 0~2 of restaurantPlaceId == "000"
-        if(restaurantPlaceId.substring(0, 3) == "000"){
-            restaurantName = restaurantPlaceId.substring(3)
-        }else {
-            try {
-                // API 호출하여 데이터 가져오기
-                val response = apiService.getRestaurantDetail(restaurantPlaceId = restaurantPlaceId)
-                reviews = response.reviewList
-            } catch (e: Exception) {
-                Log.d("RestaurantDetailScreen", "error: $e")
-            }
-            restaurantName = reviews[0].restaurant.name
+        try {
+            // API 호출하여 데이터 가져오기
+            val response = apiService.getRestaurantDetail(restaurantPlaceId = resPlaceId)
+            reviews = response.reviewList
+        } catch (e: Exception) {
+            Log.d("RestaurantDetailScreen", "error: $e")
         }
         isLoading = false
     }
@@ -98,7 +93,7 @@ fun RestaurantDetailScreen(
                 TopRestaurantBar(
                     onCloseClick = onBackClick,
                     onWriteReviewClick = onWriteReviewClick,
-                    restaurantPlaceId = restaurantPlaceId,
+                    restaurantPlaceId = resPlaceId,
                     restaurantName = restaurantName,
                     restaurantGood = restaurantGood,
                     restaurantBad = restaurantBad,

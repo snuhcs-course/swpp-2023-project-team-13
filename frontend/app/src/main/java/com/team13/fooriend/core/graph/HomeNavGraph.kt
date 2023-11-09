@@ -78,6 +78,7 @@ fun HomeNavGraph(
         }
         composable(route = "writeReview/{restaurantPlaceId}"){
             PostingScreen(
+                context = context,
                 restaurantPlaceId = it.arguments?.getString("restaurantPlaceId")?:"",
                 onCloseClick = { navController.navigateUp() },
                 onPostClick = { navController.navigateUp() }, // TODO : Post버튼을 누르면 review가 저장되어야 함
