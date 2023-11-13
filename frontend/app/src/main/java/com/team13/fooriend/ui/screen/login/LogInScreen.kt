@@ -26,8 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.team13.fooriend.ui.theme.BaseGray
 import com.team13.fooriend.ui.theme.BaseGreen
-import com.team13.fooriend.ui.theme.BaseGrey
 import com.team13.fooriend.ui.theme.CDarkGreen
 import com.team13.fooriend.ui.theme.CIvory
 import com.team13.fooriend.ui.theme.CLightGreen
@@ -47,12 +47,12 @@ fun LogInScreen(
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val color = if (isPressed) CRed else Color.Black//CDarkGreen
+    val color = if (isPressed) CRed else Color.DarkGray//CDarkGreen
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BaseGreen),//CMidGreen),
+            .background(Color.White),//CMidGreen),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
@@ -66,8 +66,8 @@ fun LogInScreen(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
 //                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGrey,//CLightGreen,
-                unfocusedContainerColor = BaseGrey,//CIvory,
+                focusedContainerColor = BaseGray,//CLightGreen,
+                unfocusedContainerColor = BaseGray,//CIvory,
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -81,13 +81,13 @@ fun LogInScreen(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
 //                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGrey,//CLightGreen,
-                unfocusedContainerColor = BaseGrey,//CIvory,
+                focusedContainerColor = BaseGray,//CLightGreen,
+                unfocusedContainerColor = BaseGray,//CIvory,
             ),
             placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = { if(id.isNotEmpty() && password.isNotEmpty()){
                 onClick()
@@ -109,11 +109,11 @@ fun LogInScreen(
         },
             colors = ButtonDefaults.buttonColors(
                 Color.Transparent,//CMidGreen,
-                contentColor = Color.Black//CDarkGreen
+                contentColor = BaseGreen//CDarkGreen
                          )) {
             Text(
                 "SIGN UP",
-                fontSize = 25.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
         }

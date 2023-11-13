@@ -16,7 +16,7 @@ sealed class BottomNavItem( // Bottom Navigation Bar에 들어갈 아이템들
     object Home: BottomNavItem(
         title = "Home",
         icon = Icons.Default.Map,
-        route = "home"
+        route = "home",
     )
     object Social: BottomNavItem(
         title = "Social",
