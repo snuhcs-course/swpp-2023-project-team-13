@@ -31,14 +31,12 @@ fun ChangePwdScreen(
         //textfield 로 바꾸기
         //현재 비번 맞는지 확인->맞아야 바뀌게
         //새 비번, 확인 필드 일치하는지 확인->맞아야 넘어가게
-
-
-//        TextField(
-//            text = "현재 비밀번호 :",
-//            modifier = Modifier.align(Alignment.Start)
-//        )
-//        TextField(text = "새 비밀번호 :", modifier = Modifier.align(Alignment.Start))
-//        TextField(text = "비밀번호 확인 :", modifier = Modifier.align(Alignment.Start))
+        Text(
+            text = "현재 비밀번호 :",
+            modifier = Modifier.align(Alignment.Start)
+        )
+        Text(text = "새 비밀번호 :", modifier = Modifier.align(Alignment.Start))
+        Text(text = "비밀번호 확인 :", modifier = Modifier.align(Alignment.Start))
         Button(
             onClick = { onConfirmClick() },
             colors = ButtonDefaults.buttonColors(
