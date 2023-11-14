@@ -10,3 +10,8 @@ val CRed = Color(0xFFbc4749)
 
 val BaseGreen = Color(0xFF32B768)
 val BaseGray = Color(0xFFD9D9D9)
+
+object FooriendColor {
+    val FooriendGreen = Color(0xFF32B768)
+    val FooriendGrey = Color(0xFF4B5563)
+}

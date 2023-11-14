@@ -45,10 +45,10 @@ data class Review(
     val id: Int,
     val content: String,
     val images: List<Image>,
+    val isPositive: Boolean,
     val receiptImage: Image?,
     val issuedAt: String,
     val restaurant: Restaurant,
-    val isPositive: Boolean,
     val user: User
 )
 

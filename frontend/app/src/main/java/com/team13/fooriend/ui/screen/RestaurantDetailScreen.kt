@@ -43,11 +43,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
-import com.team13.fooriend.ui.screen.home.MyItem
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -56,7 +53,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 fun RestaurantDetailScreen(
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
+    onWriteReviewClick: (String, String) -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -100,6 +97,7 @@ fun RestaurantDetailScreen(
                     onWriteReviewClick = onWriteReviewClick,
                     restaurantName = restaurantName,
                     restaurantGood = restaurantGood,
+                    restaurantPlaceId = restaurantPlaceId,
                     restaurantBad = restaurantBad,
                 )
             }
@@ -112,10 +110,10 @@ fun RestaurantDetailScreen(
                 contentPadding = PaddingValues(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items(reviews) { review -> // restaurant에 있는 reveiwList를 가져옴
+                items(reviews) { review ->
                     ReviewItem(
                         review = review,
-                        onWriterClick = onWriterClick,
+                        onWriterClick = onWriterClick
                     )
                 }
             }
@@ -187,7 +185,8 @@ fun LoadImageFromUrl(url: String) {
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
+    onWriteReviewClick: (String, String) -> Unit,
+    restaurantPlaceId: String,
     restaurantName: String,
     restaurantGood: Int,
     restaurantBad: Int,
@@ -216,15 +215,15 @@ fun TopRestaurantBar(
             horizontalArrangement = Arrangement.SpaceBetween,
         ){
             TextButton(onClick = { /*TODO*/ }) {// 좋아요 버튼 누르면 긍정 리뷰만 뜨도록
-                Text(text = "좋아요 $restaurantGood")
+                Text(text = "긍정 $restaurantGood")
             }
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = { /*TODO*/ }) {// 싫어요 버튼 누르면 부정 리뷰만 뜨도록
-                Text(text = "싫어요 $restaurantBad")
+                Text(text = "부정 $restaurantBad")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = onWriteReviewClick) {
-                Text(text = "리뷰 작성")
+            Button(onClick = { onWriteReviewClick(restaurantName, restaurantPlaceId) }) {
+                Text(text = "리뷰 쓰기")
             }
         }
     }

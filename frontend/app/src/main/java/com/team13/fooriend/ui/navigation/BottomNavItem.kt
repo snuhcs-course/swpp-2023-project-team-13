@@ -7,6 +7,10 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.team13.fooriend.ui.MyIconPack
+import com.team13.fooriend.ui.myiconpack.Home
+import com.team13.fooriend.ui.myiconpack.My
+import com.team13.fooriend.ui.myiconpack.Social
 
 sealed class BottomNavItem( // Bottom Navigation Bar에 들어갈 아이템들
     val title: String,
@@ -15,17 +19,17 @@ sealed class BottomNavItem( // Bottom Navigation Bar에 들어갈 아이템들
 ){
     object Home: BottomNavItem(
         title = "Home",
-        icon = Icons.Default.Map,
-        route = "home",
+        icon = MyIconPack.Home,
+        route = "home"
     )
     object Social: BottomNavItem(
         title = "Social",
-        icon = Icons.Default.Search,
+        icon = MyIconPack.Social,
         route = "social"
     )
     object MyPage: BottomNavItem(
         title = "MyPage",
-        icon = Icons.Default.AccountCircle,
+        icon = MyIconPack.My,
         route = "myPage"
     )
 }
