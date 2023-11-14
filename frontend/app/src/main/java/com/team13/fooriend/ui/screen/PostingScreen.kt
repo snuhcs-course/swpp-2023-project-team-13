@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.net.toFile
@@ -107,6 +108,8 @@ fun PostingScreen(
     val placesApi = retrofit2.create(PlacesApiService::class.java)
 
     val coroutineScope = rememberCoroutineScope()
+
+    var isLoading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -185,6 +188,7 @@ fun PostingScreen(
                 Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
                 return@Button
             }
+            isLoading = true
              coroutineScope.launch {
                  Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
                  val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
@@ -250,10 +254,18 @@ fun PostingScreen(
         }
 
     }
+    if (isLoading) {
+        LoadingScreen()
+    }
 }
-// place api 로 Restaurant 객체 가져와서 RestaurantInfo 객체 만들기
-suspend fun onPost(){
-
+@Composable
+fun LoadingScreen() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
