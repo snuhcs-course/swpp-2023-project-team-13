@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen.mypage
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import com.team13.fooriend.ui.theme.BaseGray
 
 @Composable
 fun ChangePwdScreen(
+    context : Context,
     onConfirmClick : () -> Unit = {}
 ){
     Column(
@@ -51,6 +53,7 @@ fun ChangePwdScreen(
 @Preview(showSystemUi = true, showBackground = true)
 fun ChangePwdScreenPreview(){
     ChangePwdScreen(
+        context = TODO(),
         onConfirmClick = {}
     )
 }

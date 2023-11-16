@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -49,7 +50,53 @@ interface ApiService {
     @Multipart
     @POST("/reviews/images")
     suspend fun uploadImage(@Part file: MultipartBody.Part): ImageResponse
+
+
+    @POST("/auth/login")
+    suspend fun login(@Body loginBody: LoginBody): LoginResponse
+
+    @POST("/user")
+    suspend fun register(@Body registerBody: RegisterBody): Response<ResponseBody>
+
+    @DELETE("/reviews/{reviewId}")
+    suspend fun deleteReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<ResponseBody>
 }
+data class RegisterBody(
+    val name: String,
+    val username: String,
+    val password: String
+)
+data class LoginBody(
+    val username: String,
+    val password: String
+)
+
+data class LoginResponse(
+    val accessToken: String,
+    val refreshToken: String
+)
+
+data class ImageResponse(
+    val id: Int,
+    val url: String,
+    val isReceiptVerified: Boolean
+)
+
+data class ReviewPostBody(
+    val content: String,
+    val imageIds: List<Int>,
+    val receiptImageId: Int,
+    val restaurant: RestaurantInfo
+)
+
+data class RestaurantInfo(
+    val googleMapPlaceId: String,
+    val name: String,
+    val latitude: Double,
+    val longitude: Double
+)
 
 data class ImageResponse(
     val id: Int,

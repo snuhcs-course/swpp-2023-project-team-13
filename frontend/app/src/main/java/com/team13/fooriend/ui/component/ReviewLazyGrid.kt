@@ -3,6 +3,7 @@ package com.team13.fooriend.ui.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -61,12 +62,14 @@ fun ReviewCard(
         ) {
             Image(
                 painter = rememberImagePainter(
-                    data = review.images[0].url,
+                    data = review.images[review.images.size - 1].url,
                     builder = {
                         crossfade(true)
                     },
                 ),
                 contentDescription = "Loaded image",
+                modifier = Modifier
+                    .fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
         }

@@ -40,7 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateOfhttps://github.com/snuhcs-course/swpp-2023-project-team-13/pull/19/conflict?name=frontend%252Fapp%252Fsrc%252Fmain%252Fjava%252Fcom%252Fteam13%252Ffooriend%252Fui%252Fscreen%252FPostingScreen.kt&ancestor_oid=b6e8a2d814eef2bfc744b665c6c1e7f72740cd28&base_oid=3b9b8c0399bc80db27f42dff5cfebbae2dc417b0&head_oid=82240c1de2b395d2b9c79700df60b0c3b40ffcb5
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -62,6 +62,7 @@ import com.team13.fooriend.ui.screen.home.PlacesApiService
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.RestaurantInfo
 import com.team13.fooriend.ui.util.ReviewPostBody
+import com.team13.fooriend.ui.util.createRetrofit
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -93,11 +94,8 @@ fun PostingScreen(
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()){
             selectReceipt = it
         }
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
 
+    val retrofit = createRetrofit(context)
     val apiService = retrofit.create(ApiService::class.java)
 
     val retrofit2 = Retrofit.Builder()
@@ -189,34 +187,35 @@ fun PostingScreen(
                 return@Button
             }
             isLoading = true
-            coroutineScope.launch {
-                Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
-                val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
-                Log.d("PostingScreen", "restaurant: $response")
-                val restaurant = RestaurantInfo(
-                    googleMapPlaceId = restaurantPlaceId,
-                    name = response.result.name,
-                    latitude = response.result.geometry.location["lat"]!!,
-                    longitude = response.result.geometry.location["lng"]!!
-                )
-                var imageIds = mutableListOf<Int>()
-                for(uri in selectImages){
-                    val inputStream = context.contentResolver.openInputStream(uri)
-                    inputStream?.let { stream ->
-                        val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
-                        val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+             coroutineScope.launch {
+                 Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+                 val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
+                 Log.d("PostingScreen", "restaurant: $response")
+                 val restaurant = RestaurantInfo(
+                     googleMapPlaceId = restaurantPlaceId,
+                     name = response.result.name,
+                     latitude = response.result.geometry.location["lat"]!!,
+                     longitude = response.result.geometry.location["lng"]!!
+                 )
+                 var imageIds = mutableListOf<Int>()
+                 for(uri in selectImages){
+                     val inputStream = context.contentResolver.openInputStream(uri)
+                     inputStream?.let { stream ->
+                         val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                         val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
 
-                        // API 호출
-                        val response = apiService.uploadImage(multipartBody)
-                        imageIds.add(response.id)
-                    }
+                         // API 호출
+                         val response = apiService.uploadImage(multipartBody)
+                         imageIds.add(response.id)
+                     }
 //                     val file = File(uri.path)
 //                     Log.d("PostingScreen", "file: $file")
 //                     val requestbody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
 //                     val body = MultipartBody.Part.createFormData("file",file.name, requestbody)
 //                     val imageresponse = apiService.uploadImage(body)
-                }
-                Log.d("PostingScreen", "imageIds: $imageIds")
+
+                 }
+                 Log.d("PostingScreen", "imageIds: $imageIds")
                 val receiptImageIds = mutableListOf<Int>()
                 for(uri in selectReceipt){
                     val inputStream = context.contentResolver.openInputStream(uri)
@@ -235,21 +234,21 @@ fun PostingScreen(
                     receiptImageId = receiptImageIds[0]
                 }
 
-                apiService.postReview(
-                    ReviewPostBody(
-                        content = content,
-                        imageIds = imageIds,
-                        receiptImageId = receiptImageId,
-                        restaurant = restaurant
-                    )
-                )
-                Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
-                onPostClick()
-            }
-        },
+                 apiService.postReview(
+                     ReviewPostBody(
+                         content = content,
+                         imageIds = imageIds,
+                         receiptImageId = receiptImageId,
+                         restaurant = restaurant
+                     )
+                 )
+                 Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                 onPostClick()
+             }
+            },
             modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)){
+            .fillMaxWidth()
+            .align(Alignment.CenterHorizontally)){
             Text(text = "리뷰 등록")
         }
 

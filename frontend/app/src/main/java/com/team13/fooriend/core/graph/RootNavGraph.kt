@@ -6,19 +6,27 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.team13.fooriend.ui.util.LoginSuccess
+import com.team13.fooriend.ui.util.getAccessToken
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController, context: Context) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.AUTHENTICATION // 앱이 시작하면 authNavGraph 먼저 시작
+        startDestination =
+            if(!isLoggedIn(context)) Graph.AUTHENTICATION else Graph.HOME
+         // 앱이 시작하면 authNavGraph 먼저 시작
     ) {
-        authNavGraph(navController = navController)
+        authNavGraph(context = context, navController = navController)
         composable(route = Graph.HOME) {
             LoginSuccess(context) // 로그인 성공하면 Graph.Home 라우터 호출 -> LoginSuccess로 이동 (util package)
         }
     }
+}
+
+private fun isLoggedIn(context: Context): Boolean {
+    val accesstoken = getAccessToken(context)
+    return accesstoken != ""
 }
 
 object Graph {

@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -22,20 +23,19 @@ import com.team13.fooriend.ui.component.ProfileSection
 import com.team13.fooriend.ui.component.ReviewLazyGrid
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
+import com.team13.fooriend.ui.util.createRetrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
 fun FooriendScreen(
+    context : Context,
     onBackClick : () -> Unit = {},
     onFollowClick : () -> Unit = {},
     userId : Int = 0,
     onReviewClick : (Int) -> Unit = {},
 ){
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    val retrofit = createRetrofit(context)
 
     val apiService = retrofit.create(ApiService::class.java)
 
@@ -87,5 +87,7 @@ fun FooriendScreen(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun FooriendScreenPreview(){
-    FooriendScreen()
+
+    FooriendScreen(TODO())
 }
+

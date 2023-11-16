@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,6 +48,7 @@ import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.screen.home.MyItem
+import com.team13.fooriend.ui.util.createRetrofit
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -54,6 +56,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantDetailScreen(
+    context: Context,
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
     onWriteReviewClick: (String) -> Unit,
@@ -64,10 +67,7 @@ fun RestaurantDetailScreen(
     var isLoading by remember { mutableStateOf(true) }
 
     // Retrofit 설정
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    val retrofit = createRetrofit(context)
 
     val apiService = retrofit.create(ApiService::class.java)
     var resPlaceId = restaurantPlaceId.substring(0,27)

@@ -1,6 +1,7 @@
 package com.team13.fooriend.ui.screen.mypage
 
 import androidx.compose.foundation.background
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,20 +41,24 @@ import androidx.compose.ui.unit.sp
 import com.team13.fooriend.data.User
 import com.team13.fooriend.ui.theme.BaseGray
 import com.team13.fooriend.ui.theme.BaseGreen
+import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.util.createRetrofit
 
 @Composable
 fun MyInformationScreen(
+    context: Context,
     onBackClick: () -> Unit,
     onChangePwd: () -> Unit,
 ) {
-    // 실제로는 user data 저장한 내용에서 가져와야 함
-    val user = User(
-        id = 202114671,
-        userID = "korean_penguin",
-        name = "조용찬",
-//        email = "jych1109@gmail.com",
-        password = "******",
-    )
+    val retrofit = createRetrofit(context)
+    val apiService = retrofit.create(ApiService::class.java)
+    var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    LaunchedEffect(Unit){
+        val user = apiService.getMyInfo()
+        name = user.name
+        username = user.username
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -101,7 +111,13 @@ fun MyInformationScreen(
                         .clip(RoundedCornerShape(50.dp))
                 )
             }
-        }
+//         Text(text = "Name : ${name}")
+//         Text(text = "ID : ${username}")
+//        Text(text = "Email : ${user.email}")
+//        Text(text = "Password : ${user.password}")
+//         Button(onClick = onChangePwd) {
+//             Text(text = "logout")
+//         }
 
         Column(
             modifier = Modifier
@@ -112,9 +128,9 @@ fun MyInformationScreen(
 
         ) {
             Spacer(modifier = Modifier.height(50.dp))
-            Text(text = user.name, fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
+            Text(text = name, fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = user.userID, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+            Text(text = username, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(35.dp))
             Button(
                 onClick = onChangePwd,
@@ -123,7 +139,7 @@ fun MyInformationScreen(
                 )) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "edit", modifier = Modifier.size(18.dp),)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "비밀번호 변경하기")
+                Text(text = "logout")
             }
         }
 
@@ -134,6 +150,7 @@ fun MyInformationScreen(
 @Preview(showSystemUi = true, showBackground = true)
 fun MyInformationScreenPreview() {
     MyInformationScreen(
+        context = TODO(),
         onBackClick = {},
         onChangePwd = {}
     )
