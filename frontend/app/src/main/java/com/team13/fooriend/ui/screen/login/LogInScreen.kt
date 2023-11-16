@@ -61,7 +61,10 @@ fun LogInScreen(
     val isPressed by interactionSource.collectIsPressedAsState()
     val color = if (isPressed) CRed else Color.Black//CDarkGreen
     val coroutineScope = rememberCoroutineScope()
-    val retrofit = createRetrofit(context)
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
     val apiService = retrofit.create(ApiService::class.java)
 

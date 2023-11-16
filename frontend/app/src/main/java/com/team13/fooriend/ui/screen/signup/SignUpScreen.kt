@@ -1,5 +1,7 @@
 package com.team13.fooriend.ui.screen.signup
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,12 +45,18 @@ import com.team13.fooriend.ui.theme.CIvory
 import com.team13.fooriend.ui.theme.CLightGreen
 import com.team13.fooriend.ui.theme.CMidGreen
 import com.team13.fooriend.ui.theme.CRed
+import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.util.RegisterBody
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.time.format.TextStyle
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignUpScreen(
+    context : Context,
     onSignUpClick : () -> Unit = {}
 ){
     val (id, idValue) = remember { mutableStateOf("") }
@@ -59,7 +68,13 @@ fun SignUpScreen(
     val color = if (isPressed) CRed else Color.Black//CDarkGreen
 //    val (nickname, nicknameValue) = remember { mutableStateOf("") }
 //    val (phoneNumber, phoneNumberValue) = remember { mutableStateOf("") }
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
+    val apiService = retrofit.create(ApiService::class.java)
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -119,7 +134,15 @@ fun SignUpScreen(
 //        TextField(value = nickname, onValueChange = nicknameValue)
 //        TextField(value = phoneNumber, onValueChange = phoneNumberValue)
         Button(
-            onClick = { onSignUpClick() },
+            onClick = {
+                coroutineScope.launch {
+                    if(password != passwordCheck){
+                        Toast.makeText(context, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                        return@launch
+                    }
+                    val response = apiService.register(RegisterBody("username",id, password))
+                    onSignUpClick()
+                } },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
                 Color.Transparent,//CMidGreen,
@@ -136,5 +159,5 @@ fun SignUpScreen(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun SignUpScreenPreview(){
-    SignUpScreen()
+    SignUpScreen(TODO())
 }

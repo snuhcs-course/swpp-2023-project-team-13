@@ -52,7 +52,15 @@ interface ApiService {
 
     @POST("/auth/login")
     suspend fun login(@Body loginBody: LoginBody): LoginResponse
+
+    @POST("/user")
+    suspend fun register(@Body registerBody: RegisterBody): Response<ResponseBody>
 }
+data class RegisterBody(
+    val name: String,
+    val username: String,
+    val password: String
+)
 data class LoginBody(
     val username: String,
     val password: String
