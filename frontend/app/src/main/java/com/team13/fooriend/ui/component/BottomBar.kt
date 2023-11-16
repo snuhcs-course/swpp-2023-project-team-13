@@ -46,6 +46,7 @@ fun BottomNavigation(navController: NavHostController){
         items.forEach { item ->
             val selected = item.route == navBackStackEntry.value?.destination?.route
             NavigationBarItem(
+
                 icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
                 label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
                 selected = selected,
