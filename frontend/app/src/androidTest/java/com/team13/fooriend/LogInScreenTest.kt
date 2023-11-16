@@ -11,13 +11,12 @@ import androidx.navigation.testing.TestNavHostController
 import com.team13.fooriend.core.graph.AuthScreen
 import com.team13.fooriend.core.graph.Graph
 import com.team13.fooriend.core.graph.RootNavigationGraph
-import com.team13.fooriend.ui.screen.login.LogInScreen
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class NavigationTest {
+class LogInScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
