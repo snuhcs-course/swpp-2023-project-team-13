@@ -51,6 +51,7 @@ interface ApiService {
     @POST("/reviews/images")
     suspend fun uploadImage(@Part file: MultipartBody.Part): ImageResponse
 
+
     @POST("/auth/login")
     suspend fun login(@Body loginBody: LoginBody): LoginResponse
 
@@ -75,6 +76,26 @@ data class LoginBody(
 data class LoginResponse(
     val accessToken: String,
     val refreshToken: String
+)
+
+data class ImageResponse(
+    val id: Int,
+    val url: String,
+    val isReceiptVerified: Boolean
+)
+
+data class ReviewPostBody(
+    val content: String,
+    val imageIds: List<Int>,
+    val receiptImageId: Int,
+    val restaurant: RestaurantInfo
+)
+
+data class RestaurantInfo(
+    val googleMapPlaceId: String,
+    val name: String,
+    val latitude: Double,
+    val longitude: Double
 )
 
 data class ImageResponse(

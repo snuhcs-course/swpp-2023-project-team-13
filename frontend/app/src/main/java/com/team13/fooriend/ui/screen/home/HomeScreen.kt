@@ -125,13 +125,13 @@ fun HomeScreen(
                                         myLocationMarker = map.addMarker(
                                             MarkerOptions().position(myLocation)
                                                 .title("Current Location").icon(
-                                                getMarkerIconFromDrawable(
-                                                    context,
-                                                    R.drawable.mypin,
-                                                    100,
-                                                    100
+                                                    getMarkerIconFromDrawable(
+                                                        context,
+                                                        R.drawable.mypin,
+                                                        100,
+                                                        100
+                                                    )
                                                 )
-                                            )
                                         )
                                     }
                                 }

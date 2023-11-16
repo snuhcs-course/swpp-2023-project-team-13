@@ -51,4 +51,3 @@ data class Geometry(
 //data class Geometry(
 //    val location: LatLng
 //)
-

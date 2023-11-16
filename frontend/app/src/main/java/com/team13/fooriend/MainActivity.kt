@@ -15,7 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+//import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.team13.fooriend.ui.FooriendApp
 import com.team13.fooriend.ui.LocationPermissionScreen
 import com.team13.fooriend.ui.theme.FooriendTheme

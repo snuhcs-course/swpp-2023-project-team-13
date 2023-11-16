@@ -87,6 +87,7 @@ fun FooriendScreen(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun FooriendScreenPreview(){
+
     FooriendScreen(TODO())
 }
 

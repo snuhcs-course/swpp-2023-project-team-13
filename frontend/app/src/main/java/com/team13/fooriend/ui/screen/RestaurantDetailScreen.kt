@@ -169,7 +169,7 @@ fun LoadImageFromUrl(url: String) {
                 // 예: placeholder(R.drawable.placeholder), error(R.drawable.error)
             },
 
-        ),
+            ),
         contentDescription = "Loaded image",
         modifier = Modifier
             .height(200.dp)
