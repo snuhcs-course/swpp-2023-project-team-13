@@ -1,8 +1,10 @@
 package com.team13.fooriend.ui.screen
 
 import android.app.Activity
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -51,14 +53,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.net.toFile
 import com.team13.fooriend.ui.component.ImageCard
+import com.team13.fooriend.ui.screen.home.PlacesApiService
+import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.util.RestaurantInfo
+import com.team13.fooriend.ui.util.ReviewPostBody
+import com.team13.fooriend.ui.util.createRetrofit
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostingScreen(
+    context: Context,
+    restaurantPlaceId: String = "",
     onCloseClick: () -> Unit = {},
     onPostClick: () -> Unit = {},
 ){
+
     val state = rememberScrollState()
     val (content, contentValue) = remember { mutableStateOf("") }
     var selectImages by remember { mutableStateOf(listOf<Uri>()) }
@@ -71,6 +94,20 @@ fun PostingScreen(
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()){
             selectReceipt = it
         }
+    val retrofit = createRetrofit(context)
+    val apiService = retrofit.create(ApiService::class.java)
+
+    val retrofit2 = Retrofit.Builder()
+        .baseUrl("https://maps.googleapis.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val placesApi = retrofit2.create(PlacesApiService::class.java)
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var isLoading by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -88,8 +125,7 @@ fun PostingScreen(
                 )
             }
         }
-        // 음식점 이름
-        Text(text = "용찬 반점")
+        Text(text = "리뷰 작성")
         // 리뷰 작성 textfield (최대 140자)
         TextField(
             modifier = Modifier
@@ -140,17 +176,97 @@ fun PostingScreen(
         }
         // 리뷰 등록
         Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = { onPostClick() }, modifier = Modifier
+        Button(onClick = {
+            Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+            if(content == ""){
+                Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@Button
+            } else if(selectImages.size == 0){
+                Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
+                return@Button
+            }
+            isLoading = true
+             coroutineScope.launch {
+                 Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+                 val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
+                 Log.d("PostingScreen", "restaurant: $response")
+                 val restaurant = RestaurantInfo(
+                     googleMapPlaceId = restaurantPlaceId,
+                     name = response.result.name,
+                     latitude = response.result.geometry.location["lat"]!!,
+                     longitude = response.result.geometry.location["lng"]!!
+                 )
+                 var imageIds = mutableListOf<Int>()
+                 for(uri in selectImages){
+                     val inputStream = context.contentResolver.openInputStream(uri)
+                     inputStream?.let { stream ->
+                         val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                         val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+
+                         // API 호출
+                         val response = apiService.uploadImage(multipartBody)
+                         imageIds.add(response.id)
+                     }
+//                     val file = File(uri.path)
+//                     Log.d("PostingScreen", "file: $file")
+//                     val requestbody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//                     val body = MultipartBody.Part.createFormData("file",file.name, requestbody)
+//                     val imageresponse = apiService.uploadImage(body)
+                 }
+                 Log.d("PostingScreen", "imageIds: $imageIds")
+                val receiptImageIds = mutableListOf<Int>()
+                for(uri in selectReceipt){
+                    val inputStream = context.contentResolver.openInputStream(uri)
+                    inputStream?.let { stream ->
+                        val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                        val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+
+                        // API 호출
+                        val response = apiService.uploadImage(multipartBody)
+                        imageIds.add(response.id)
+                    }
+                }
+                Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
+                var receiptImageId = 0
+                if(receiptImageIds.size > 0) {
+                    receiptImageId = receiptImageIds[0]
+                }
+
+                 apiService.postReview(
+                     ReviewPostBody(
+                         content = content,
+                         imageIds = imageIds,
+                         receiptImageId = receiptImageId,
+                         restaurant = restaurant
+                     )
+                 )
+                 Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                 onPostClick()
+             }
+            },
+            modifier = Modifier
             .fillMaxWidth()
             .align(Alignment.CenterHorizontally)){
             Text(text = "리뷰 등록")
         }
 
     }
+    if (isLoading) {
+        LoadingScreen()
+    }
+}
+@Composable
+fun LoadingScreen() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun PostingScreenPreview(){
-    PostingScreen()
+//    PostingScreen()
 }

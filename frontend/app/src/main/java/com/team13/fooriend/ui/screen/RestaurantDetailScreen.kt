@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -47,6 +48,7 @@ import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.screen.home.MyItem
+import com.team13.fooriend.ui.util.createRetrofit
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -54,9 +56,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RestaurantDetailScreen(
+    context: Context,
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
+    onWriteReviewClick: (String) -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -64,30 +67,22 @@ fun RestaurantDetailScreen(
     var isLoading by remember { mutableStateOf(true) }
 
     // Retrofit 설정
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    val retrofit = createRetrofit(context)
 
     val apiService = retrofit.create(ApiService::class.java)
-    var restaurantName by remember { mutableStateOf("") }
+    var resPlaceId = restaurantPlaceId.substring(0,27)
+    var restaurantName  = restaurantPlaceId.substring(27)
     var restaurantGood by remember { mutableStateOf(0) }
     var restaurantBad by remember { mutableStateOf(0) }
 
     // LaunchedEffect를 사용하여 Composable이 처음 구성될 때 데이터 로드
     LaunchedEffect(Unit) {
-        // if prefix 0~2 of restaurantPlaceId == "000"
-        if(restaurantPlaceId.substring(0, 3) == "000"){
-            restaurantName = restaurantPlaceId.substring(3)
-        }else {
-            try {
-                // API 호출하여 데이터 가져오기
-                val response = apiService.getRestaurantDetail(restaurantPlaceId = restaurantPlaceId)
-                reviews = response.reviewList
-            } catch (e: Exception) {
-                Log.d("RestaurantDetailScreen", "error: $e")
-            }
-            restaurantName = reviews[0].restaurant.name
+        try {
+            // API 호출하여 데이터 가져오기
+            val response = apiService.getRestaurantDetail(restaurantPlaceId = resPlaceId)
+            reviews = response.reviewList
+        } catch (e: Exception) {
+            Log.d("RestaurantDetailScreen", "error: $e")
         }
         isLoading = false
     }
@@ -98,6 +93,7 @@ fun RestaurantDetailScreen(
                 TopRestaurantBar(
                     onCloseClick = onBackClick,
                     onWriteReviewClick = onWriteReviewClick,
+                    restaurantPlaceId = resPlaceId,
                     restaurantName = restaurantName,
                     restaurantGood = restaurantGood,
                     restaurantBad = restaurantBad,
@@ -187,7 +183,8 @@ fun LoadImageFromUrl(url: String) {
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
-    onWriteReviewClick: () -> Unit,
+    onWriteReviewClick: (String) -> Unit,
+    restaurantPlaceId: String,
     restaurantName: String,
     restaurantGood: Int,
     restaurantBad: Int,
@@ -223,7 +220,7 @@ fun TopRestaurantBar(
                 Text(text = "싫어요 $restaurantBad")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = onWriteReviewClick) {
+            Button(onClick = { onWriteReviewClick(restaurantPlaceId) }) {
                 Text(text = "리뷰 작성")
             }
         }

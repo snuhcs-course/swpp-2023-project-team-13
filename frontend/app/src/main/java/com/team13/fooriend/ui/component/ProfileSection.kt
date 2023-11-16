@@ -32,15 +32,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.team13.fooriend.R
 
 @Composable
 fun ProfileSection(
     // default value는 추후에 모두 지우자
-    username : String = "ozeeeno",
+    username : String = "",
     followersCount : Int = 100,
     followingCount : Int = 50,
-    userProfileImageUrl : Int = R.drawable.profile_cat,
+    userProfileImageUrl : String,
     isFooried : Boolean = false,
     onFollowClick : () -> Unit = {},
     isMyPage : Boolean = false,
@@ -59,7 +60,15 @@ fun ProfileSection(
                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         ) {
             Image(
-                painter = painterResource(id = userProfileImageUrl),
+                painter = rememberImagePainter(
+                    data = userProfileImageUrl,
+                    builder = {
+                        crossfade(true)
+                        // 이곳에 더 많은 Coil 설정을 추가할 수 있습니다.
+                        // 예: placeholder(R.drawable.placeholder), error(R.drawable.error)
+                    },
+
+                    ),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -104,6 +113,6 @@ fun ProfileSection(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun ProfileSectionPreview(){
-    ProfileSection("조용찬", 10, 20, R.drawable.profile_cat,
+    ProfileSection("조용찬", 10, 20, "",
         isFooried = false, onFollowClick = {}, isMyPage = false)
 }
