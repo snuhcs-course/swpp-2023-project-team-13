@@ -1,5 +1,6 @@
 package com.team13.fooriend.core.graph
 
+import android.content.Context
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -13,6 +14,7 @@ sealed class AuthScreen(val route: String) {
     object Forgot : AuthScreen(route = "FORGOT")
 }
 fun NavGraphBuilder.authNavGraph(
+    context : Context,
     navController: NavHostController
 ){
     navigation(
@@ -21,6 +23,7 @@ fun NavGraphBuilder.authNavGraph(
     ){
         composable(route = AuthScreen.Login.route){// LogInScreen
             LogInScreen(
+                context = context,
                 onClick = {
                     navController.popBackStack()
                     navController.navigate(Graph.HOME)

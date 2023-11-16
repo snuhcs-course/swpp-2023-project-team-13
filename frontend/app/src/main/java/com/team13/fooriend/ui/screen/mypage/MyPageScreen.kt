@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen.mypage
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -46,20 +47,18 @@ import com.team13.fooriend.ui.component.ProfileSection
 import com.team13.fooriend.ui.component.ReviewLazyGrid
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
+import com.team13.fooriend.ui.util.createRetrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
 @Composable
 fun MyPageScreen(
+    context : Context,
     onMyInfoClick: () -> Unit,
     onReviewClick: (Int) -> Unit
 ){
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
+    val retrofit = createRetrofit(context)
     val apiService = retrofit.create(ApiService::class.java)
 
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
@@ -119,5 +118,5 @@ fun MyPageScreen(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun MyPageScreenPreview(){
-    MyPageScreen( onMyInfoClick = {  }, onReviewClick = {  })
+    MyPageScreen( context = TODO(), onMyInfoClick = {  }, onReviewClick = {  })
 }

@@ -49,7 +49,19 @@ interface ApiService {
     @Multipart
     @POST("/reviews/images")
     suspend fun uploadImage(@Part file: MultipartBody.Part): ImageResponse
+
+    @POST("/auth/login")
+    suspend fun login(@Body loginBody: LoginBody): LoginResponse
 }
+data class LoginBody(
+    val username: String,
+    val password: String
+)
+
+data class LoginResponse(
+    val accessToken: String,
+    val refreshToken: String
+)
 
 data class ImageResponse(
     val id: Int,

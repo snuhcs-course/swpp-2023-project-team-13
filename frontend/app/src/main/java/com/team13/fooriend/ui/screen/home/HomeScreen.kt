@@ -39,6 +39,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.screen.LoadingScreen
 import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.util.createRetrofit
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 //import com.team13.fooriend.ui.util.restaurants
 import kotlinx.coroutines.launch
@@ -65,11 +66,7 @@ fun HomeScreen(
 
     val placesApi = retrofit.create(PlacesApiService::class.java)
 
-    val retrofit2 = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com") // 기본 URL 설정
-        .addConverterFactory(GsonConverterFactory.create()) // Gson 변환기 사용
-        .build()
-
+    val retrofit2 = createRetrofit(context)
     val apiService = retrofit2.create(ApiService::class.java)
 
     val coroutineScope = rememberCoroutineScope()

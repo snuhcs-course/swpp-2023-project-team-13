@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen.social
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import com.team13.fooriend.data.User
 import com.team13.fooriend.ui.component.ReviewLazyGrid
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
+import com.team13.fooriend.ui.util.createRetrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -45,15 +47,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SocialScreen(
-    // reviews: List<Review> 파라미터로 받아야 하나?
+    context: Context,
     onReviewClick : (Int) -> Unit, // 리뷰 이미지를 클릭한 경우
     onUserClick : (Int) -> Unit, // search bar에서 검색한 유저를 클릭한 경우
 ){
-    // 임시로 id=1 호출
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    val retrofit = createRetrofit(context)
 
     val apiService = retrofit.create(ApiService::class.java)
 
@@ -202,5 +200,5 @@ fun SocialSearchBar(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun SocialScreenPreview(){
-    SocialScreen(onReviewClick = {}, onUserClick = {})
+    SocialScreen(context = TODO(),onReviewClick = {}, onUserClick = {})
 }

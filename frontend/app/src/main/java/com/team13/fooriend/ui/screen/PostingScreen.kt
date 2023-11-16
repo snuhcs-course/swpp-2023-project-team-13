@@ -62,6 +62,7 @@ import com.team13.fooriend.ui.screen.home.PlacesApiService
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.RestaurantInfo
 import com.team13.fooriend.ui.util.ReviewPostBody
+import com.team13.fooriend.ui.util.createRetrofit
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -93,11 +94,7 @@ fun PostingScreen(
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()){
             selectReceipt = it
         }
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
+    val retrofit = createRetrofit(context)
     val apiService = retrofit.create(ApiService::class.java)
 
     val retrofit2 = Retrofit.Builder()

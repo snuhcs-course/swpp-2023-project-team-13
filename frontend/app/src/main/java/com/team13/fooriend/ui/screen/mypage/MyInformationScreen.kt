@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen.mypage
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import com.team13.fooriend.data.User
 
 @Composable
 fun MyInformationScreen(
+    context: Context,
     onBackClick: () -> Unit,
     onChangePwd: () -> Unit,
 ) {
@@ -62,6 +64,7 @@ fun MyInformationScreen(
 @Preview(showSystemUi = true, showBackground = true)
 fun MyInformationScreenPreview() {
     MyInformationScreen(
+        context = TODO(),
         onBackClick = {},
         onChangePwd = {}
     )

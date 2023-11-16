@@ -1,5 +1,6 @@
 package com.team13.fooriend.ui.screen
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -41,20 +42,19 @@ import com.team13.fooriend.R
 import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
+import com.team13.fooriend.ui.util.createRetrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
 fun ReviewDetailScreen(
+    context: Context,
     reviewId: Int,
     onBackClick: () -> Unit,
     onWriterClick: (Int) -> Unit,
     onRestaurantClick: (String) -> Unit,
 ) {
-    val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    val retrofit = createRetrofit(context)
 
     val apiService = retrofit.create(ApiService::class.java)
     //add review variable
@@ -148,6 +148,7 @@ fun ReviewDetailScreen(
 @Preview(showSystemUi = true, showBackground = true)
 fun ReviewDetailScreenPreview() {
     ReviewDetailScreen(
+        context = TODO(),
         reviewId = 0,
         onBackClick = {},
         onWriterClick = {},

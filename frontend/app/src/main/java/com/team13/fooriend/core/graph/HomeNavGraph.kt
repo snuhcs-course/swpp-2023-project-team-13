@@ -41,6 +41,7 @@ fun HomeNavGraph(
         }
         composable(route = BottomNavItem.Social.route) {
             SocialScreen(
+                context = context,
                 onReviewClick = {
                     navController.navigate("reviewDetail/${it}") }, //  리뷰 이미지를 클릭한 경우
                 onUserClick = { navController.navigate("fooriend/${it}") }, // search bar에서 검색한 유저를 클릭한 경우
@@ -48,12 +49,14 @@ fun HomeNavGraph(
         }
         composable(route = BottomNavItem.MyPage.route) {
             MyPageScreen(
+                context = context,
                 onMyInfoClick = { navController.navigate("myInfo") },
                 onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
             )
         }
         composable(route = "restaurant/{restaurantId}"){
             RestaurantDetailScreen(
+                context = context,
                 restaurantPlaceId = it.arguments?.getString("restaurantId")?:"",
                 onBackClick = { navController.navigateUp() }, // 뒤로가기 버튼을 누른 경우
                 onWriteReviewClick = { navController.navigate("writeReview/${it}") }, // 리뷰 작성 버튼을 누른 경우
@@ -62,6 +65,7 @@ fun HomeNavGraph(
         }
         composable("reviewDetail/{reviewId}"){backStackEntry ->
             ReviewDetailScreen(
+                context = context,
                 onBackClick = { navController.navigateUp() },
                 onWriterClick = { navController.navigate("fooriend/${it}") }, // 작성자를 클릭한 경우
                 onRestaurantClick = { navController.navigate("restaurant/${it}") }, // 식당을 클릭한 경우
@@ -70,6 +74,7 @@ fun HomeNavGraph(
         }
         composable(route = "fooriend/{userId}"){
             FooriendScreen(
+                context = context,
                 onBackClick = { navController.navigateUp() },
                 onFollowClick = { }, //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
                 userId = it.arguments?.getString("userId")?.toInt() ?: 0,
@@ -86,12 +91,14 @@ fun HomeNavGraph(
         }
         composable(route = "myInfo"){
             MyInformationScreen(
+                context = context,
                 onBackClick = { navController.navigateUp() },
                 onChangePwd = { navController.navigate("changePwd") },
             )
         }
         composable(route = "changePwd"){
              ChangePwdScreen(
+                 context = context,
                  onConfirmClick = { navController.navigateUp() },
              )
         }
