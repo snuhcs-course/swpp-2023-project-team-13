@@ -48,7 +48,7 @@ export class UserEntity extends IssuedAtMetaEntity {
 
   public createAccessToken() {
     return sign(this.tokenPayload, process.env.ACCESS_SECRET!, {
-      expiresIn: '1d',
+      expiresIn: process.env.ACCESS_EXPIRES_IN || '1d',
     });
   }
 

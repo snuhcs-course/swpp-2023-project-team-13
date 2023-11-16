@@ -80,13 +80,12 @@ export class ReviewRepository extends Repository<ReviewEntity> {
     });
   }
 
-  findRandomReviews(limit: number) {
+  findRandomReviews() {
     return this.createQueryBuilder('review')
       .leftJoinAndSelect('review.images', 'image')
       .leftJoinAndSelect('review.user', 'user')
       .leftJoinAndSelect('review.restaurant', 'restaurant')
       .orderBy('RANDOM()')
-      .limit(limit)
       .getMany();
   }
 }

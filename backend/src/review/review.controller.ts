@@ -66,7 +66,6 @@ export class ReviewController {
   @UseGuards(JwtAccessGuard)
   @Get('/my')
   async getMyReview(@Req() { user }: UserRequest) {
-    console.log(user);
     const reviews = await this.reviewRepository.findOfUser(user);
     return new ReviewListDto(reviews);
   }
@@ -74,8 +73,7 @@ export class ReviewController {
   @UseGuards(JwtAccessGuard)
   @Get('/random')
   async getReviewRandom() {
-    const limit = 5; // Define the number of random reviews you want to retrieve
-    const randomReviews = await this.reviewRepository.findRandomReviews(limit);
+    const randomReviews = await this.reviewRepository.findRandomReviews();
     return new ReviewListDto(randomReviews);
   }
 
