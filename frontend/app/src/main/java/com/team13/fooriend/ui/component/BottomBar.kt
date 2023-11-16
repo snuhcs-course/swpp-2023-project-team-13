@@ -23,11 +23,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.team13.fooriend.core.graph.HomeNavGraph
 import com.team13.fooriend.ui.navigation.BottomNavItem
-<<<<<<< Updated upstream
 import com.team13.fooriend.ui.theme.BaseGreen
-=======
+
 import com.team13.fooriend.ui.theme.FooriendColor
->>>>>>> Stashed changes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,9 +63,15 @@ fun BottomNavigation(navController: NavHostController){
         items.forEach { item ->
             val selected = item.route == navBackStackEntry.value?.destination?.route
             NavigationBarItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+                icon = { Icon(imageVector = item.icon, contentDescription = item.title,modifier = Modifier.width(26.dp).height(26.dp)) },
+                label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
                 selected = selected,
-
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = BaseGreen,
+                    selectedTextColor = BaseGreen,
+                    unselectedIconColor = Color.DarkGray,
+                    indicatorColor = Color.White,
+                ),
                 alwaysShowLabel = false,
 
                 onClick = {
@@ -82,10 +86,6 @@ fun BottomNavigation(navController: NavHostController){
                     }
                 },
 
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = FooriendColor.FooriendGreen,
-                    unselectedIconColor = FooriendColor.FooriendGrey,
-                )
             )
         }
     }

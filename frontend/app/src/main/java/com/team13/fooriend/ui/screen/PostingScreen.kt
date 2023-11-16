@@ -4,8 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,14 +16,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,275 +53,223 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Store
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContentProviderCompat.requireContext
-import coil.compose.rememberImagePainter
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.core.net.toFile
 import com.team13.fooriend.ui.component.ImageCard
-import com.team13.fooriend.ui.theme.FooriendColor
-
+import com.team13.fooriend.ui.screen.home.PlacesApiService
+import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.util.RestaurantInfo
+import com.team13.fooriend.ui.util.ReviewPostBody
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostingScreen(
-    restaurantPlaceId : String,
-    restaurantName: String,
+    context: Context,
+    restaurantPlaceId: String = "",
     onCloseClick: () -> Unit = {},
-    onPostClick: (String, String, List<Uri>, Uri?) -> Unit = { _, _, _, _ -> }
+    onPostClick: () -> Unit = {},
 ){
+
     val state = rememberScrollState()
-    val context = LocalContext.current
+    val (content, contentValue) = remember { mutableStateOf("") }
+    var selectImages by remember { mutableStateOf(listOf<Uri>()) }
+    var selectReceipt by remember { mutableStateOf(listOf<Uri>()) }
+    val galleryLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()){
+            selectImages = it
+        }
+    val receiptLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()){
+            selectReceipt = it
+        }
+    val retrofit = Retrofit.Builder()
+        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
-    var selectedReviews by remember {
-        mutableStateOf<List<Uri>>(emptyList())
-    }
+    val apiService = retrofit.create(ApiService::class.java)
 
-    val reviewphotoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = { uris -> selectedReviews = uris }
-    )
+    val retrofit2 = Retrofit.Builder()
+        .baseUrl("https://maps.googleapis.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
-    var selectedReceipt by remember {
-        mutableStateOf<Uri?>(null)
-    }
+    val placesApi = retrofit2.create(PlacesApiService::class.java)
 
-    val receiptphotoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> selectedReceipt = uri }
-    )
+    val coroutineScope = rememberCoroutineScope()
 
-
-    var contentState by remember { mutableStateOf(TextFieldValue("")) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .padding(16.dp)
             .verticalScroll(state)
     ){
-
+        // 나가기 버튼
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        ){
             IconButton(onClick = onCloseClick) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = Icons.Default.Close,
                     contentDescription = "Close"
                 )
             }
-            Row(
-                modifier = Modifier
-                    .weight(1f),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Store,
-                    contentDescription = "Store",
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                )
-                Text(
-                    text = restaurantName,
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
-                    )
-                )
-            }
         }
-
-        Text(
-            text = "리뷰 작성",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 8 .dp)
-        )
-
+        Text(text = "리뷰 작성")
+        // 리뷰 작성 textfield (최대 140자)
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 130.dp),
-            value = contentState,
-            onValueChange = {
-                if (it.text.length <= 200) {
-                    contentState = it
+                .heightIn(min = 100.dp),
+            value = content,
+            onValueChange = contentValue
+        )
+        // 사진 등록 (최대 ?장)
+        Text(text = "사진 등록")
+        OutlinedButton(
+            onClick = { galleryLauncher.launch("image/*") },
+            shape = RoundedCornerShape(10.dp),
+        ) {
+            Text(text = "Pick Image From Gallery")
+        }
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .background(Color.LightGray)){
+            LazyVerticalGrid(columns = GridCells.Fixed(3)){
+                items(
+                    items = selectImages,
+                ){
+                    ImageCard(uri = it, onClick = {/*TODO*/ })
                 }
             }
-        )
+        }
+        // 영수증 사진 첨부
+        Text(text = "영수증 사진 첨부")
+        OutlinedButton(
+            onClick = { receiptLauncher.launch("image/*") },
+            shape = RoundedCornerShape(10.dp),
+        ) {
+            Text(text = "Pick Receipt From Gallery")
+        }
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .background(Color.LightGray)){
+            LazyVerticalGrid(columns = GridCells.Fixed(3)){
+                items(
+                    items = selectReceipt,
+                ){
+                    ImageCard(uri = it, onClick = {/*TODO*/ })
+                }
+            }
+        }
+        // 리뷰 등록
+        Spacer(modifier = Modifier.height(20.dp))
+        Button(onClick = {
+            Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+            if(content == ""){
+                Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                return@Button
+            } else if(selectImages.size == 0){
+                Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
+                return@Button
+            }
+            isLoading = true
+            coroutineScope.launch {
+                Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+                val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
+                Log.d("PostingScreen", "restaurant: $response")
+                val restaurant = RestaurantInfo(
+                    googleMapPlaceId = restaurantPlaceId,
+                    name = response.result.name,
+                    latitude = response.result.geometry.location["lat"]!!,
+                    longitude = response.result.geometry.location["lng"]!!
+                )
+                var imageIds = mutableListOf<Int>()
+                for(uri in selectImages){
+                    val inputStream = context.contentResolver.openInputStream(uri)
+                    inputStream?.let { stream ->
+                        val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                        val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
 
-        Text(
-            text = "${contentState.text.length}/200",
-            color = if (contentState.text.length <= 200) Color.Gray else Color.Red,
-            textAlign = TextAlign.End,
+                        // API 호출
+                        val response = apiService.uploadImage(multipartBody)
+                        imageIds.add(response.id)
+                    }
+//                     val file = File(uri.path)
+//                     Log.d("PostingScreen", "file: $file")
+//                     val requestbody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//                     val body = MultipartBody.Part.createFormData("file",file.name, requestbody)
+//                     val imageresponse = apiService.uploadImage(body)
+                }
+                Log.d("PostingScreen", "imageIds: $imageIds")
+                val receiptImageIds = mutableListOf<Int>()
+                for(uri in selectReceipt){
+                    val inputStream = context.contentResolver.openInputStream(uri)
+                    inputStream?.let { stream ->
+                        val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                        val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+
+                        // API 호출
+                        val response = apiService.uploadImage(multipartBody)
+                        imageIds.add(response.id)
+                    }
+                }
+                Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
+                var receiptImageId = 0
+                if(receiptImageIds.size > 0) {
+                    receiptImageId = receiptImageIds[0]
+                }
+
+                apiService.postReview(
+                    ReviewPostBody(
+                        content = content,
+                        imageIds = imageIds,
+                        receiptImageId = receiptImageId,
+                        restaurant = restaurant
+                    )
+                )
+                Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                onPostClick()
+            }
+        },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 4.dp)
-        )
-
-        Text(
-            text = "사진 등록",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .height(110.dp)
-                .clickable {
-                    reviewphotoLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (selectedReviews.isEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .fillMaxHeight()
-                            .background(Color.Gray),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                } else {
-                    for (imageUri in selectedReviews) {
-                        Box(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .fillMaxHeight()
-                        ) {
-                            Image(
-                                painter = rememberImagePainter(imageUri),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                                alignment = Alignment.Center
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        Text(
-            text = "영수증 인증하기",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .height(110.dp)
-                .clickable {
-                    receiptphotoLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (selectedReceipt == null) {
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .fillMaxHeight()
-                            .background(Color.Gray),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                } else {
-                        Box(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .fillMaxHeight()
-                        ) {
-                            Image(
-                                painter = rememberImagePainter(selectedReceipt),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                                alignment = Alignment.Center
-                            )
-                        }
-
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        Button(onClick = {
-                onPostClick(
-                    restaurantPlaceId,
-                    contentState.text,
-                    selectedReviews,
-                    selectedReceipt
-                )
-
-
-
-
-                         }, modifier = Modifier
-            .height(50.dp)
-            .width(200.dp)
-            .align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = FooriendColor.FooriendGreen,
-                contentColor = Color.White
-            )
-            ){
+                .align(Alignment.CenterHorizontally)){
             Text(text = "리뷰 등록")
         }
 
     }
+    if (isLoading) {
+        LoadingScreen()
+    }
 }
-
+@Composable
+fun LoadingScreen() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator()
+    }
+}
 
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun PostingScreenPreview(){
-    PostingScreen(restaurantName = "Sample Restaurant", restaurantPlaceId = "ChIJN1t_tDeuEmsRUsoyG83frY4")
+//    PostingScreen()
 }

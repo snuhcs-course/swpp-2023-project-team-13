@@ -1,13 +1,15 @@
 package com.team13.fooriend.core.graph
 
+import android.app.Activity
 import android.content.Context
-import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.team13.fooriend.R
+import com.team13.fooriend.data.Restaurant
+import com.team13.fooriend.data.Review
 import com.team13.fooriend.ui.navigation.BottomNavItem
 import com.team13.fooriend.ui.screen.FooriendScreen
 import com.team13.fooriend.ui.screen.PostingScreen
@@ -15,6 +17,7 @@ import com.team13.fooriend.ui.screen.RestaurantDetailScreen
 import com.team13.fooriend.ui.screen.ReviewDetailScreen
 import com.team13.fooriend.ui.screen.home.HomeScreen
 import com.team13.fooriend.ui.screen.mypage.ChangePwdScreen
+import com.team13.fooriend.ui.screen.mypage.ChangePwdScreenPreview
 import com.team13.fooriend.ui.screen.mypage.MyInformationScreen
 import com.team13.fooriend.ui.screen.mypage.MyPageScreen
 import com.team13.fooriend.ui.screen.social.SocialScreen
@@ -53,9 +56,7 @@ fun HomeNavGraph(
             RestaurantDetailScreen(
                 restaurantPlaceId = it.arguments?.getString("restaurantId")?:"",
                 onBackClick = { navController.navigateUp() }, // 뒤로가기 버튼을 누른 경우
-                onWriteReviewClick = { restaurantName ->
-                    navController.navigate("writeReview/$restaurantName")
-                }, // 리뷰 작성 버튼을 누른 경우
+                onWriteReviewClick = { navController.navigate("writeReview/${it}") }, // 리뷰 작성 버튼을 누른 경우
                 onWriterClick = { navController.navigate("fooriend/${it}") }, // 리뷰에 있는 작성자 프로필 이미지를 누른 경우
             )
         }
@@ -75,17 +76,14 @@ fun HomeNavGraph(
                 onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
             )
         }
-
-        composable(route = "writeReview/{restaurantName}"){
-            val restaurantName = it.arguments?.getString("restaurantName") ?: ""
+        composable(route = "writeReview/{restaurantPlaceId}"){
             PostingScreen(
-                restaurantName = restaurantName,
+                context = context,
+                restaurantPlaceId = it.arguments?.getString("restaurantPlaceId")?:"",
                 onCloseClick = { navController.navigateUp() },
                 onPostClick = { navController.navigateUp() }, // TODO : Post버튼을 누르면 review가 저장되어야 함
             )
         }
-
-        // TODO : Post버튼을 누르면 review가 저장되어야 함
         composable(route = "myInfo"){
             MyInformationScreen(
                 onBackClick = { navController.navigateUp() },
@@ -93,9 +91,9 @@ fun HomeNavGraph(
             )
         }
         composable(route = "changePwd"){
-             ChangePwdScreen(
-                 onConfirmClick = { navController.navigateUp() },
-             )
+            ChangePwdScreen(
+                onConfirmClick = { navController.navigateUp() },
+            )
         }
     }
 }

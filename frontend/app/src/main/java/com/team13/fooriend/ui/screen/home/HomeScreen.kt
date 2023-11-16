@@ -37,6 +37,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.team13.fooriend.R
+import com.team13.fooriend.ui.screen.LoadingScreen
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.getMarkerIconFromDrawable
 //import com.team13.fooriend.ui.util.restaurants
@@ -90,7 +91,8 @@ fun HomeScreen(
     val lastAddedMarker = remember { mutableStateOf<Marker?>(null) }
     var lastMarkerUpdated by remember { mutableStateOf(false) } // 초기 마커들이 추가되었는지 여부
     var markers by remember { mutableStateOf<List<MyItem>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
+    var isFirstLoad by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(false) }
     LaunchedEffect(Unit){
         markers = apiService.getFriendsRestaurants().restaurantList.map { restaurant ->
             MyItem(
@@ -100,9 +102,9 @@ fun HomeScreen(
                 id = restaurant.id
             )
         }
-        isLoading = false
+        isFirstLoad = false
     }
-    if(!isLoading) {
+    if(!isFirstLoad) {
         Box(modifier = Modifier.fillMaxSize()) {
             AndroidView(
                 factory = { innerContext ->
@@ -126,13 +128,13 @@ fun HomeScreen(
                                         myLocationMarker = map.addMarker(
                                             MarkerOptions().position(myLocation)
                                                 .title("Current Location").icon(
-                                                getMarkerIconFromDrawable(
-                                                    context,
-                                                    R.drawable.mypin,
-                                                    100,
-                                                    100
+                                                    getMarkerIconFromDrawable(
+                                                        context,
+                                                        R.drawable.mypin,
+                                                        100,
+                                                        100
+                                                    )
                                                 )
-                                            )
                                         )
                                     }
                                 }
@@ -145,14 +147,13 @@ fun HomeScreen(
 
                             map.setOnPoiClickListener { poi ->
                                 val matchingItem = markers.find { it.placeId == poi.placeId }
-
-                                // 일치하는 MyItem이 있으면 로그를 찍거나 원하는 다른 작업을 수행
+                                // 일치하는 MyItem이 있으면 투명 마커를 추가하고 카메라를 이동시킴
                                 matchingItem?.let {
                                     // MyItem을 처리하는 코드, 예를 들어 로그 출력
                                     Log.d("MyMap", "Matching MyItem found: ${it.title}")
                                     lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
                                     val marker = map.addMarker(
-                                        MarkerOptions().position(it.position).title(it.title).icon(
+                                        MarkerOptions().position(it.position).title(it.title!!.lines()[0]).icon(
                                             getMarkerIconFromDrawable(
                                                 context,
                                                 R.drawable.transparent,
@@ -169,11 +170,12 @@ fun HomeScreen(
                                         map.cameraPosition.bearing
                                     )
                                     map.setOnInfoWindowClickListener { clickedMarker ->
-                                        onReviewClick(poi.placeId) // onReviewClick(clickedMarker.placeId)
+                                        onReviewClick(poi.placeId + poi.name.lines()[0]) // onReviewClick(clickedMarker.placeId)
                                     }
                                     lastMarkerUpdated = true
                                     return@setOnPoiClickListener // MyItem을 찾았으므로 여기서 리스너 작업을 종료
                                 }
+                                isLoading = true
                                 coroutineScope.launch {
                                     Log.d("MyMap", "Poi clicked: ${poi.placeId}")
                                     val response = placesApi.getPlaceDetails(
@@ -218,10 +220,10 @@ fun HomeScreen(
                                     val marker = map.addMarker(
                                         MarkerOptions().position(latLng).title(poi.name.lines()[0])
                                     )
-                                    if(response.result.types.contains("food") || response.result.types.contains("bar")){
+                                    if(response.result.types.contains("restaurant") || response.result.types.contains("bar") || response.result.types.contains("cafe")){
                                         map.setOnInfoWindowClickListener { clickedMarker ->
                                             if (clickedMarker.id == marker?.id) {
-                                                onReviewClick("000${poi.name.lines()[0]}") // onReviewClick(poi.placeId)
+                                                onReviewClick(poi.placeId + poi.name.lines()[0]) // onReviewClick(poi.placeId)
                                             }
                                             true
                                         }
@@ -241,6 +243,7 @@ fun HomeScreen(
                                     lastAddedMarker.value?.remove() // 마지막에 추가된 마커 삭제
                                     lastAddedMarker.value = marker
                                     lastMarkerUpdated = true
+                                    isLoading = false
                                 }
                             }
                             map.setOnMapClickListener { clickedLatLng ->
@@ -277,7 +280,7 @@ fun HomeScreen(
                             defaultClusterRenderer.setOnClusterItemInfoWindowClickListener { item ->
                                 map.setOnInfoWindowClickListener(clusterManager)
                                 cameraPositionState.position = map.cameraPosition
-                                onReviewClick(item.placeId) // onReviewClick(item.placeId)
+                                onReviewClick(item.placeId + item.title) // onReviewClick(item.placeId)
                             }
                             Log.d(
                                 "MyMap",
@@ -321,6 +324,9 @@ fun HomeScreen(
                 }
             )
         }
+    }
+    if (isLoading) {
+        LoadingScreen()
     }
     Log.d("MyMap", "Reload")
 }

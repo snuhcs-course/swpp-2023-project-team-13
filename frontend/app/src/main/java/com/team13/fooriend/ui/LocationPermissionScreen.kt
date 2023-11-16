@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.team13.fooriend.ui.theme.BaseGreen
 import com.team13.fooriend.ui.theme.CMidGreen
 
 @Composable
@@ -51,11 +52,20 @@ fun LocationPermissionScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Location Permission Required",
+            text= "Fooriend",
+            fontSize = 40.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = BaseGreen
+        )
+        Text(
+            text = "믿을 수 있는 사람의 믿을 수 있는 리뷰 FOORIEND",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Fooriend는 친구와 내가 방문한 주변의 식당을 보여주는 맛 지도 앱입니다."
+        )
         Button(
             onClick = {
                 locationPermissionLauncher.launch(
@@ -71,7 +81,7 @@ fun LocationPermissionScreen(
             )
 
         ) {
-            Text(text = "Grant Location Permission")
+            Text(text = "위치 권한 허용하고 시작하기")
         }
     }
 }

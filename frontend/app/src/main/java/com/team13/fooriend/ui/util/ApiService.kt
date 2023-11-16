@@ -1,6 +1,13 @@
 package com.team13.fooriend.ui.util
 
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ApiService {
@@ -13,9 +20,14 @@ interface ApiService {
     ): RestaurantDetailResponse
 
     @GET("/reviews/users/{userId}")
-    suspend fun getUserDetail(
+    suspend fun getUserReviews(
         @Path("userId") userId: Int
     ): UserDetailResponse
+
+    @GET("/user/{userId}")
+    suspend fun getUserDetail(
+        @Path("userId") userId: Int
+    ): User
 
     @GET("/reviews/{reviewId}")
     suspend fun getReviewDetail(
@@ -24,7 +36,40 @@ interface ApiService {
 
     @GET("/reviews/random")
     suspend fun getRandomReviews(): RandomReviews
+
+    @GET("/reviews/my")
+    suspend fun getMyReviews(): MyReviews
+
+    @GET("/user/me")
+    suspend fun getMyInfo(): User
+
+    @POST("/reviews")
+    suspend fun postReview(@Body reviewPostBody: ReviewPostBody): Response<ResponseBody>
+
+    @Multipart
+    @POST("/reviews/images")
+    suspend fun uploadImage(@Part file: MultipartBody.Part): ImageResponse
 }
+
+data class ImageResponse(
+    val id: Int,
+    val url: String,
+    val isReceiptVerified: Boolean
+)
+
+data class ReviewPostBody(
+    val content: String,
+    val imageIds: List<Int>,
+    val receiptImageId: Int,
+    val restaurant: RestaurantInfo
+)
+
+data class RestaurantInfo(
+    val googleMapPlaceId: String,
+    val name: String,
+    val latitude: Double,
+    val longitude: Double
+)
 
 data class RestaurantsResponse(
     val restaurantList: List<Restaurant>
@@ -45,10 +90,10 @@ data class Review(
     val id: Int,
     val content: String,
     val images: List<Image>,
-    val isPositive: Boolean,
     val receiptImage: Image?,
     val issuedAt: String,
     val restaurant: Restaurant,
+    val isPositive: Boolean,
     val user: User
 )
 
@@ -61,7 +106,11 @@ data class Image(
 
 data class User(
     val id: Int,
-    val name: String
+    val profileImage: String,
+    val name: String,
+    val username: String,
+    val followerCount: Int,
+    val followingCount: Int,
 )
 
 data class UserDetailResponse(
@@ -69,5 +118,9 @@ data class UserDetailResponse(
 )
 
 data class RandomReviews(
+    val reviewList: List<Review>
+)
+
+data class MyReviews(
     val reviewList: List<Review>
 )

@@ -43,8 +43,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.screen.home.MyItem
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -53,7 +56,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 fun RestaurantDetailScreen(
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
-    onWriteReviewClick: (String, String) -> Unit,
+    onWriteReviewClick: (String) -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -67,24 +70,19 @@ fun RestaurantDetailScreen(
         .build()
 
     val apiService = retrofit.create(ApiService::class.java)
-    var restaurantName by remember { mutableStateOf("") }
+    var resPlaceId = restaurantPlaceId.substring(0,27)
+    var restaurantName  = restaurantPlaceId.substring(27)
     var restaurantGood by remember { mutableStateOf(0) }
     var restaurantBad by remember { mutableStateOf(0) }
 
     // LaunchedEffect를 사용하여 Composable이 처음 구성될 때 데이터 로드
     LaunchedEffect(Unit) {
-        // if prefix 0~2 of restaurantPlaceId == "000"
-        if(restaurantPlaceId.substring(0, 3) == "000"){
-            restaurantName = restaurantPlaceId.substring(3)
-        }else {
-            try {
-                // API 호출하여 데이터 가져오기
-                val response = apiService.getRestaurantDetail(restaurantPlaceId = restaurantPlaceId)
-                reviews = response.reviewList
-            } catch (e: Exception) {
-                Log.d("RestaurantDetailScreen", "error: $e")
-            }
-            restaurantName = reviews[0].restaurant.name
+        try {
+            // API 호출하여 데이터 가져오기
+            val response = apiService.getRestaurantDetail(restaurantPlaceId = resPlaceId)
+            reviews = response.reviewList
+        } catch (e: Exception) {
+            Log.d("RestaurantDetailScreen", "error: $e")
         }
         isLoading = false
     }
@@ -95,9 +93,9 @@ fun RestaurantDetailScreen(
                 TopRestaurantBar(
                     onCloseClick = onBackClick,
                     onWriteReviewClick = onWriteReviewClick,
+                    restaurantPlaceId = resPlaceId,
                     restaurantName = restaurantName,
                     restaurantGood = restaurantGood,
-                    restaurantPlaceId = restaurantPlaceId,
                     restaurantBad = restaurantBad,
                 )
             }
@@ -110,10 +108,10 @@ fun RestaurantDetailScreen(
                 contentPadding = PaddingValues(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items(reviews) { review ->
+                items(reviews) { review -> // restaurant에 있는 reveiwList를 가져옴
                     ReviewItem(
                         review = review,
-                        onWriterClick = onWriterClick
+                        onWriterClick = onWriterClick,
                     )
                 }
             }
@@ -171,7 +169,7 @@ fun LoadImageFromUrl(url: String) {
                 // 예: placeholder(R.drawable.placeholder), error(R.drawable.error)
             },
 
-        ),
+            ),
         contentDescription = "Loaded image",
         modifier = Modifier
             .height(200.dp)
@@ -185,7 +183,7 @@ fun LoadImageFromUrl(url: String) {
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
-    onWriteReviewClick: (String, String) -> Unit,
+    onWriteReviewClick: (String) -> Unit,
     restaurantPlaceId: String,
     restaurantName: String,
     restaurantGood: Int,
@@ -215,15 +213,15 @@ fun TopRestaurantBar(
             horizontalArrangement = Arrangement.SpaceBetween,
         ){
             TextButton(onClick = { /*TODO*/ }) {// 좋아요 버튼 누르면 긍정 리뷰만 뜨도록
-                Text(text = "긍정 $restaurantGood")
+                Text(text = "좋아요 $restaurantGood")
             }
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = { /*TODO*/ }) {// 싫어요 버튼 누르면 부정 리뷰만 뜨도록
-                Text(text = "부정 $restaurantBad")
+                Text(text = "싫어요 $restaurantBad")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onWriteReviewClick(restaurantName, restaurantPlaceId) }) {
-                Text(text = "리뷰 쓰기")
+            Button(onClick = { onWriteReviewClick(restaurantPlaceId) }) {
+                Text(text = "리뷰 작성")
             }
         }
     }
