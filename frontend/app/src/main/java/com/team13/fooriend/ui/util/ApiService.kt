@@ -98,26 +98,6 @@ data class RestaurantInfo(
     val longitude: Double
 )
 
-data class ImageResponse(
-    val id: Int,
-    val url: String,
-    val isReceiptVerified: Boolean
-)
-
-data class ReviewPostBody(
-    val content: String,
-    val imageIds: List<Int>,
-    val receiptImageId: Int,
-    val restaurant: RestaurantInfo
-)
-
-data class RestaurantInfo(
-    val googleMapPlaceId: String,
-    val name: String,
-    val latitude: Double,
-    val longitude: Double
-)
-
 data class RestaurantsResponse(
     val restaurantList: List<Restaurant>
 )
