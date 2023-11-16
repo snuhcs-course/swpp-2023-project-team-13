@@ -4,6 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -55,6 +56,11 @@ interface ApiService {
 
     @POST("/user")
     suspend fun register(@Body registerBody: RegisterBody): Response<ResponseBody>
+
+    @DELETE("/reviews/{reviewId}")
+    suspend fun deleteReview(
+        @Path("reviewId") reviewId: Int
+    ): Response<ResponseBody>
 }
 data class RegisterBody(
     val name: String,

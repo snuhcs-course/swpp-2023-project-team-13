@@ -62,7 +62,7 @@ fun ReviewCard(
         ) {
             Image(
                 painter = rememberImagePainter(
-                    data = review.images[0].url,
+                    data = review.images[review.images.size - 1].url,
                     builder = {
                         crossfade(true)
                     },
