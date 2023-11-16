@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -109,7 +110,7 @@ export class ReviewController {
 
   @UseGuards(JwtAccessGuard)
   @Get('/:reviewId')
-  async getReviewDetail(
+  async removeReview(
     @Req() { user }: UserRequest,
     @Param('reviewId') reviewId: number,
   ) {
@@ -117,6 +118,18 @@ export class ReviewController {
 
     if (!review) throw new NotFoundException('리뷰를 찾을 수 없습니다.');
     return new ReviewDetailDto(review, review.user);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Delete('/:reviewId')
+  async getReviewDetail(
+    @Req() { user }: UserRequest,
+    @Param('reviewId') reviewId: number,
+  ) {
+    const review = await this.reviewRepository.findOfReviewId(reviewId);
+
+    if (!review) throw new NotFoundException('리뷰를 찾을 수 없습니다.');
+    return review.softRemove();
   }
 
   @UseGuards(JwtAccessGuard)
