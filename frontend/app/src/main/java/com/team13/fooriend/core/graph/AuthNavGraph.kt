@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.team13.fooriend.ui.screen.login.LogInScreen
 import com.team13.fooriend.ui.screen.signup.SignUpScreen
+import com.team13.fooriend.ui.util.getAccessToken
 
 sealed class AuthScreen(val route: String) {
     object Login : AuthScreen(route = "LOGIN")
@@ -21,7 +22,12 @@ fun NavGraphBuilder.authNavGraph(
         route = Graph.AUTHENTICATION,
         startDestination = AuthScreen.Login.route // default screen
     ){
-        composable(route = AuthScreen.Login.route){// LogInScreen
+        composable(route = AuthScreen.Login.route){
+//            if(isLoggedIn(context)){
+//                navController.popBackStack()
+//                navController.navigate(Graph.HOME)
+//            }
+            // LogInScreen
             LogInScreen(
                 context = context,
                 onClick = {
@@ -42,4 +48,9 @@ fun NavGraphBuilder.authNavGraph(
             )
         }
     }
+}
+
+private fun isLoggedIn(context: Context): Boolean {
+    val accesstoken = getAccessToken(context)
+    return accesstoken != ""
 }

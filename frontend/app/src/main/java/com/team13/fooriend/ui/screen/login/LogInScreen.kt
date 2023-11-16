@@ -39,6 +39,7 @@ import com.team13.fooriend.ui.theme.CMidGreen
 import com.team13.fooriend.ui.theme.CRed
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.LoginBody
+import com.team13.fooriend.ui.util.LoginResponse
 import com.team13.fooriend.ui.util.createRetrofit
 import com.team13.fooriend.ui.util.saveAccessToken
 import kotlinx.coroutines.launch
@@ -110,8 +111,10 @@ fun LogInScreen(
         Button(
             onClick = { if(id.isNotEmpty() && password.isNotEmpty()){
                 coroutineScope.launch{
-                    val response = apiService.login(LoginBody(id, password))
-                    if(response.accessToken == null){
+                    var response: LoginResponse? = null
+                    try{
+                        response = apiService.login(LoginBody(id, password))
+                    } catch(e: Exception){
                         Toast.makeText(context, "아이디 또는 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
                         return@launch
                     }

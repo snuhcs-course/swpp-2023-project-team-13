@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.team13.fooriend.R
 import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.data.Review
+import com.team13.fooriend.ui.FooriendApp
 import com.team13.fooriend.ui.navigation.BottomNavItem
 import com.team13.fooriend.ui.screen.FooriendScreen
 import com.team13.fooriend.ui.screen.PostingScreen
@@ -21,6 +22,7 @@ import com.team13.fooriend.ui.screen.mypage.ChangePwdScreenPreview
 import com.team13.fooriend.ui.screen.mypage.MyInformationScreen
 import com.team13.fooriend.ui.screen.mypage.MyPageScreen
 import com.team13.fooriend.ui.screen.social.SocialScreen
+import com.team13.fooriend.ui.util.saveAccessToken
 
 @Composable
 fun HomeNavGraph(
@@ -93,14 +95,13 @@ fun HomeNavGraph(
             MyInformationScreen(
                 context = context,
                 onBackClick = { navController.navigateUp() },
-                onChangePwd = { navController.navigate("changePwd") },
+                onChangePwd = {
+                    saveAccessToken(context, "")
+                    navController.navigate("changePwd") },
             )
         }
         composable(route = "changePwd"){
-             ChangePwdScreen(
-                 context = context,
-                 onConfirmClick = { navController.navigateUp() },
-             )
+             FooriendApp(context = context)
         }
     }
 }

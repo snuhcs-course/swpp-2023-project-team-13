@@ -13,12 +13,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.team13.fooriend.data.User
+import com.team13.fooriend.ui.util.ApiService
+import com.team13.fooriend.ui.util.createRetrofit
 
 @Composable
 fun MyInformationScreen(
@@ -27,12 +34,16 @@ fun MyInformationScreen(
     onChangePwd: () -> Unit,
 ) {
     // 실제로는 user data 저장한 내용에서 가져와야 함
-    val user = User(
-        id = 202114671,
-        name = "조용찬",
-        email = "jych1109@gmail.com",
-        password = "******",
-    )
+    val retrofit = createRetrofit(context)
+    val apiService = retrofit.create(ApiService::class.java)
+    var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    LaunchedEffect(Unit){
+        val user = apiService.getMyInfo()
+        name = user.name
+        username = user.username
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,12 +59,12 @@ fun MyInformationScreen(
                 tint = Color.Black
             )
         }
-        Text(text = "Name : ${user.name}")
-        Text(text = "ID : ${user.id}")
-        Text(text = "Email : ${user.email}")
-        Text(text = "Password : ${user.password}")
+        Text(text = "Name : ${name}")
+        Text(text = "ID : ${username}")
+//        Text(text = "Email : ${user.email}")
+//        Text(text = "Password : ${user.password}")
         Button(onClick = onChangePwd) {
-            Text(text = "change pwd")
+            Text(text = "logout")
         }
     }
 
