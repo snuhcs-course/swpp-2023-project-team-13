@@ -95,7 +95,7 @@ fun MyPageScreen(
             IconButton(onClick = onMyInfoClick){
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Back",
+                    contentDescription = "My Info",
                     tint = Color.Black,
                 )
             }
