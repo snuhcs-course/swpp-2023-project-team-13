@@ -44,10 +44,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
-import com.team13.fooriend.ui.screen.home.MyItem
 import com.team13.fooriend.ui.util.createRetrofit
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import retrofit2.Retrofit
@@ -59,7 +57,7 @@ fun RestaurantDetailScreen(
     context: Context,
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
-    onWriteReviewClick: (String) -> Unit,
+    onWriteReviewClick: (String, String) -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -86,6 +84,7 @@ fun RestaurantDetailScreen(
         }
         isLoading = false
     }
+
     if(!isLoading) {
         Scaffold(
             // top bar를 설정하면서 top bar 영역은 scroll의 영향을 받지 않도록 한다.
@@ -183,7 +182,7 @@ fun LoadImageFromUrl(url: String) {
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
-    onWriteReviewClick: (String) -> Unit,
+    onWriteReviewClick: (String, String) -> Unit,
     restaurantPlaceId: String,
     restaurantName: String,
     restaurantGood: Int,
@@ -220,7 +219,7 @@ fun TopRestaurantBar(
                 Text(text = "싫어요 $restaurantBad")
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onWriteReviewClick(restaurantPlaceId) }) {
+            Button(onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) }) {
                 Text(text = "리뷰 작성")
             }
         }
