@@ -35,6 +35,7 @@ export class ReviewService {
       await receiptImage.markAsReceipt();
       try {
         const receiptData = await getReceiptOcr(receiptImage.url);
+        console.log(receiptData);
         menu = receiptData['menu'];
       } catch (e) {
         throw new BadRequestException('잘못된 영수증입니다.');

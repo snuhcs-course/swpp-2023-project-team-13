@@ -9,11 +9,12 @@ export async function getReceiptOcr(imageUrl: string) {
 }
 
 export async function getReviewIsPositive(review: string) {
-  return (
-    (
-      await axios.post(`${process.env.ML_URL}review`, {
-        review,
-      })
-    ).data['result'] === '긍정'
-  );
+  const data = (
+    await axios.post(`${process.env.ML_URL}review`, {
+      review,
+    })
+  ).data;
+
+  console.log(data);
+  return data['result'] === '긍정';
 }

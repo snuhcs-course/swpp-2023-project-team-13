@@ -105,4 +105,34 @@ export class UserEntity extends IssuedAtMetaEntity {
       user: { id: this.id },
     });
   }
+
+  async getFollowerUsers() {
+    return (
+      await FollowEntity.find({
+        where: {
+          follower: {
+            id: this.id,
+          },
+        },
+        relations: {
+          user: true,
+        },
+      })
+    ).map((follow) => follow.user);
+  }
+
+  async getFollowingUsers() {
+    return (
+      await FollowEntity.find({
+        where: {
+          user: {
+            id: this.id,
+          },
+        },
+        relations: {
+          follower: true,
+        },
+      })
+    ).map((follow) => follow.follower);
+  }
 }
