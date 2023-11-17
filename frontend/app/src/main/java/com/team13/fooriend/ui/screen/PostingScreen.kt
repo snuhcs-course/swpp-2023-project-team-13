@@ -40,7 +40,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOfhttps://github.com/snuhcs-course/swpp-2023-project-team-13/pull/19/conflict?name=frontend%252Fapp%252Fsrc%252Fmain%252Fjava%252Fcom%252Fteam13%252Ffooriend%252Fui%252Fscreen%252FPostingScreen.kt&ancestor_oid=b6e8a2d814eef2bfc744b665c6c1e7f72740cd28&base_oid=3b9b8c0399bc80db27f42dff5cfebbae2dc417b0&head_oid=82240c1de2b395d2b9c79700df60b0c3b40ffcb5
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +54,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.net.toFile
 import com.team13.fooriend.ui.component.ImageCard

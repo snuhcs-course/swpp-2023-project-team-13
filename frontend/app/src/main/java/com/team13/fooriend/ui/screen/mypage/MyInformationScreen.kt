@@ -1,7 +1,7 @@
 package com.team13.fooriend.ui.screen.mypage
 
-import androidx.compose.foundation.background
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,7 +64,7 @@ fun MyInformationScreen(
             .fillMaxWidth()
             .fillMaxHeight(),
 
-    ) {
+        ) {
         Column(
             modifier = Modifier
                 .background(BaseGreen)
@@ -111,13 +111,7 @@ fun MyInformationScreen(
                         .clip(RoundedCornerShape(50.dp))
                 )
             }
-//         Text(text = "Name : ${name}")
-//         Text(text = "ID : ${username}")
-//        Text(text = "Email : ${user.email}")
-//        Text(text = "Password : ${user.password}")
-//         Button(onClick = onChangePwd) {
-//             Text(text = "logout")
-//         }
+        }
 
         Column(
             modifier = Modifier
@@ -126,7 +120,7 @@ fun MyInformationScreen(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
 
-        ) {
+            ) {
             Spacer(modifier = Modifier.height(50.dp))
             Text(text = name, fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(20.dp))
@@ -139,7 +133,7 @@ fun MyInformationScreen(
                 )) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "edit", modifier = Modifier.size(18.dp),)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "logout")
+                Text(text = "로그아웃")
             }
         }
 
