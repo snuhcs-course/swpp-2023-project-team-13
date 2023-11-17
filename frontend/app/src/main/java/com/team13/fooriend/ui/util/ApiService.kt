@@ -97,8 +97,6 @@ data class RestaurantInfo(
     val latitude: Double,
     val longitude: Double
 )
-
-
 data class RestaurantsResponse(
     val restaurantList: List<Restaurant>
 )
