@@ -138,7 +138,7 @@ fun MyInformationScreen(
         }
 
     }
-}}
+}
 
 //@Composable
 //@Preview(showSystemUi = true, showBackground = true)

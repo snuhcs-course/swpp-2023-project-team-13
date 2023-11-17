@@ -308,7 +308,7 @@ fun PostingScreen(
 
         Button(onClick = {
             Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
-            if(content == ""){
+            if(contentState.text.isEmpty()){
                 Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@Button
             } else if(selectImages.size == 0){
