@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.team13.fooriend.R
+import com.team13.fooriend.ui.theme.FooriendColor
 
 @Composable
 fun ProfileSection(
@@ -57,7 +58,6 @@ fun ProfileSection(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         ) {
             Image(
                 painter = rememberImagePainter(
@@ -87,9 +87,9 @@ fun ProfileSection(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Followers \n $followersCount", color = MaterialTheme.colorScheme.primary)
+                Text(text = "$followersCount \n Followers", color = FooriendColor.FooriendGreen)
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "Following \n $followingCount", color = MaterialTheme.colorScheme.primary)
+                Text(text = "$followingCount \n Following", color = FooriendColor.FooriendGreen)
             }
 
             Spacer(modifier = Modifier.height(8.dp))

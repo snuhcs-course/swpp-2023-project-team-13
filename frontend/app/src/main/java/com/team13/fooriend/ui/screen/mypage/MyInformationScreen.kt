@@ -38,9 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.team13.fooriend.data.User
-import com.team13.fooriend.ui.theme.BaseGray
-import com.team13.fooriend.ui.theme.BaseGreen
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.createRetrofit
 
@@ -67,7 +65,7 @@ fun MyInformationScreen(
         ) {
         Column(
             modifier = Modifier
-                .background(BaseGreen)
+                .background(FooriendColor.FooriendGreen)
                 .fillMaxWidth()
                 .fillMaxHeight(0.3f)
 
@@ -87,7 +85,7 @@ fun MyInformationScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .background(BaseGreen, shape = RoundedCornerShape(bottomEnd = 80.dp, bottomStart = 80.dp))
+                    .background(FooriendColor.FooriendGreen, shape = RoundedCornerShape(bottomEnd = 80.dp, bottomStart = 80.dp))
                     .fillMaxWidth()
                     .fillMaxHeight(0.7f)
             )
@@ -107,7 +105,7 @@ fun MyInformationScreen(
                     contentDescription = "profile",
                     modifier = Modifier
                         .size(180.dp)
-                        .background(BaseGray, shape = RoundedCornerShape(15.dp))
+                        .background(FooriendColor.FooriendLightGray, shape = RoundedCornerShape(15.dp))
                         .clip(RoundedCornerShape(50.dp))
                 )
             }
@@ -129,7 +127,7 @@ fun MyInformationScreen(
             Button(
                 onClick = onChangePwd,
                 colors = ButtonDefaults.buttonColors(
-                    BaseGreen,//CMidGreen,
+                    FooriendColor.FooriendGreen
                 )) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "edit", modifier = Modifier.size(18.dp),)
                 Spacer(modifier = Modifier.width(8.dp))

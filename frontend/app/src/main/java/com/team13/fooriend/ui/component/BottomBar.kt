@@ -23,10 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.team13.fooriend.core.graph.HomeNavGraph
 import com.team13.fooriend.ui.navigation.BottomNavItem
-import com.team13.fooriend.ui.theme.BaseGreen
-
 import com.team13.fooriend.ui.theme.FooriendColor
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBar(context: Context, navController: NavHostController, showBottomBar: Boolean) {
@@ -67,8 +64,8 @@ fun BottomNavigation(navController: NavHostController){
                 label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
                 selected = selected,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BaseGreen,
-                    selectedTextColor = BaseGreen,
+                    selectedIconColor = FooriendColor.FooriendGreen,
+                    selectedTextColor = FooriendColor.FooriendGreen,
                     unselectedIconColor = Color.DarkGray,
                     indicatorColor = Color.White,
                 ),

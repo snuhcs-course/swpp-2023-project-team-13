@@ -25,22 +25,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.team13.fooriend.ui.theme.BaseGray
-import com.team13.fooriend.ui.theme.BaseGreen
-import com.team13.fooriend.ui.theme.CDarkGreen
-import com.team13.fooriend.ui.theme.CIvory
-import com.team13.fooriend.ui.theme.CLightGreen
-import com.team13.fooriend.ui.theme.CMidGreen
 import com.team13.fooriend.ui.theme.CRed
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.LoginBody
 import com.team13.fooriend.ui.util.LoginResponse
-import com.team13.fooriend.ui.util.createRetrofit
 import com.team13.fooriend.ui.util.saveAccessToken
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -61,7 +55,7 @@ fun LogInScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val color = if (isPressed) CRed else Color.DarkGray//CDarkGreen
+    val color = if (isPressed) CRed else Color.DarkGray
     val coroutineScope = rememberCoroutineScope()
     val retrofit = Retrofit.Builder()
         .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
@@ -74,7 +68,7 @@ fun LogInScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),//CMidGreen),
+            .background(Color.White),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
@@ -87,9 +81,8 @@ fun LogInScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGray,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -102,10 +95,10 @@ fun LogInScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGray,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
+            visualTransformation = PasswordVisualTransformation(),
             placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
         )
@@ -126,7 +119,7 @@ fun LogInScreen(
             } },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                BaseGreen,//CMidGreen,
+                FooriendColor.FooriendGreen,
                 contentColor = color )) {
             Text(
                 "LOGIN",
@@ -141,7 +134,7 @@ fun LogInScreen(
         },
             colors = ButtonDefaults.buttonColors(
                 Color.Transparent,//CMidGreen,
-                contentColor = BaseGreen//CDarkGreen
+                contentColor = FooriendColor.FooriendGreen
                          )) {
             Text(
                 "SIGN UP",

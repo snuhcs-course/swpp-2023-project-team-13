@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,13 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.team13.fooriend.ui.theme.BaseGreen
-import com.team13.fooriend.ui.theme.BaseGray
-import com.team13.fooriend.ui.theme.CDarkGreen
-import com.team13.fooriend.ui.theme.CIvory
-import com.team13.fooriend.ui.theme.CLightGreen
-import com.team13.fooriend.ui.theme.CMidGreen
 import com.team13.fooriend.ui.theme.CRed
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.RegisterBody
 import kotlinx.coroutines.launch
@@ -93,9 +85,8 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray
             ),
             placeholder = { Text("NAME", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -109,8 +100,8 @@ fun SignUpScreen(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
 //                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -124,8 +115,8 @@ fun SignUpScreen(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
 //                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
             placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -138,9 +129,8 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray
             ),
             placeholder = { Text("PASSWORD CONFIRM", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -149,7 +139,6 @@ fun SignUpScreen(
 //        TODO("password confirm check")
         Spacer(modifier = Modifier.height(30.dp))
 //        TextField(value = nickname, onValueChange = nicknameValue)
-//        TextField(value = phoneNumber, onValueChange = phoneNumberValue)
         Button(
             onClick = {
                 coroutineScope.launch {
@@ -162,7 +151,7 @@ fun SignUpScreen(
                 } },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                BaseGreen,//CMidGreen,
+                FooriendColor.FooriendGreen,
                 contentColor = color )) {
             Text(
                 "SIGN UP",
