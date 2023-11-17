@@ -140,12 +140,12 @@ fun MyInformationScreen(
     }
 }
 
-@Composable
-@Preview(showSystemUi = true, showBackground = true)
-fun MyInformationScreenPreview() {
-    MyInformationScreen(
-        context = TODO(),
-        onBackClick = {},
-        onChangePwd = {}
-    )
-}
+//@Composable
+//@Preview(showSystemUi = true, showBackground = true)
+//fun MyInformationScreenPreview() {
+//    MyInformationScreen(
+//        context = TODO(),
+//        onBackClick = {},
+//        onChangePwd = {}
+//    )
+//}
