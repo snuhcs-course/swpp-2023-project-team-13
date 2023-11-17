@@ -23,6 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -152,6 +155,7 @@ fun RestaurantDetailScreen(
 @Composable
 fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
     val image = review.images
+    val isReceiptVerified = review.receiptImage?.isReceiptVerified ?: false
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -184,6 +188,31 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
                 .padding(10.dp, 0.dp, 0.dp, 10.dp),
         ){
             Text(text = review.content)
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            if (review.isPositive) {
+                Icon(
+                    imageVector = Icons.Default.ThumbUp, // Thumbs-up icon for positive reviews
+                    contentDescription = "Positive Review",
+                    tint = Color.Green
+                )
+            } else if (!review.isPositive) {
+                Icon(
+                    imageVector = Icons.Default.ThumbDown, // Thumbs-down icon for negative reviews
+                    contentDescription = "Negative Review",
+                    tint = Color.Red
+                )
+            }
+
+            if (review.receiptImage?.isReceiptVerified == true) {
+                Icon(
+                    imageVector = Icons.Default.Verified, // Replace with your verification mark icon
+                    contentDescription = "Receipt Verified",
+                    tint = Color.Blue
+                )
+            }
         }
     }
 }
