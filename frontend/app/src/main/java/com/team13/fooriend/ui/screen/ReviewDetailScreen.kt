@@ -119,11 +119,11 @@ fun ReviewDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Button(onClick = { onWriterClick(review!!.user.id) }) {
-                    Text(text = "Writer")
+                    Text(text = review!!.user.name)
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 Button(onClick = { onRestaurantClick(review!!.restaurant.googleMapPlaceId) }) {
-                    Text(text = "Restaurant")
+                    Text(text = review!!.restaurant.name)
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
