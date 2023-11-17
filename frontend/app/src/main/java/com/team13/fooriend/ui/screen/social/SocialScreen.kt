@@ -16,12 +16,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.component.ReviewLazyGrid
 import com.team13.fooriend.ui.util.AbstractUser
@@ -84,6 +89,8 @@ fun SocialScreen(
             isLoading = false
         }
     }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = false)
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -91,10 +98,22 @@ fun SocialScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
         SocialSearchBar(context = context, onUserClick = onUserClick)
+//        Button(onClick = { isLoading = true }){
+//            Text(text = "test")
+//        }
         Spacer(modifier = Modifier.height(16.dp))
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = {
+                isLoading = true
+            }
+        ) {
+            ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
+        }
         ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
