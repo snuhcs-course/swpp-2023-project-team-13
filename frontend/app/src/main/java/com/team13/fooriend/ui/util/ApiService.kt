@@ -62,7 +62,16 @@ interface ApiService {
     suspend fun deleteReview(
         @Path("reviewId") reviewId: Int
     ): Response<ResponseBody>
+
+    @GET("/user/search/{name}")
+    suspend fun searchUser(
+        @Path("name") name: String
+    ): SearchResponse
 }
+
+data class SearchResponse(
+    val userList: List<AbstractUser>
+)
 data class RegisterBody(
     val name: String,
     val username: String,
