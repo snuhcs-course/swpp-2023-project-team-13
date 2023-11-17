@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,6 +50,8 @@ fun ProfileSection(
     userId: Int,
     onFollowClick : () -> Unit = {},
     isMyPage : Boolean = false,
+    clickedFollower : () -> Unit = {},
+    clickedFollowing : () -> Unit = {},
 ) {
     val retrofit = createRetrofit(context)
     val apiService = retrofit.create(ApiService::class.java)
@@ -59,14 +62,13 @@ fun ProfileSection(
     var isFollowing by remember { mutableStateOf(false) }
     var myId by remember { mutableStateOf(0) }
 
+
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(isFollowing){
         myId = apiService.getMyInfo().id
         val myFollowings = apiService.getFollows(myId).followings
-        Log.d("ProfileSection", "userId: $userId")
         var user = apiService.getUserDetail(userId = userId)
-        Log.d("ProfileSection", "user: $user")
         username = user.name
         followerCount = user.followerCount
         followingCount = user.followingCount
@@ -115,9 +117,19 @@ fun ProfileSection(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Followers \n $followerCount", color = MaterialTheme.colorScheme.primary)
+                TextButton(onClick = clickedFollower) {
+                    Text(
+                        text = "Followers \n $followerCount",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "Following \n $followingCount", color = MaterialTheme.colorScheme.primary)
+                TextButton(onClick = clickedFollowing) {
+                    Text(
+                        text = "Following \n $followingCount",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
