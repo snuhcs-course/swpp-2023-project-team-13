@@ -61,6 +61,7 @@ fun ReviewDetailScreen(
     val retrofit = createRetrofit(context)
 
     val apiService = retrofit.create(ApiService::class.java)
+    var myId by remember { mutableStateOf(0) }
     //add review variable
     var review by remember { mutableStateOf<Review?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -69,9 +70,8 @@ fun ReviewDetailScreen(
     LaunchedEffect(Unit) {
         try {
             // API 호출하여 데이터 가져오기
-            Log.d("RestaurantDetailScreen", "reviewId: $reviewId")
             review = apiService.getReviewDetail(reviewId = reviewId)
-            Log.d("RestaurantDetailScreen", "review: $review")
+            myId = apiService.getMyInfo().id
         } catch (e: Exception) {
             Log.d("RestaurantDetailScreen", "error: $e")
         }
@@ -98,19 +98,20 @@ fun ReviewDetailScreen(
                         tint = Color.Black
                     )
                 }
-
-                IconButton(onClick = {
-                    coroutineScope.launch{
-                        apiService.deleteReview(reviewId)
-                        Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                        onBackClick()
+                if(review!!.user.id == myId) {
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            apiService.deleteReview(reviewId)
+                            Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                            onBackClick()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color.Black
+                        )
                     }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        tint = Color.Black
-                    )
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
