@@ -39,6 +39,7 @@ import com.team13.fooriend.data.User
 import com.team13.fooriend.ui.component.ReviewLazyGrid
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
+import com.team13.fooriend.ui.util.ReviewsListSaver
 import com.team13.fooriend.ui.util.createRetrofit
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -55,8 +56,9 @@ fun SocialScreen(
 
     val apiService = retrofit.create(ApiService::class.java)
 
-    var reviews by rememberSaveable { mutableStateOf<List<Review>>(emptyList()) }
+    var reviews by rememberSaveable(stateSaver = ReviewsListSaver) { mutableStateOf<List<Review>>(emptyList()) }
     var isLoading by rememberSaveable { mutableStateOf(true) }
+    Log.d("SocialScreen", "isLoading: $isLoading")
     if(isLoading) {
         LaunchedEffect(Unit) {
             try {

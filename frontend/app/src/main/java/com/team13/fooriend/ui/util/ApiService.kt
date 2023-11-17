@@ -122,7 +122,7 @@ data class Review(
     val issuedAt: String,
     val restaurant: Restaurant,
     val isPositive: Boolean,
-    val user: User
+    val user: AbstractUser
 )
 
 data class Image(
@@ -139,6 +139,11 @@ data class User(
     val username: String,
     val followerCount: Int,
     val followingCount: Int,
+)
+
+data class AbstractUser(
+    val id: Int,
+    val name: String,
 )
 
 data class UserDetailResponse(

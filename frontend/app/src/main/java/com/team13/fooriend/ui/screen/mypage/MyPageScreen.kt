@@ -67,7 +67,7 @@ fun MyPageScreen(
     var followerCount by remember { mutableStateOf(0) }
     var followingCount by remember { mutableStateOf(0) }
     var userProfileImageUrl by remember { mutableStateOf("") }
-
+    Log.d("MyPageScreen", "isLoading: $isLoading")
     LaunchedEffect(Unit) {
         try {
             // API 호출하여 데이터 가져오기
