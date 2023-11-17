@@ -8,6 +8,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -67,8 +68,21 @@ interface ApiService {
     suspend fun searchUser(
         @Path("name") name: String
     ): SearchResponse
-}
 
+    @GET("/user/follow/{userId}")
+    suspend fun getFollows(
+        @Path("userId") userId: Int
+    ): FollowResponse
+
+    @PUT("/user/follow/{userId}")
+    suspend fun follow(
+        @Path("userId") userId: Int
+    ): Response<ResponseBody>
+}
+data class FollowResponse(
+    val followers: List<AbstractUser>,
+    val followings: List<AbstractUser>
+)
 data class SearchResponse(
     val userList: List<AbstractUser>
 )

@@ -63,55 +63,49 @@ fun MyPageScreen(
 
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
-    var username by remember { mutableStateOf("")}
-    var followerCount by remember { mutableStateOf(0) }
-    var followingCount by remember { mutableStateOf(0) }
-    var userProfileImageUrl by remember { mutableStateOf("") }
+    var myId by remember { mutableStateOf(0) }
     Log.d("MyPageScreen", "isLoading: $isLoading")
     LaunchedEffect(Unit) {
         try {
             // API 호출하여 데이터 가져오기
             val response = apiService.getMyReviews()
             val response2 = apiService.getMyInfo()
+            myId = response2.id
             reviews = response.reviewList
-            username = response2.name
-            followerCount = response2.followerCount
-            followingCount = response2.followingCount
-            userProfileImageUrl = response2.profileImage
         } catch (e: Exception) {
             Log.d("RestaurantDetailScreen", "error: $e")
         }
-        username = reviews[0].user.name
         isLoading = false
     }
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-        ){
-            IconButton(onClick = onMyInfoClick){
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "My Info",
-                    tint = Color.Black,
-                )
+    if(!isLoading) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                IconButton(onClick = onMyInfoClick) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "My Info",
+                        tint = Color.Black,
+                    )
+                }
             }
+            // 프로필 섹션
+            ProfileSection(
+                context = context,
+                userId = myId
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            // 중앙의 음식 리스트
+            ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
         }
-        // 프로필 섹션
-        ProfileSection(username = username,
-            followersCount = followerCount,
-            followingCount = followingCount,
-            userProfileImageUrl = userProfileImageUrl,
-            isMyPage = true)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        // 중앙의 음식 리스트
-        ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
     }
 }
 
