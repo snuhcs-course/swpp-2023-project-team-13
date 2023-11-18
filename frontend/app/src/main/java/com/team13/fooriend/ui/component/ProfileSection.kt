@@ -87,7 +87,6 @@ fun ProfileSection(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
         ) {
             Image(
                 painter = rememberImagePainter(
