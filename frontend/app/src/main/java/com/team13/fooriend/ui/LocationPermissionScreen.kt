@@ -53,7 +53,7 @@ fun LocationPermissionScreen(
             text= "Fooriend",
             fontSize = 40.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = FooriendColor.FooriendGreen
+            color = FooriendColor.FooriendGreen,
         )
         Text(
             text = "믿을 수 있는 사람의 믿을 수 있는 리뷰 FOORIEND",

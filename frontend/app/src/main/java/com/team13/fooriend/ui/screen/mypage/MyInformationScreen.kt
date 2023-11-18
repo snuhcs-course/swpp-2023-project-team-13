@@ -31,11 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.team13.fooriend.ui.theme.FooriendColor
@@ -65,7 +62,7 @@ fun MyInformationScreen(
         ) {
         Column(
             modifier = Modifier
-                .background(FooriendColor.FooriendGreen)
+                .background(FooriendColor.FooriendGreen,)
                 .fillMaxWidth()
                 .fillMaxHeight(0.3f)
 
@@ -127,7 +124,7 @@ fun MyInformationScreen(
             Button(
                 onClick = onChangePwd,
                 colors = ButtonDefaults.buttonColors(
-                    FooriendColor.FooriendGreen
+                    FooriendColor.FooriendGreen,
                 )) {
                 Icon(imageVector = Icons.Default.Edit, contentDescription = "edit", modifier = Modifier.size(18.dp),)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -138,12 +135,12 @@ fun MyInformationScreen(
     }
 }
 
-@Composable
-@Preview(showSystemUi = true, showBackground = true)
-fun MyInformationScreenPreview() {
-    MyInformationScreen(
-        context = TODO(),
-        onBackClick = {},
-        onChangePwd = {}
-    )
-}
+//@Composable
+//@Preview(showSystemUi = true, showBackground = true)
+//fun MyInformationScreenPreview() {
+//    MyInformationScreen(
+//        context = TODO(),
+//        onBackClick = {},
+//        onChangePwd = {}
+//    )
+//}

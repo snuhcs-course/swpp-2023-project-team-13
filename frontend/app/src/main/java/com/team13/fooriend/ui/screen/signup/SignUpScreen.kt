@@ -11,10 +11,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -29,9 +37,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +50,6 @@ import com.team13.fooriend.ui.util.RegisterBody
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.format.TextStyle
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,6 +75,9 @@ fun SignUpScreen(
 
     val apiService = retrofit.create(ApiService::class.java)
     val coroutineScope = rememberCoroutineScope()
+    val (isPasswordVisible, setPasswordVisibility) = remember { mutableStateOf(false) }
+    val (isPasswordConfirmVisible, setPasswordConfirmVisibility) = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +87,6 @@ fun SignUpScreen(
     ){
         //Text(text = "Sign Up Page")
         Spacer(modifier = Modifier.height(20.dp))
-        //val containerColor = FilledTextFieldTokens.ContainerColor.toColor()
         TextField(
             value = name,
             onValueChange = nameValue,
@@ -85,8 +94,8 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = FooriendColor.FooriendGreen,
-                unfocusedContainerColor = FooriendColor.FooriendLightGray
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
             placeholder = { Text("NAME", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -99,9 +108,8 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = FooriendColor.FooriendGreen,
-                unfocusedContainerColor = FooriendColor.FooriendLightGray
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -114,11 +122,30 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = FooriendColor.FooriendGreen,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
                 unfocusedContainerColor = FooriendColor.FooriendLightGray,
-            ),
+            ),visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
             placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
+            trailingIcon = {
+                val icon = if (isPasswordVisible) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+                IconButton(
+                    onClick = { setPasswordVisibility(!isPasswordVisible) },
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.DarkGray
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
         )
         Spacer(modifier = Modifier.height(15.dp))
@@ -129,16 +156,35 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = FooriendColor.FooriendGreen,
-                unfocusedContainerColor = FooriendColor.FooriendLightGray
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
+            visualTransformation = if (isPasswordConfirmVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
             placeholder = { Text("PASSWORD CONFIRM", fontWeight = FontWeight.SemiBold)},
+            trailingIcon = {
+                val icon = if (isPasswordConfirmVisible) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+                IconButton(
+                    onClick = { setPasswordConfirmVisibility(!isPasswordConfirmVisible) },
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.DarkGray
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
         )
 //        TODO("keyboard hide")
-//        TODO("password confirm check")
         Spacer(modifier = Modifier.height(30.dp))
-//        TextField(value = nickname, onValueChange = nicknameValue)
         Button(
             onClick = {
                 coroutineScope.launch {
@@ -157,7 +203,7 @@ fun SignUpScreen(
                 "SIGN UP",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
-                )
+            )
         }
     }
 }

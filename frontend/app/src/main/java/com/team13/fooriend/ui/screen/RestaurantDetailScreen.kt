@@ -23,7 +23,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,10 +48,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.team13.fooriend.data.Restaurant
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
-import com.team13.fooriend.ui.screen.home.MyItem
 import com.team13.fooriend.ui.util.createRetrofit
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import retrofit2.Retrofit
@@ -59,7 +61,7 @@ fun RestaurantDetailScreen(
     context: Context,
     restaurantPlaceId: String,
     onBackClick: () -> Unit,
-    onWriteReviewClick: (String) -> Unit,
+    onWriteReviewClick: (String, String) -> Unit,
     onWriterClick: (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -71,9 +73,26 @@ fun RestaurantDetailScreen(
 
     val apiService = retrofit.create(ApiService::class.java)
     var resPlaceId = restaurantPlaceId.substring(0,27)
-    var restaurantName  = restaurantPlaceId.substring(27)
+    var restaurantName  by remember {mutableStateOf(restaurantPlaceId.substring(27))}
     var restaurantGood by remember { mutableStateOf(0) }
     var restaurantBad by remember { mutableStateOf(0) }
+    var flag by remember { mutableStateOf(0) }
+    fun changeFlag(num: Int){
+        if(flag != num) flag = num
+        else flag = 0
+    }
+
+    LaunchedEffect(flag){
+        val response = apiService.getRestaurantDetail(restaurantPlaceId = resPlaceId)
+        reviews = response.reviewList
+        if(flag == 1){
+            //reviews that are positive
+            reviews = reviews.filter { it.isPositive }
+        } else if(flag == 2){
+            //reviews that are negative
+            reviews = reviews.filter { !it.isPositive }
+        }
+    }
 
     // LaunchedEffect를 사용하여 Composable이 처음 구성될 때 데이터 로드
     LaunchedEffect(Unit) {
@@ -81,11 +100,21 @@ fun RestaurantDetailScreen(
             // API 호출하여 데이터 가져오기
             val response = apiService.getRestaurantDetail(restaurantPlaceId = resPlaceId)
             reviews = response.reviewList
+            for(review in reviews){
+                if(review.isPositive){
+                    restaurantGood += 1
+                }
+                else{
+                    restaurantBad += 1
+                }
+            }
+            if(reviews.isNotEmpty() && restaurantName == "") restaurantName = reviews[0].restaurant.name
         } catch (e: Exception) {
             Log.d("RestaurantDetailScreen", "error: $e")
         }
         isLoading = false
     }
+
     if(!isLoading) {
         Scaffold(
             // top bar를 설정하면서 top bar 영역은 scroll의 영향을 받지 않도록 한다.
@@ -97,6 +126,8 @@ fun RestaurantDetailScreen(
                     restaurantName = restaurantName,
                     restaurantGood = restaurantGood,
                     restaurantBad = restaurantBad,
+                    onPosClick = { changeFlag(1) },
+                    onNegClick = { changeFlag(2) },
                 )
             }
         ) { innerPadding ->
@@ -112,6 +143,7 @@ fun RestaurantDetailScreen(
                     ReviewItem(
                         review = review,
                         onWriterClick = onWriterClick,
+                        flag = 0
                     )
                 }
             }
@@ -120,8 +152,9 @@ fun RestaurantDetailScreen(
 }
 
 @Composable
-fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit) {
+fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
     val image = review.images
+    val isReceiptVerified = review.receiptImage?.isReceiptVerified ?: false
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,6 +188,31 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit) {
         ){
             Text(text = review.content)
         }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            if (review.isPositive) {
+                Icon(
+                    imageVector = Icons.Default.ThumbUp, // Thumbs-up icon for positive reviews
+                    contentDescription = "Positive Review",
+                    tint = Color.Green
+                )
+            } else if (!review.isPositive) {
+                Icon(
+                    imageVector = Icons.Default.ThumbDown, // Thumbs-down icon for negative reviews
+                    contentDescription = "Negative Review",
+                    tint = Color.Red
+                )
+            }
+
+            if (review.receiptImage?.isReceiptVerified == true) {
+                Icon(
+                    imageVector = Icons.Default.Verified, // Replace with your verification mark icon
+                    contentDescription = "Receipt Verified",
+                    tint = Color.Blue
+                )
+            }
+        }
     }
 }
 
@@ -165,8 +223,6 @@ fun LoadImageFromUrl(url: String) {
             data = url,
             builder = {
                 crossfade(true)
-                // 이곳에 더 많은 Coil 설정을 추가할 수 있습니다.
-                // 예: placeholder(R.drawable.placeholder), error(R.drawable.error)
             },
 
             ),
@@ -183,12 +239,16 @@ fun LoadImageFromUrl(url: String) {
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
-    onWriteReviewClick: (String) -> Unit,
+    onWriteReviewClick: (String, String) -> Unit,
     restaurantPlaceId: String,
     restaurantName: String,
     restaurantGood: Int,
     restaurantBad: Int,
+    onPosClick: () -> Unit,
+    onNegClick: () -> Unit,
 ) {
+    var isLikeSelected by remember { mutableStateOf(false) }
+    var isDislikeSelected by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,21 +272,49 @@ fun TopRestaurantBar(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ){
-            TextButton(onClick = { /*TODO*/ }) {// 좋아요 버튼 누르면 긍정 리뷰만 뜨도록
-                Text(text = "좋아요 $restaurantGood")
-            }
+            ToggleButton(onClick = {
+                onPosClick()
+                isLikeSelected = !isLikeSelected
+                if (isDislikeSelected) isDislikeSelected = false
+                },
+                text = "좋아요 $restaurantGood",
+                color = if (isLikeSelected) Color.Green else Color.Gray
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            TextButton(onClick = { /*TODO*/ }) {// 싫어요 버튼 누르면 부정 리뷰만 뜨도록
-                Text(text = "싫어요 $restaurantBad")
-            }
+            ToggleButton(onClick = {
+                onNegClick()
+                isDislikeSelected = !isDislikeSelected
+                if (isLikeSelected) isLikeSelected = false
+                },
+                text = "싫어요 $restaurantBad",
+                color = if (isDislikeSelected) Color.Red else Color.Gray
+            )
             Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onWriteReviewClick(restaurantPlaceId) }) {
+            Button(onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) }) {
                 Text(text = "리뷰 작성")
             }
         }
     }
 }
+@Composable
+fun ToggleButton(
+    onClick: () -> Unit,
+    text: String,
+    color: Color = Color.White,
+) {
+    var clickCount by remember { mutableStateOf(0) }
+    val isButtonEnabled = clickCount % 2 == 0 // Button enabled on even clicks
 
+    // Define colors for enabled and disabled states
+
+    TextButton(
+        onClick = { clickCount++
+                  onClick()},
+        colors = ButtonDefaults.buttonColors(color)
+    ) {
+        Text(text)
+    }
+}
 //@Composable
 //@Preview(showSystemUi = true, showBackground = true)
 //fun RestaurantDetailScreenPreview() {

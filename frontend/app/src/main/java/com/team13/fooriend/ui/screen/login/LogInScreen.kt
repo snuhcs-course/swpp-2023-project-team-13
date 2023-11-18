@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -25,8 +30,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +62,7 @@ fun LogInScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val color = if (isPressed) CRed else Color.DarkGray
+    val color = if (isPressed) CRed else Color.DarkGray//CDarkGreen
     val coroutineScope = rememberCoroutineScope()
     val retrofit = Retrofit.Builder()
         .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
@@ -63,12 +70,13 @@ fun LogInScreen(
         .build()
 
     val apiService = retrofit.create(ApiService::class.java)
+    val (isPasswordVisible, setPasswordVisibility) = remember { mutableStateOf(false) }
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color.White),//CMidGreen),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
@@ -81,8 +89,8 @@ fun LogInScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = FooriendColor.FooriendLightGray,
-                unfocusedContainerColor = FooriendColor.FooriendLightGray,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
@@ -95,11 +103,31 @@ fun LogInScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedContainerColor = FooriendColor.FooriendLightGray,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
                 unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
-            visualTransformation = PasswordVisualTransformation(),
-            placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
+            visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold) },
+            trailingIcon = {
+                val icon = if (isPasswordVisible) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+                IconButton(
+                    onClick = { setPasswordVisibility(!isPasswordVisible) },
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.DarkGray
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
         )
         Spacer(modifier = Modifier.height(30.dp))
@@ -128,14 +156,13 @@ fun LogInScreen(
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Text("Don't have a Fooriend account?")
         Button(onClick = {
             onSignUpClick()
         },
             colors = ButtonDefaults.buttonColors(
-                Color.Transparent,//CMidGreen,
-                contentColor = FooriendColor.FooriendGreen
-                         )) {
+                Color.Transparent,
+                contentColor = FooriendColor.FooriendGreen,
+            )) {
             Text(
                 "SIGN UP",
                 fontSize = 20.sp,

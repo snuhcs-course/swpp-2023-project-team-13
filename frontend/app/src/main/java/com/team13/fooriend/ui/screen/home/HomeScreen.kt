@@ -187,6 +187,7 @@ fun HomeScreen(
                                             "정보를 불러오지 못 했습니다",
                                             Toast.LENGTH_SHORT
                                         ).show()
+                                        isLoading = false
                                         return@launch
                                     }
                                     Log.d("MyMap", "Place details: ${response.result.types}")

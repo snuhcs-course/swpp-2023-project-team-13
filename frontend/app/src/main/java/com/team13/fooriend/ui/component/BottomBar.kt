@@ -24,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.team13.fooriend.core.graph.HomeNavGraph
 import com.team13.fooriend.ui.navigation.BottomNavItem
 import com.team13.fooriend.ui.theme.FooriendColor
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomBar(context: Context, navController: NavHostController, showBottomBar: Boolean) {
@@ -52,7 +53,7 @@ fun BottomNavigation(navController: NavHostController){
                 clip = true
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
                 shadowElevation = 30f },
-        ) {
+    ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
 
@@ -83,7 +84,7 @@ fun BottomNavigation(navController: NavHostController){
                     }
                 },
 
-            )
+                )
         }
     }
 }

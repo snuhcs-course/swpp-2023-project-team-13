@@ -8,6 +8,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -62,7 +63,29 @@ interface ApiService {
     suspend fun deleteReview(
         @Path("reviewId") reviewId: Int
     ): Response<ResponseBody>
+
+    @GET("/user/search/{name}")
+    suspend fun searchUser(
+        @Path("name") name: String
+    ): SearchResponse
+
+    @GET("/user/follow/{userId}")
+    suspend fun getFollows(
+        @Path("userId") userId: Int
+    ): FollowResponse
+
+    @PUT("/user/follow/{userId}")
+    suspend fun follow(
+        @Path("userId") userId: Int
+    ): Response<ResponseBody>
 }
+data class FollowResponse(
+    val followers: List<AbstractUser>,
+    val followings: List<AbstractUser>
+)
+data class SearchResponse(
+    val userList: List<AbstractUser>
+)
 data class RegisterBody(
     val name: String,
     val username: String,
@@ -97,8 +120,6 @@ data class RestaurantInfo(
     val latitude: Double,
     val longitude: Double
 )
-
-
 data class RestaurantsResponse(
     val restaurantList: List<Restaurant>
 )
@@ -122,7 +143,7 @@ data class Review(
     val issuedAt: String,
     val restaurant: Restaurant,
     val isPositive: Boolean,
-    val user: User
+    val user: AbstractUser
 )
 
 data class Image(
@@ -139,6 +160,11 @@ data class User(
     val username: String,
     val followerCount: Int,
     val followingCount: Int,
+)
+
+data class AbstractUser(
+    val id: Int,
+    val name: String,
 )
 
 data class UserDetailResponse(
