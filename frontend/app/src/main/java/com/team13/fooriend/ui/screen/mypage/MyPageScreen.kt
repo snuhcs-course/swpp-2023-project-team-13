@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -41,8 +43,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import coil.compose.rememberImagePainter
 import com.team13.fooriend.ui.component.ProfileSection
@@ -65,6 +71,7 @@ fun MyPageScreen(
 
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    var myName by remember { mutableStateOf("") }
     var myId by remember { mutableStateOf(0) }
     var followerList by remember { mutableStateOf<List<Int>>(emptyList()) }
     var followingList by remember { mutableStateOf<List<Int>>(emptyList()) }
@@ -83,6 +90,7 @@ fun MyPageScreen(
             val response = apiService.getMyReviews()
             val response2 = apiService.getMyInfo()
             myId = response2.id
+            myName = response2.name
             reviews = response.reviewList
             followerList = apiService.getFollows(myId).followers.map {
                 it.id
@@ -104,12 +112,32 @@ fun MyPageScreen(
     if(!isLoading) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .padding(start = 20.dp, top = 7.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Face,
+                        contentDescription = "face",
+                        modifier = Modifier
+                            .width(15.dp)
+                            .height(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = myName,
+                        style = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp),
+                    )
+                }
                 IconButton(onClick = onMyInfoClick) {
                     Icon(
                         imageVector = Icons.Default.Settings,

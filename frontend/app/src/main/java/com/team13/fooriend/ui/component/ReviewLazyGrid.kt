@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -30,8 +31,8 @@ import com.team13.fooriend.ui.util.Review
 fun ReviewLazyGrid(
     reviews: List<Review> = listOf(),
     onReviewClick : (Int) -> Unit, // 리뷰 이미지를 클릭한 경우
-    verticalPadding : Int = 16,
-    horizontalPadding : Int = 4,
+    verticalPadding : Int = 1,
+    horizontalPadding : Int = 1,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -60,7 +61,7 @@ fun ReviewCard(
             .fillMaxWidth(),
     ) {
         Box(
-            modifier = Modifier.height(150.dp),
+            modifier = Modifier.size(150.dp),
         ) {
             Image(
                 painter = rememberImagePainter(
