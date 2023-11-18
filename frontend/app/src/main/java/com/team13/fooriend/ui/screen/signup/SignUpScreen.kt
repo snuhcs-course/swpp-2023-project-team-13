@@ -1,6 +1,7 @@
 package com.team13.fooriend.ui.screen.signup
 
 import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
@@ -30,14 +31,21 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +60,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignUpScreen(
     context : Context,
@@ -78,6 +86,9 @@ fun SignUpScreen(
     val (isPasswordVisible, setPasswordVisibility) = remember { mutableStateOf(false) }
     val (isPasswordConfirmVisible, setPasswordConfirmVisibility) = remember { mutableStateOf(false) }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,6 +110,12 @@ fun SignUpScreen(
             ),
             placeholder = { Text("NAME", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -113,6 +130,12 @@ fun SignUpScreen(
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -147,6 +170,12 @@ fun SignUpScreen(
                 }
             },
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -182,8 +211,13 @@ fun SignUpScreen(
                 }
             },
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
         )
-//        TODO("keyboard hide")
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = {
