@@ -5,6 +5,9 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -225,12 +228,15 @@ fun HomeScreen(
                                             }
                                             true
                                         }
+
+
+
                                     } else{
                                         map.setOnInfoWindowClickListener { clickedMarker ->
                                             if (clickedMarker.id == marker?.id) {
                                                 Toast.makeText(
                                                     context,
-                                                    "리뷰를 작성할 수 없습니다",
+                                                    "음식점에 대한 정보만 접근 가능합니다",
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             }

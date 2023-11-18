@@ -13,4 +13,6 @@ object FooriendColor {
     val FooriendLightGreen = Color(0xFF6cd496)
     val FooriendGray = Color(0xFF4B5562)
     val FooriendLightGray = Color(0xFFD9D9D9)
+    val FooriendRed = Color(0xFF484B)
+
 }

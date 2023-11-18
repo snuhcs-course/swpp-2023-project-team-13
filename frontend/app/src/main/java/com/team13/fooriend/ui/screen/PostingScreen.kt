@@ -45,18 +45,23 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Store
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.team13.fooriend.ui.screen.home.PlacesApiService
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.RestaurantInfo
 import com.team13.fooriend.ui.util.ReviewPostBody
@@ -170,7 +175,20 @@ fun PostingScreen(
                 if (it.text.length <= 200) {
                     contentState = it
                 }
-            }
+            },
+            placeholder = {
+                Text(
+                    text = "음식점 리뷰를 작성하면 리뷰의 긍정/부정을 AI가 자동으로 분류하여 등록합니다.",
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                )
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                cursorColor = Color.Black,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            )
         )
 
         Text(
@@ -195,55 +213,55 @@ fun PostingScreen(
         Box(
             modifier = Modifier
                 .height(110.dp)
-                .clickable {
-                    galleryLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
+
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (selectImages.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxHeight()
+                        .background(Color.Gray)
+                        .clickable {
+                            galleryLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                for (imageUri in selectImages) {
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .fillMaxHeight()
-                            .background(Color.Gray),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Icon(
-                            imageVector = Icons.Default.Add,
+                    ) {
+                        Image(
+                            painter = rememberImagePainter(imageUri),
                             contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                            alignment = Alignment.Center
                         )
-                    }
-                } else {
-                    for (imageUri in selectImages) {
-                        Box(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .fillMaxHeight()
-                        ) {
-                            Image(
-                                painter = rememberImagePainter(imageUri),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                                alignment = Alignment.Center
-                            )
-                        }
                     }
                 }
             }
         }
 
+
         // 영수증 사진 첨부
         Text(
-            text = "영수증 인증하기",
+            text = "영수증을 등록하여 리뷰 인증",
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
@@ -252,51 +270,48 @@ fun PostingScreen(
                 .padding(vertical = 8.dp)
         )
 
-
         Box(
             modifier = Modifier
                 .height(110.dp)
-                .clickable {
-                    receiptLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
+
         ) {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (selectReceipt == null) {
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .fillMaxHeight()
-                            .background(Color.Gray),
-                        contentAlignment = Alignment.Center
-                    ){
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .fillMaxHeight()
-                    ) {
-                        Image(
-                            painter = rememberImagePainter(selectReceipt),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize(),
-                            alignment = Alignment.Center
-                        )
-                    }
+                Box(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxHeight()
+                        .background(Color.Gray)
+                        .clickable {
+                            galleryLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
 
+                Box(
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .fillMaxHeight()
+                ) {
+                    Image(
+                        painter = rememberImagePainter(selectReceipt),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                        alignment = Alignment.Center
+                    )
                 }
             }
         }
@@ -372,7 +387,7 @@ fun PostingScreen(
         },
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)){
+                .align(Alignment.CenterHorizontally), colors = ButtonDefaults.buttonColors(containerColor = FooriendColor.FooriendGreen, contentColor = Color.White)){
             Text(text = "리뷰 등록")
         }
 

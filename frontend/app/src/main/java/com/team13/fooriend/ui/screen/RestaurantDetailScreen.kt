@@ -2,10 +2,12 @@ package com.team13.fooriend.ui.screen
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Verified
@@ -46,8 +49,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.createRetrofit
@@ -247,8 +255,9 @@ fun TopRestaurantBar(
     onPosClick: () -> Unit,
     onNegClick: () -> Unit,
 ) {
-    var isLikeSelected by remember { mutableStateOf(false) }
+    var isLikeSelected by remember { mutableStateOf(true) }
     var isDislikeSelected by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -256,63 +265,93 @@ fun TopRestaurantBar(
             .padding(16.dp, 16.dp, 16.dp, 0.dp)
     ){
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-        ){
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             IconButton(onClick = onCloseClick) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "back",
-                    tint = Color.Black
+                    contentDescription = "Close"
                 )
             }
-        }
-        Text(text = restaurantName)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ){
-            ToggleButton(onClick = {
-                onPosClick()
-                isLikeSelected = !isLikeSelected
-                if (isDislikeSelected) isDislikeSelected = false
-                },
-                text = "좋아요 $restaurantGood",
-                color = if (isLikeSelected) Color.Green else Color.Gray
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            ToggleButton(onClick = {
-                onNegClick()
-                isDislikeSelected = !isDislikeSelected
-                if (isLikeSelected) isLikeSelected = false
-                },
-                text = "싫어요 $restaurantBad",
-                color = if (isDislikeSelected) Color.Red else Color.Gray
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) }) {
-                Text(text = "리뷰 작성")
+            Row(
+                modifier = Modifier
+                    .weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Store,
+                    contentDescription = "Store",
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                )
+                if (restaurantName != null) {
+                    Text(
+                        text = restaurantName,
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp
+                        )
+                    )
+                }
             }
         }
-    }
-}
-@Composable
-fun ToggleButton(
-    onClick: () -> Unit,
-    text: String,
-    color: Color = Color.White,
-) {
-    var clickCount by remember { mutableStateOf(0) }
-    val isButtonEnabled = clickCount % 2 == 0 // Button enabled on even clicks
 
-    // Define colors for enabled and disabled states
+        Button(
+            onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
+            border = BorderStroke(1.dp, Color.Black)
 
-    TextButton(
-        onClick = { clickCount++
-                  onClick()},
-        colors = ButtonDefaults.buttonColors(color)
-    ) {
-        Text(text)
+        ) {
+            Text(text = "리뷰 작성하러 가기")
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Button(
+                onClick = {
+                    onPosClick()
+                    isLikeSelected = true
+                    isDislikeSelected = false
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isLikeSelected) FooriendColor.FooriendGreen else Color.Gray,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .heightIn(48.dp)
+                    .padding(12.dp)
+            ) {
+                Text(text = "좋아요 $restaurantGood")
+            }
+            Button(
+                onClick = {
+                    onNegClick()
+                    isDislikeSelected = true
+                    isLikeSelected = false
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isDislikeSelected) FooriendColor.FooriendRed else Color.Gray,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .padding(12.dp)
+            ) {
+                Text(text = "싫어요 $restaurantBad")
+            }
+        }
     }
 }
 //@Composable
