@@ -123,4 +123,7 @@ dependencies {
 
     //design system bar
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
+    // swipe refresh
+    implementation ("com.google.accompanist:accompanist-swiperefresh:0.18.0")
 }

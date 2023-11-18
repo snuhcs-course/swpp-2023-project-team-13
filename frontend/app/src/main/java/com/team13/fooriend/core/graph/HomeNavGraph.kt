@@ -5,9 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.team13.fooriend.R
-import com.team13.fooriend.data.Restaurant
-import com.team13.fooriend.data.Review
 import com.team13.fooriend.ui.FooriendApp
 import com.team13.fooriend.ui.navigation.BottomNavItem
 import com.team13.fooriend.ui.screen.FooriendScreen
@@ -50,7 +47,8 @@ fun HomeNavGraph(
             MyPageScreen(
                 context = context,
                 onMyInfoClick = { navController.navigate("myInfo") },
-                onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
+                onReviewClick = { navController.navigate("reviewDetail/${it}")},// 리뷰 이미지를 클릭한 경우
+                onUserClick = { navController.navigate("fooriend/${it}") }
             )
         }
         composable(route = "restaurant/{restaurantId}"){
@@ -80,7 +78,8 @@ fun HomeNavGraph(
                 onBackClick = { navController.navigateUp() },
                 onFollowClick = { }, //TODO: Follow 버튼을 누르면 팔로우가 되도록 구현해야 함
                 userId = it.arguments?.getString("userId")?.toInt() ?: 0,
-                onReviewClick = { navController.navigate("reviewDetail/${it}") }, // 리뷰 이미지를 클릭한 경우
+                onReviewClick = { navController.navigate("reviewDetail/${it}") },// 리뷰 이미지를 클릭한 경우
+                onUserClick = { navController.navigate("fooriend/${it}") }
             )
         }
         composable(route = "writeReview/{restaurantPlaceId}/{restaurantName}"){
