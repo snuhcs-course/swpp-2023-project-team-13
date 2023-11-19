@@ -60,6 +60,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.team13.fooriend.ui.FooriendIcon
+import com.team13.fooriend.ui.fooriendicon.Fooriendicon
 import com.team13.fooriend.ui.screen.home.PlacesApiService
 import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
@@ -139,9 +141,10 @@ fun PostingScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Default.Store,
+                    imageVector = FooriendIcon.Fooriendicon,
                     contentDescription = "Store",
                     modifier = Modifier
+                        .size(16.dp)
                         .padding(end = 8.dp)
                 )
                 if (restaurantName != null) {

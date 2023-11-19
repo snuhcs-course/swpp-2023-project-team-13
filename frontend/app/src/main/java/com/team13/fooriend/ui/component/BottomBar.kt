@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,8 +62,8 @@ fun BottomNavigation(navController: NavHostController){
         items.forEach { item ->
             val selected = item.route == navBackStackEntry.value?.destination?.route
             NavigationBarItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title,modifier = Modifier.width(26.dp).height(26.dp)) },
-                label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
+                icon = { Icon(imageVector = item.icon, contentDescription = item.title,modifier = Modifier.size(item.iconSize)) },
+                // label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
                 selected = selected,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = FooriendColor.FooriendGreen,
