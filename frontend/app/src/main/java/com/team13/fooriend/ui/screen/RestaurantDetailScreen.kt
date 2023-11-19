@@ -308,13 +308,13 @@ fun TopRestaurantBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 7.dp),
 //            .background(color = Color.White)
 //            .padding(8.dp, 8.dp, 8.dp, 16.dp)
     ){
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 7.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

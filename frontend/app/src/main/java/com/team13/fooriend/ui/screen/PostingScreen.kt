@@ -118,7 +118,6 @@ fun PostingScreen(
 
     Column(
         modifier = Modifier
-//            .padding(16.dp)
             .verticalScroll(state)
     ){
         // 나가기 버튼
@@ -159,98 +158,160 @@ fun PostingScreen(
                 }
             }
         }
-        Text(
-            text = "리뷰 작성",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 8 .dp)
-        )
-
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 130.dp),
-            value = contentState,
-            onValueChange = {
-                if (it.text.length <= 200) {
-                    contentState = it
-                }
-            },
-            placeholder = {
-                Text(
-                    text = "음식점 리뷰를 작성하면 리뷰의 긍정/부정을 AI가 자동으로 분류하여 등록합니다.",
-                    color = Color.Gray,
-                    fontSize = 12.sp,
-                )
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                cursorColor = Color.Black,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ){
+            Text(
+                text = "리뷰 작성",
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                ),
+                modifier = Modifier
+                    .padding(vertical = 8 .dp)
             )
-        )
 
-        Text(
-            text = "${contentState.text.length}/200",
-            color = if (contentState.text.length <= 200) Color.Gray else Color.Red,
-            textAlign = TextAlign.End,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-        )
-
-        Text(
-            text = "사진 등록",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .height(110.dp)
-
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .fillMaxHeight()
-                        .background(Color.Gray)
-                        .clickable {
-                            galleryLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 130.dp),
+                value = contentState,
+                onValueChange = {
+                    if (it.text.length <= 200) {
+                        contentState = it
+                    }
+                },
+                placeholder = {
+                    Text(
+                        text = "음식점 리뷰를 작성하면 리뷰의 긍정/부정을 AI가 자동으로 분류하여 등록합니다.",
+                        color = Color.Gray,
+                        fontSize = 12.sp,
                     )
-                }
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    cursorColor = Color.Black,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                )
+            )
 
-                for (imageUri in selectImages) {
+            Text(
+                text = "${contentState.text.length}/200",
+                color = if (contentState.text.length <= 200) Color.Gray else Color.Red,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            )
+
+            Text(
+                text = "사진 등록",
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                ),
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .height(110.dp)
+
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
+                            .background(Color.Gray)
+                            .clickable {
+                                galleryLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    for (imageUri in selectImages) {
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .fillMaxHeight()
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(imageUri),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                                alignment = Alignment.Center
+                            )
+                        }
+                    }
+                }
+            }
+
+
+            // 영수증 사진 첨부
+            Text(
+                text = "영수증을 등록하여 리뷰 인증",
+                style = TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                ),
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .height(110.dp)
+
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .fillMaxHeight()
+                            .background(Color.Gray)
+                            .clickable {
+                                galleryLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .fillMaxHeight()
                     ) {
                         Image(
-                            painter = rememberImagePainter(imageUri),
+                            painter = rememberImagePainter(selectReceipt),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize(),
@@ -259,91 +320,50 @@ fun PostingScreen(
                     }
                 }
             }
-        }
 
+            Spacer(modifier = Modifier.height(50.dp))
 
-        // 영수증 사진 첨부
-        Text(
-            text = "영수증을 등록하여 리뷰 인증",
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            ),
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-
-        Box(
-            modifier = Modifier
-                .height(110.dp)
-
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .fillMaxHeight()
-                        .background(Color.Gray)
-                        .clickable {
-                            galleryLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .fillMaxHeight()
-                ) {
-                    Image(
-                        painter = rememberImagePainter(selectReceipt),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                        alignment = Alignment.Center
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(50.dp))
-
-        Button(onClick = {
-            Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
-            if(contentState.text.isEmpty()){
-                Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                return@Button
-            } else if(selectImages.size == 0){
-                Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
-                return@Button
-            }
-            isLoading = true
-            coroutineScope.launch {
+            Button(onClick = {
                 Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
-                val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
-                Log.d("PostingScreen", "restaurant: $response")
-                val restaurant = RestaurantInfo(
-                    googleMapPlaceId = restaurantPlaceId,
-                    name = response.result.name,
-                    latitude = response.result.geometry.location["lat"]!!,
-                    longitude = response.result.geometry.location["lng"]!!
-                )
-                var imageIds = mutableListOf<Int>()
-                for(uri in selectImages){
-                    val inputStream = context.contentResolver.openInputStream(uri)
+                if(contentState.text.isEmpty()){
+                    Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    return@Button
+                } else if(selectImages.size == 0){
+                    Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
+                    return@Button
+                }
+                isLoading = true
+                coroutineScope.launch {
+                    Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+                    val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
+                    Log.d("PostingScreen", "restaurant: $response")
+                    val restaurant = RestaurantInfo(
+                        googleMapPlaceId = restaurantPlaceId,
+                        name = response.result.name,
+                        latitude = response.result.geometry.location["lat"]!!,
+                        longitude = response.result.geometry.location["lng"]!!
+                    )
+                    var imageIds = mutableListOf<Int>()
+                    for(uri in selectImages){
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        inputStream?.let { stream ->
+                            val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                            val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+
+                            // API 호출
+                            val response = apiService.uploadImage(multipartBody)
+                            imageIds.add(response.id)
+                        }
+//                     val file = File(uri.path)
+//                     Log.d("PostingScreen", "file: $file")
+//                     val requestbody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//                     val body = MultipartBody.Part.createFormData("file",file.name, requestbody)
+//                     val imageresponse = apiService.uploadImage(body)
+
+                    }
+                    Log.d("PostingScreen", "imageIds: $imageIds")
+                    val receiptImageIds = mutableListOf<Int>()
+                    val inputStream = selectReceipt?.let { context.contentResolver.openInputStream(it) }
                     inputStream?.let { stream ->
                         val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
                         val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
@@ -352,47 +372,32 @@ fun PostingScreen(
                         val response = apiService.uploadImage(multipartBody)
                         imageIds.add(response.id)
                     }
-//                     val file = File(uri.path)
-//                     Log.d("PostingScreen", "file: $file")
-//                     val requestbody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//                     val body = MultipartBody.Part.createFormData("file",file.name, requestbody)
-//                     val imageresponse = apiService.uploadImage(body)
+                    Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
+                    var receiptImageId = 0
+                    if(receiptImageIds.size > 0) {
+                        receiptImageId = receiptImageIds[0]
+                    }
 
-                }
-                Log.d("PostingScreen", "imageIds: $imageIds")
-                val receiptImageIds = mutableListOf<Int>()
-                val inputStream = selectReceipt?.let { context.contentResolver.openInputStream(it) }
-                inputStream?.let { stream ->
-                    val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
-                    val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
-
-                    // API 호출
-                    val response = apiService.uploadImage(multipartBody)
-                    imageIds.add(response.id)
-                }
-                Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
-                var receiptImageId = 0
-                if(receiptImageIds.size > 0) {
-                    receiptImageId = receiptImageIds[0]
-                }
-
-                apiService.postReview(
-                    ReviewPostBody(
-                        content = contentState.text,
-                        imageIds = imageIds,
-                        receiptImageId = receiptImageId,
-                        restaurant = restaurant
+                    apiService.postReview(
+                        ReviewPostBody(
+                            content = contentState.text,
+                            imageIds = imageIds,
+                            receiptImageId = receiptImageId,
+                            restaurant = restaurant
+                        )
                     )
-                )
-                Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
-                onPostClick()
+                    Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    onPostClick()
+                }
+            },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally), colors = ButtonDefaults.buttonColors(containerColor = FooriendColor.FooriendGreen, contentColor = Color.White)){
+                Text(text = "리뷰 등록")
             }
-        },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally), colors = ButtonDefaults.buttonColors(containerColor = FooriendColor.FooriendGreen, contentColor = Color.White)){
-            Text(text = "리뷰 등록")
         }
+
+
 
     }
     if (isLoading) {

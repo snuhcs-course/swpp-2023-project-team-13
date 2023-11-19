@@ -147,9 +147,9 @@ fun ReviewDetailScreen(
             Spacer(modifier = Modifier.height(20.dp))
             Row(
                 modifier = Modifier
-                    .padding(start = 20.dp)
+                    .padding(start = 10.dp, end = 10.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Box(
                     modifier = Modifier
