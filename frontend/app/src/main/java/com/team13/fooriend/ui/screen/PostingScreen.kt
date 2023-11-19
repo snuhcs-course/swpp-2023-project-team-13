@@ -118,15 +118,15 @@ fun PostingScreen(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+//            .padding(16.dp)
             .verticalScroll(state)
     ){
         // 나가기 버튼
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.End,
+                .padding(top = 7.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onCloseClick) {

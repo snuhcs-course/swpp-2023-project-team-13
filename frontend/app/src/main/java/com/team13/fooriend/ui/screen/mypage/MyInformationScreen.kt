@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -68,7 +69,6 @@ fun MyInformationScreen(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(),
-
         ) {
         Column(
             modifier = Modifier
@@ -77,7 +77,7 @@ fun MyInformationScreen(
                 .fillMaxHeight(0.3f)
 
         ){
-            IconButton(onClick = onBackClick) {
+            IconButton(onClick = onBackClick, modifier = Modifier.padding(top = 7.dp)) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",

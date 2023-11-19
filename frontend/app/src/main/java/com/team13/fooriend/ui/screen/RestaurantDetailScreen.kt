@@ -60,6 +60,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
@@ -159,8 +160,8 @@ fun RestaurantDetailScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(16.dp),
+                    .padding(innerPadding),
+//                    .padding(16.dp),
                 contentPadding = PaddingValues(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -307,14 +308,14 @@ fun TopRestaurantBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(8.dp, 8.dp, 8.dp, 16.dp)
+//            .background(color = Color.White)
+//            .padding(8.dp, 8.dp, 8.dp, 16.dp)
     ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.End,
+                .padding(top = 7.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onCloseClick) {
@@ -341,8 +342,8 @@ fun TopRestaurantBar(
                         textAlign = TextAlign.Center,
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
-                        )
+                            fontSize = 24.sp,
+                        ),
                     )
                 }
             }
@@ -352,7 +353,7 @@ fun TopRestaurantBar(
             onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 8.dp),
+                .padding(start = 8.dp, bottom = 8.dp, end = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
             border = BorderStroke(1.dp, Color.Black)
 

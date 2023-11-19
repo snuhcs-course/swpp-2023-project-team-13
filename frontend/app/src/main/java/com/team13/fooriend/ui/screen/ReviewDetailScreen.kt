@@ -111,8 +111,9 @@ fun ReviewDetailScreen(
     if(!isLoading){
         Column(
             modifier = Modifier
+                .padding(top = 7.dp)
                 .fillMaxSize(),
-//                .padding(16.dp),
+
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
@@ -145,7 +146,9 @@ fun ReviewDetailScreen(
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Box(
