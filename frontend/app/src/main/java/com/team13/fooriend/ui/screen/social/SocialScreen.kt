@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.component.ReviewLazyGrid
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.AbstractUser
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
@@ -98,9 +100,6 @@ fun SocialScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
         SocialSearchBar(context = context, onUserClick = onUserClick)
-//        Button(onClick = { isLoading = true }){
-//            Text(text = "test")
-//        }
         Spacer(modifier = Modifier.height(16.dp))
         SwipeRefresh(
             state = swipeRefreshState,
@@ -150,6 +149,7 @@ fun SocialSearchBar(
         onQueryChange = {
             text = it
         },
+        colors = SearchBarDefaults.colors(FooriendColor.FooriendLightGreen),
         onSearch = {// 일반 검색을 통해서는 유저 프로필 검색 불가 like instagram
 //            items.add(text)
 //            active = false
@@ -159,7 +159,7 @@ fun SocialSearchBar(
             active = it
         },
         placeholder = {
-            Text(text = "Search")
+            Text(text = "Search User")
         },
         leadingIcon = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
@@ -222,7 +222,9 @@ fun UserRow(user: User, onUserClick: (Int) -> Unit) {
         Image(
             painter = rememberImagePainter(user.profileImage),
             contentDescription = "Profile Picture",
-            modifier = Modifier.size(30.dp).clip(CircleShape),
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
