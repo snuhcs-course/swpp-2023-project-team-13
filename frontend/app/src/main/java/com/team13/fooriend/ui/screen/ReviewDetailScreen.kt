@@ -111,8 +111,8 @@ fun ReviewDetailScreen(
     if(!isLoading){
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+                .fillMaxSize(),
+//                .padding(16.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
@@ -146,7 +146,7 @@ fun ReviewDetailScreen(
             Spacer(modifier = Modifier.height(20.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Box(
                     modifier = Modifier
@@ -239,8 +239,9 @@ fun ReviewDetailScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(scrollState),
-            ) {
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
+                ) {
                 LazyRow() {
                     review?.let {
                         items(it.images) {
