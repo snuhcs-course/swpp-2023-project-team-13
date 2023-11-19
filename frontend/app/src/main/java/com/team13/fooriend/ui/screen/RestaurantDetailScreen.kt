@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
@@ -57,13 +58,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.team13.fooriend.R
 import com.team13.fooriend.ui.FooriendIcon
 import com.team13.fooriend.ui.fooriendicon.Dislike
 import com.team13.fooriend.ui.fooriendicon.Fooriendicon
@@ -188,7 +193,7 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int, userProf
             .clip(RoundedCornerShape(10.dp))
             .background(color = Color.White)
             .padding(10.dp, 5.dp)
-            .heightIn(min = 200.dp, max = 400.dp)
+            .heightIn(min = 200.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
     ){
         LazyRow(){
@@ -197,40 +202,52 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int, userProf
             }
         }
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             Button(
                 onClick = { onWriterClick(review.user.id) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                modifier = Modifier
-                    .width(30.dp)
-                    .height(15.dp)
+//                modifier = Modifier
+//                    .width(30.dp)
+//                    .height(15.dp)
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(5.dp)
+                        .heightIn(min = 15.dp, max = 20.dp)
+                        .fillMaxHeight()
+                        .widthIn(min = 15.dp, max = 20.dp)
+                        .fillMaxWidth()
+                        .graphicsLayer {
+                            clip = true
+                            shape = CircleShape
+                        }
                 ) {
                     Image(
                         painter = rememberImagePainter(
                             data = userProfileImageUrl,
                             builder = {
                                 crossfade(true)
-                            }
-                        ),
+                            }),
                         contentDescription = null,
-                        modifier = Modifier.fillMaxHeight()
-                            .clip(MaterialTheme.shapes.small),
-                        contentScale = ContentScale.Crop,
-                    )
-
-                    Text(
-                        text = review.user.name,
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .align(Alignment.CenterStart),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
                     )
                 }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                ClickableText(
+                    text = AnnotatedString(review!!.user.name),
+                    onClick = { offset ->
+                        onWriterClick(review!!.user.id)
+                    },
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.notosanskr_regular, FontWeight.Normal))
+                    ),
+                )
             }
         }
 
@@ -248,14 +265,13 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int, userProf
                 Icon(
                     imageVector = FooriendIcon.Like,
                     contentDescription = "Positive Review",
-                    modifier = Modifier.size(12.dp)
-
+//                    modifier = Modifier.size(12.dp)
                 )
             } else if (!review.isPositive) {
                 Icon(
                     imageVector = FooriendIcon.Dislike,
                     contentDescription = "Negative Review",
-                    modifier = Modifier.size(12.dp)
+//                    modifier = Modifier.size(12.dp)
                 )
             }
 
