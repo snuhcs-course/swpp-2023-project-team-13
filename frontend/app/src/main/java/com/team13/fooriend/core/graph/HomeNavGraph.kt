@@ -2,6 +2,7 @@ package com.team13.fooriend.core.graph
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,11 +23,12 @@ import com.team13.fooriend.ui.util.saveAccessToken
 fun HomeNavGraph(
     context: Context,
     navController: NavHostController,
+    startDestination: String = BottomNavItem.Home.route
 ) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = BottomNavItem.Home.route // login이 성공하면 home 화면으로 이동
+        startDestination = startDestination // login이 성공하면 home 화면으로 이동
     ) {
         composable(route = BottomNavItem.Home.route) {
             HomeScreen(
@@ -97,10 +99,10 @@ fun HomeNavGraph(
                 onBackClick = { navController.navigateUp() },
                 onChangePwd = {
                     saveAccessToken(context, "")
-                    navController.navigate("changePwd") },
+                    navController.navigate("logout") },
             )
         }
-        composable(route = "changePwd"){
+        composable(route = "logout"){
              FooriendApp(context = context)
         }
     }

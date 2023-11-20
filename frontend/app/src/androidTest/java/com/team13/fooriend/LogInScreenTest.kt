@@ -1,5 +1,6 @@
 package com.team13.fooriend
 
+import androidx.annotation.UiThread
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,6 +12,7 @@ import androidx.navigation.testing.TestNavHostController
 import com.team13.fooriend.core.graph.AuthScreen
 import com.team13.fooriend.core.graph.Graph
 import com.team13.fooriend.core.graph.RootNavigationGraph
+import com.team13.fooriend.ui.util.saveAccessToken
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -21,13 +23,14 @@ class LogInScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     lateinit var navController: TestNavHostController
-
     @Before
     fun setUpNavHost(){
         composeTestRule.setContent {
-            navController = TestNavHostController(LocalContext.current)
+            val context = LocalContext.current
+            saveAccessToken(context, "")
+            navController = TestNavHostController(context)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
-            RootNavigationGraph(navController = navController, context = LocalContext.current)
+            RootNavigationGraph(navController = navController, context = context)
         }
     }
 
@@ -75,14 +78,16 @@ class LogInScreenTest {
     fun performClick_OnLogInButton_withCorrectIDandPWD(){
         composeTestRule
             .onNodeWithText("ID")
-            .performTextInput("admin")
+            .performTextInput("mechanicjo")
         composeTestRule
             .onNodeWithText("PASSWORD")
-            .performTextInput("admin")
+            .performTextInput("1q2w3e4r")
         composeTestRule
             .onNodeWithText("LOGIN")
             .performClick()
-        val route = navController.currentBackStackEntry?.destination?.route
-        Assert.assertEquals(route, Graph.HOME)
+        composeTestRule.runOnUiThread {
+            val route = navController.currentBackStackEntry?.destination?.route
+            Assert.assertEquals(route, AuthScreen.Login.route)
+        }
     }
 }
