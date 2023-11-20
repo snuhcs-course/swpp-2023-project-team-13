@@ -46,6 +46,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -318,7 +319,7 @@ fun TopRestaurantBar(
     onPosClick: () -> Unit,
     onNegClick: () -> Unit,
 ) {
-    var isLikeSelected by remember { mutableStateOf(true) }
+    var isLikeSelected by remember { mutableStateOf(false) }
     var isDislikeSelected by remember { mutableStateOf(false) }
 
     Column(
@@ -392,8 +393,8 @@ fun TopRestaurantBar(
                 Button(
                     onClick = {
                         onPosClick()
-                        isLikeSelected = true
-                        isDislikeSelected = false
+                        isLikeSelected = !isLikeSelected
+                        if (isDislikeSelected) isDislikeSelected = false
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isLikeSelected) FooriendColor.FooriendGreen else Color.Gray,
@@ -415,8 +416,8 @@ fun TopRestaurantBar(
                 Button(
                     onClick = {
                         onNegClick()
-                        isDislikeSelected = true
-                        isLikeSelected = false
+                        isDislikeSelected = !isDislikeSelected
+                        if (isLikeSelected) isLikeSelected = false
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isDislikeSelected) FooriendColor.FooriendRed else Color.Gray,
@@ -430,9 +431,6 @@ fun TopRestaurantBar(
                 }
             }
         }
-
-
-
     }
 }
 //@Composable
