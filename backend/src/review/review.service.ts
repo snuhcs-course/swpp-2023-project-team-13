@@ -24,6 +24,8 @@ export class ReviewService {
       restaurant: restaurantDto,
     } = createReviewDto;
 
+    console.log(createReviewDto);
+
     const restaurant =
       await this.restaurantRepository.findOrCreate(restaurantDto);
     const images = await this.imageRepository.findBy({
