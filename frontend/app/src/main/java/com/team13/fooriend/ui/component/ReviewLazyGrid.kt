@@ -75,6 +75,15 @@ fun ReviewCard(
                     .fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
+            if(review.receiptImage?.isReceiptVerified == true){
+                Image(
+                    painterResource(id = R.drawable.verify),
+                    contentDescription = "Negative Review",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
+                )
+            }
         }
     }
 
