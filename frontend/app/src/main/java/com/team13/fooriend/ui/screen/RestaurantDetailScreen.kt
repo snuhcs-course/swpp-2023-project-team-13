@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -59,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -263,29 +265,46 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int, userProf
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (review.isPositive) {
-                Icon(
-                    imageVector = FooriendIcon.Like,
-                    contentDescription = "Positive Review",
-//                    modifier = Modifier.size(12.dp)
+//                Icon(
+//                    imageVector = FooriendIcon.Like,
+//                    contentDescription = "Positive Review",
+////                    modifier = Modifier.size(12.dp)
+//                )
+                Image(
+                    painterResource(id = R.drawable.up_thumb),
+                    contentDescription = "Negative Review",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
                 )
             } else if (!review.isPositive) {
-                Icon(
-                    imageVector = FooriendIcon.Dislike,
+                Image(
+                    painterResource(id = R.drawable.down_thumb),
                     contentDescription = "Negative Review",
-//                    modifier = Modifier.size(12.dp)
-                )
-            }
-
-            if (review.receiptImage?.isReceiptVerified == true) {
-                Icon(
-                    imageVector = FooriendIcon.Verified,
-                    contentDescription = "Receipt Verified",
-                    modifier = Modifier.size(12.dp)
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
                 )
             }
         }
+
+        if (review.receiptImage?.isReceiptVerified == true) {
+//            Icon(
+//                imageVector = FooriendIcon.Verified,
+//                contentDescription = "Receipt Verified",
+//                modifier = Modifier.size(12.dp)
+//            )
+            Image(
+                painterResource(id = R.drawable.verify),
+                contentDescription = "Negative Review",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp)
+            )
+        }
     }
 }
+
 
 @Composable
 fun LoadImageFromUrl(url: String) {
@@ -350,8 +369,11 @@ fun TopRestaurantBar(
                     imageVector = FooriendIcon.Fooriendicon,
                     contentDescription = "Store",
                     modifier = Modifier
-                        .padding(8.dp).heightIn(min = 15.dp, max = 20.dp).fillMaxHeight()
-                        .widthIn(min = 15.dp, max = 20.dp).fillMaxWidth()
+                        .padding(8.dp)
+                        .heightIn(min = 15.dp, max = 20.dp)
+                        .fillMaxHeight()
+                        .widthIn(min = 15.dp, max = 20.dp)
+                        .fillMaxWidth()
                 )
                 if (restaurantName != null) {
                     Text(
