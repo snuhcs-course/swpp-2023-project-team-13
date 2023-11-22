@@ -370,7 +370,7 @@ fun PostingScreen(
 
                         // API 호출
                         val response = apiService.uploadImage(multipartBody)
-                        imageIds.add(response.id)
+                        receiptImageIds.add(response.id)
                     }
                     Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
                     var receiptImageId = 0
