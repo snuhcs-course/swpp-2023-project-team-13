@@ -183,9 +183,7 @@ fun FooriendScreen(
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
         }
         // review lazy grid

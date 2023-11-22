@@ -140,7 +140,6 @@ fun RestaurantDetailScreen(
                 }
                 val user = apiService.getUserDetail(userId = review.user.id)
                 userProfileImageUrls += mapOf(review.user.id to user.profileImage)
-
             }
             if(reviews.isNotEmpty() && restaurantName == "") restaurantName = reviews[0].restaurant.name
         } catch (e: Exception) {
@@ -340,7 +339,6 @@ fun TopRestaurantBar(
 ) {
     var isLikeSelected by remember { mutableStateOf(false) }
     var isDislikeSelected by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -455,22 +453,22 @@ fun TopRestaurantBar(
         }
     }
 }
-//@Composable
-//@Preview(showSystemUi = true, showBackground = true)
-//fun RestaurantDetailScreenPreview() {
-//    RestaurantDetailScreen(
-//        restaurant = Restaurant(
-//            id = 0,
-//            name = "음식점 이름",
-//            good = 0,
-//            bad = 0,
-//            reviewList = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-//            latitude = 0.0,
-//            longitude = 0.0,
-//            reviewCount = 10,
-//        ),
-//        onBackClick = {},
-//        onWriteReviewClick = {},
-//        onWriterClick = {},
-//    )
-//}
+@Composable
+fun ToggleButton(
+    onClick: () -> Unit,
+    text: String,
+    color: Color = Color.White,
+) {
+    var clickCount by remember { mutableStateOf(0) }
+    val isButtonEnabled = clickCount % 2 == 0 // Button enabled on even clicks
+
+    // Define colors for enabled and disabled states
+
+    TextButton(
+        onClick = { clickCount++
+                  onClick()},
+        colors = ButtonDefaults.buttonColors(color)
+    ) {
+        Text(text)
+    }
+}
