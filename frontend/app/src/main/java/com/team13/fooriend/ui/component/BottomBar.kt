@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,8 +24,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.team13.fooriend.core.graph.HomeNavGraph
 import com.team13.fooriend.ui.navigation.BottomNavItem
-import com.team13.fooriend.ui.theme.BaseGreen
-
 import com.team13.fooriend.ui.theme.FooriendColor
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +54,7 @@ fun BottomNavigation(navController: NavHostController){
                 clip = true
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
                 shadowElevation = 30f },
-        ) {
+    ) {
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
 
@@ -63,12 +62,12 @@ fun BottomNavigation(navController: NavHostController){
         items.forEach { item ->
             val selected = item.route == navBackStackEntry.value?.destination?.route
             NavigationBarItem(
-                icon = { Icon(imageVector = item.icon, contentDescription = item.title,modifier = Modifier.width(26.dp).height(26.dp)) },
-                label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
+                icon = { Icon(imageVector = item.icon, contentDescription = item.title,modifier = Modifier.size(item.iconSize)) },
+                // label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
                 selected = selected,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BaseGreen,
-                    selectedTextColor = BaseGreen,
+                    selectedIconColor = FooriendColor.FooriendGreen,
+                    selectedTextColor = FooriendColor.FooriendGreen,
                     unselectedIconColor = Color.DarkGray,
                     indicatorColor = Color.White,
                 ),
@@ -86,7 +85,7 @@ fun BottomNavigation(navController: NavHostController){
                     }
                 },
 
-            )
+                )
         }
     }
 }

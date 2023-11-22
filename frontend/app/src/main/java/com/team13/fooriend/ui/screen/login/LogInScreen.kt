@@ -11,9 +11,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -23,31 +30,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.team13.fooriend.ui.theme.BaseGray
-import com.team13.fooriend.ui.theme.BaseGreen
-import com.team13.fooriend.ui.theme.CDarkGreen
-import com.team13.fooriend.ui.theme.CIvory
-import com.team13.fooriend.ui.theme.CLightGreen
-import com.team13.fooriend.ui.theme.CMidGreen
 import com.team13.fooriend.ui.theme.CRed
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.LoginBody
 import com.team13.fooriend.ui.util.LoginResponse
-import com.team13.fooriend.ui.util.createRetrofit
 import com.team13.fooriend.ui.util.saveAccessToken
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LogInScreen(
     context : Context,
@@ -69,6 +77,9 @@ fun LogInScreen(
         .build()
 
     val apiService = retrofit.create(ApiService::class.java)
+    val (isPasswordVisible, setPasswordVisibility) = remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
 
     Column(
@@ -87,12 +98,17 @@ fun LogInScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -102,12 +118,38 @@ fun LogInScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
-            placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
+            visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold) },
+            trailingIcon = {
+                val icon = if (isPasswordVisible) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+                IconButton(
+                    onClick = { setPasswordVisibility(!isPasswordVisible) },
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.DarkGray
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(30.dp))
         Button(
@@ -126,7 +168,7 @@ fun LogInScreen(
             } },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                BaseGreen,//CMidGreen,
+                FooriendColor.FooriendGreen,
                 contentColor = color )) {
             Text(
                 "LOGIN",
@@ -135,14 +177,13 @@ fun LogInScreen(
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Text("Don't have a Fooriend account?")
         Button(onClick = {
             onSignUpClick()
         },
             colors = ButtonDefaults.buttonColors(
-                Color.Transparent,//CMidGreen,
-                contentColor = BaseGreen//CDarkGreen
-                         )) {
+                Color.Transparent,
+                contentColor = FooriendColor.FooriendGreen,
+            )) {
             Text(
                 "SIGN UP",
                 fontSize = 20.sp,

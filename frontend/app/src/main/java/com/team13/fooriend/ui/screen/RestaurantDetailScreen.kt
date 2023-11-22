@@ -2,41 +2,53 @@ package com.team13.fooriend.ui.screen
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material.icons.filled.ThumbDown
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,9 +57,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.team13.fooriend.R
+import com.team13.fooriend.ui.FooriendIcon
+import com.team13.fooriend.ui.fooriendicon.Dislike
+import com.team13.fooriend.ui.fooriendicon.Fooriendicon
+import com.team13.fooriend.ui.fooriendicon.Like
+import com.team13.fooriend.ui.fooriendicon.Verified
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.createRetrofit
@@ -77,6 +107,7 @@ fun RestaurantDetailScreen(
     var restaurantGood by remember { mutableStateOf(0) }
     var restaurantBad by remember { mutableStateOf(0) }
     var flag by remember { mutableStateOf(0) }
+    var userProfileImageUrls by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
     fun changeFlag(num: Int){
         if(flag != num) flag = num
         else flag = 0
@@ -107,6 +138,8 @@ fun RestaurantDetailScreen(
                 else{
                     restaurantBad += 1
                 }
+                val user = apiService.getUserDetail(userId = review.user.id)
+                userProfileImageUrls += mapOf(review.user.id to user.profileImage)
             }
             if(reviews.isNotEmpty() && restaurantName == "") restaurantName = reviews[0].restaurant.name
         } catch (e: Exception) {
@@ -134,8 +167,8 @@ fun RestaurantDetailScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(16.dp),
+                    .padding(innerPadding),
+//                    .padding(16.dp),
                 contentPadding = PaddingValues(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -143,7 +176,8 @@ fun RestaurantDetailScreen(
                     ReviewItem(
                         review = review,
                         onWriterClick = onWriterClick,
-                        flag = 0
+                        flag = 0,
+                        userProfileImageUrl = userProfileImageUrls[review.user.id] ?: ""
                     )
                 }
             }
@@ -152,7 +186,7 @@ fun RestaurantDetailScreen(
 }
 
 @Composable
-fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
+fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int, userProfileImageUrl: String) {
     val image = review.images
     val isReceiptVerified = review.receiptImage?.isReceiptVerified ?: false
     Column(
@@ -161,7 +195,7 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
             .clip(RoundedCornerShape(10.dp))
             .background(color = Color.White)
             .padding(10.dp, 5.dp)
-            .heightIn(min = 200.dp, max = 400.dp)
+            .heightIn(min = 200.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(10.dp))
     ){
         LazyRow(){
@@ -169,16 +203,54 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
                 LoadImageFromUrl(url = it.url)
             }
         }
-        Row() {
-            IconButton(onClick = { onWriterClick(review.user.id) }) { // review.user.id
-                Icon(
-                    imageVector = Icons.Default.AccountBox, // Default image가 아니라 user profile 이미지를 삽입해야 한다.
-                    contentDescription = "Writer",
-                    tint = Color.Black
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Button(
+                onClick = { onWriterClick(review.user.id) },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+//                modifier = Modifier
+//                    .width(30.dp)
+//                    .height(15.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .heightIn(min = 15.dp, max = 20.dp)
+                        .fillMaxHeight()
+                        .widthIn(min = 15.dp, max = 20.dp)
+                        .fillMaxWidth()
+                        .graphicsLayer {
+                            clip = true
+                            shape = CircleShape
+                        }
+                ) {
+                    Image(
+                        painter = rememberImagePainter(
+                            data = userProfileImageUrl,
+                            builder = {
+                                crossfade(true)
+                            }),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                ClickableText(
+                    text = AnnotatedString(review!!.user.name),
+                    onClick = { offset ->
+                        onWriterClick(review!!.user.id)
+                    },
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.notosanskr_regular, FontWeight.Normal))
+                    ),
                 )
             }
-            // at the middle of the row
-            Text(text = review.user.name, modifier = Modifier.align(Alignment.CenterVertically))
         }
 
         Column(
@@ -192,29 +264,46 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (review.isPositive) {
-                Icon(
-                    imageVector = Icons.Default.ThumbUp, // Thumbs-up icon for positive reviews
-                    contentDescription = "Positive Review",
-                    tint = Color.Green
+//                Icon(
+//                    imageVector = FooriendIcon.Like,
+//                    contentDescription = "Positive Review",
+////                    modifier = Modifier.size(12.dp)
+//                )
+                Image(
+                    painterResource(id = R.drawable.up_thumb),
+                    contentDescription = "Negative Review",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
                 )
             } else if (!review.isPositive) {
-                Icon(
-                    imageVector = Icons.Default.ThumbDown, // Thumbs-down icon for negative reviews
+                Image(
+                    painterResource(id = R.drawable.down_thumb),
                     contentDescription = "Negative Review",
-                    tint = Color.Red
-                )
-            }
-
-            if (review.receiptImage?.isReceiptVerified == true) {
-                Icon(
-                    imageVector = Icons.Default.Verified, // Replace with your verification mark icon
-                    contentDescription = "Receipt Verified",
-                    tint = Color.Blue
+                    modifier = Modifier
+                        .size(40.dp)
+                        .padding(8.dp)
                 )
             }
         }
+
+        if (review.receiptImage?.isReceiptVerified == true) {
+//            Icon(
+//                imageVector = FooriendIcon.Verified,
+//                contentDescription = "Receipt Verified",
+//                modifier = Modifier.size(12.dp)
+//            )
+            Image(
+                painterResource(id = R.drawable.verify),
+                contentDescription = "Negative Review",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp)
+            )
+        }
     }
 }
+
 
 @Composable
 fun LoadImageFromUrl(url: String) {
@@ -236,6 +325,7 @@ fun LoadImageFromUrl(url: String) {
     )
 }
 
+
 @Composable
 fun TopRestaurantBar(
     onCloseClick: () -> Unit,
@@ -252,46 +342,113 @@ fun TopRestaurantBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.White)
-            .padding(16.dp, 16.dp, 16.dp, 0.dp)
+            .padding(top = 7.dp),
+//            .background(color = Color.White)
+//            .padding(8.dp, 8.dp, 8.dp, 16.dp)
     ){
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-        ){
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             IconButton(onClick = onCloseClick) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "back",
-                    tint = Color.Black
+                    contentDescription = "Close"
                 )
             }
+            Row(
+                modifier = Modifier
+                    .weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = FooriendIcon.Fooriendicon,
+                    contentDescription = "Store",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .heightIn(min = 15.dp, max = 20.dp)
+                        .fillMaxHeight()
+                        .widthIn(min = 15.dp, max = 20.dp)
+                        .fillMaxWidth()
+                )
+                if (restaurantName != null) {
+                    Text(
+                        text = restaurantName,
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                        ),
+                    )
+                }
+            }
         }
-        Text(text = restaurantName)
+
+        Button(
+            onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, bottom = 8.dp, end = 8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
+            border = BorderStroke(1.dp, Color.Black)
+
+        ) {
+            Text(text = "리뷰 작성하러 가기")
+        }
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-        ){
-            ToggleButton(onClick = {
-                onPosClick()
-                isLikeSelected = !isLikeSelected
-                if (isDislikeSelected) isDislikeSelected = false
-                },
-                text = "좋아요 $restaurantGood",
-                color = if (isLikeSelected) Color.Green else Color.Gray
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            ToggleButton(onClick = {
-                onNegClick()
-                isDislikeSelected = !isDislikeSelected
-                if (isLikeSelected) isLikeSelected = false
-                },
-                text = "싫어요 $restaurantBad",
-                color = if (isDislikeSelected) Color.Red else Color.Gray
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            Button(onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) }) {
-                Text(text = "리뷰 작성")
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        onPosClick()
+                        isLikeSelected = !isLikeSelected
+                        if (isDislikeSelected) isDislikeSelected = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isLikeSelected) FooriendColor.FooriendGreen else Color.Gray,
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 30.dp, max = 60.dp)
+                ) {
+                    Text(text = "좋아요 $restaurantGood")
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            ) {
+                Button(
+                    onClick = {
+                        onNegClick()
+                        isDislikeSelected = !isDislikeSelected
+                        if (isLikeSelected) isLikeSelected = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDislikeSelected) FooriendColor.FooriendRed else Color.Gray,
+                        contentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 30.dp, max = 60.dp)
+                ) {
+                    Text(text = "싫어요 $restaurantBad")
+                }
             }
         }
     }
@@ -315,22 +472,3 @@ fun ToggleButton(
         Text(text)
     }
 }
-//@Composable
-//@Preview(showSystemUi = true, showBackground = true)
-//fun RestaurantDetailScreenPreview() {
-//    RestaurantDetailScreen(
-//        restaurant = Restaurant(
-//            id = 0,
-//            name = "음식점 이름",
-//            good = 0,
-//            bad = 0,
-//            reviewList = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-//            latitude = 0.0,
-//            longitude = 0.0,
-//            reviewCount = 10,
-//        ),
-//        onBackClick = {},
-//        onWriteReviewClick = {},
-//        onWriterClick = {},
-//    )
-//}

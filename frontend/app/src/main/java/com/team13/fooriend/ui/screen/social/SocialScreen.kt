@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
@@ -32,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,15 +48,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.team13.fooriend.R
 import com.team13.fooriend.ui.component.ReviewLazyGrid
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.AbstractUser
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
@@ -98,9 +105,6 @@ fun SocialScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
         SocialSearchBar(context = context, onUserClick = onUserClick)
-//        Button(onClick = { isLoading = true }){
-//            Text(text = "test")
-//        }
         Spacer(modifier = Modifier.height(16.dp))
         SwipeRefresh(
             state = swipeRefreshState,
@@ -150,6 +154,8 @@ fun SocialSearchBar(
         onQueryChange = {
             text = it
         },
+        shape = RectangleShape,
+        colors = SearchBarDefaults.colors(Color.LightGray),
         onSearch = {// 일반 검색을 통해서는 유저 프로필 검색 불가 like instagram
 //            items.add(text)
 //            active = false
@@ -159,7 +165,7 @@ fun SocialSearchBar(
             active = it
         },
         placeholder = {
-            Text(text = "Search")
+            Text(text = "Search User", fontSize = 15.sp)
         },
         leadingIcon = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
@@ -222,7 +228,9 @@ fun UserRow(user: User, onUserClick: (Int) -> Unit) {
         Image(
             painter = rememberImagePainter(user.profileImage),
             contentDescription = "Profile Picture",
-            modifier = Modifier.size(30.dp).clip(CircleShape),
+            modifier = Modifier
+                .size(30.dp)
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
