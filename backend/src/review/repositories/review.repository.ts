@@ -75,18 +75,17 @@ export class ReviewRepository extends Repository<ReviewEntity> {
 
     return this.findFull({
       user: {
-        id: In(friendsIds),
+        id: In([...friendsIds, user.id]),
       },
     });
   }
 
-  findRandomReviews(limit: number) {
+  findRandomReviews() {
     return this.createQueryBuilder('review')
       .leftJoinAndSelect('review.images', 'image')
       .leftJoinAndSelect('review.user', 'user')
       .leftJoinAndSelect('review.restaurant', 'restaurant')
       .orderBy('RANDOM()')
-      .limit(limit)
       .getMany();
   }
 }

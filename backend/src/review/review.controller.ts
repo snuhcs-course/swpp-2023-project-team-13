@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -73,8 +74,7 @@ export class ReviewController {
   @UseGuards(JwtAccessGuard)
   @Get('/random')
   async getReviewRandom() {
-    const limit = 5; // Define the number of random reviews you want to retrieve
-    const randomReviews = await this.reviewRepository.findRandomReviews(limit);
+    const randomReviews = await this.reviewRepository.findRandomReviews();
     return new ReviewListDto(randomReviews);
   }
 
@@ -110,7 +110,7 @@ export class ReviewController {
 
   @UseGuards(JwtAccessGuard)
   @Get('/:reviewId')
-  async getReviewDetail(
+  async removeReview(
     @Req() { user }: UserRequest,
     @Param('reviewId') reviewId: number,
   ) {
@@ -118,6 +118,35 @@ export class ReviewController {
 
     if (!review) throw new NotFoundException('리뷰를 찾을 수 없습니다.');
     return new ReviewDetailDto(review, review.user);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Delete('/:reviewId')
+  async getReviewDetail(
+    @Req() { user }: UserRequest,
+    @Param('reviewId') reviewId: number,
+  ) {
+    const review = await this.reviewRepository.findOfReviewId(reviewId);
+
+    if (!review) throw new NotFoundException('리뷰를 찾을 수 없습니다.');
+    return review.softRemove();
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/users/:userId')
+  async getReviewOfUser(
+    @Req() { user }: UserRequest,
+    @Param('userId') userId: number,
+  ) {
+    const userEntity = await UserEntity.findOneBy({
+      id: userId,
+    });
+
+    if (!userEntity) throw new NotFoundException('유저를 찾을 수 없습니다.');
+
+    const reviews = await this.reviewRepository.findOfUser(userEntity);
+
+    return new ReviewListDto(reviews);
   }
 
   @UseGuards(JwtAccessGuard)

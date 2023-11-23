@@ -8,10 +8,11 @@ val CLightGreen = Color(0xFFa7c957)
 val CIvory = Color(0xFFf2e8cf)
 val CRed = Color(0xFFbc4749)
 
-val BaseGreen = Color(0xFF32B768)
-val BaseGray = Color(0xFFD9D9D9)
-
 object FooriendColor {
     val FooriendGreen = Color(0xFF32B768)
-    val FooriendGrey = Color(0xFF4B5563)
+    val FooriendLightGreen = Color(0xFF98dbb3)
+    val FooriendGray = Color(0xFF4B5562)
+    val FooriendLightGray = Color(0xFFD9D9D9)
+    val FooriendRed = Color(0xFFbc4749)
+
 }

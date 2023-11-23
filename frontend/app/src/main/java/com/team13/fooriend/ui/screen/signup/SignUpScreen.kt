@@ -1,6 +1,7 @@
 package com.team13.fooriend.ui.screen.signup
 
 import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
@@ -15,9 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -25,35 +31,36 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.team13.fooriend.ui.theme.BaseGreen
-import com.team13.fooriend.ui.theme.BaseGray
-import com.team13.fooriend.ui.theme.CDarkGreen
-import com.team13.fooriend.ui.theme.CIvory
-import com.team13.fooriend.ui.theme.CLightGreen
-import com.team13.fooriend.ui.theme.CMidGreen
 import com.team13.fooriend.ui.theme.CRed
+import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.RegisterBody
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.format.TextStyle
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SignUpScreen(
     context : Context,
@@ -76,6 +83,12 @@ fun SignUpScreen(
 
     val apiService = retrofit.create(ApiService::class.java)
     val coroutineScope = rememberCoroutineScope()
+    val (isPasswordVisible, setPasswordVisibility) = remember { mutableStateOf(false) }
+    val (isPasswordConfirmVisible, setPasswordConfirmVisibility) = remember { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +98,6 @@ fun SignUpScreen(
     ){
         //Text(text = "Sign Up Page")
         Spacer(modifier = Modifier.height(20.dp))
-        //val containerColor = FilledTextFieldTokens.ContainerColor.toColor()
         TextField(
             value = name,
             onValueChange = nameValue,
@@ -93,12 +105,17 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
             placeholder = { Text("NAME", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -108,12 +125,17 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
             placeholder = { Text("ID", fontWeight = FontWeight.SemiBold)},
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -123,12 +145,37 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
-            ),
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
+            ),visualTransformation = if (isPasswordVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
             placeholder = { Text("PASSWORD", fontWeight = FontWeight.SemiBold)},
+            trailingIcon = {
+                val icon = if (isPasswordVisible) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+                IconButton(
+                    onClick = { setPasswordVisibility(!isPasswordVisible) },
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.DarkGray
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }
+            ),
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -138,18 +185,40 @@ fun SignUpScreen(
                 Color.Black,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-//                focusedTextColor = Color.DarkGray,
-                focusedContainerColor = BaseGray,//CLightGreen,
-                unfocusedContainerColor = BaseGray,//CIvory,
+                focusedContainerColor = FooriendColor.FooriendLightGreen,
+                unfocusedContainerColor = FooriendColor.FooriendLightGray,
             ),
+            visualTransformation = if (isPasswordConfirmVisible) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
             placeholder = { Text("PASSWORD CONFIRM", fontWeight = FontWeight.SemiBold)},
+            trailingIcon = {
+                val icon = if (isPasswordConfirmVisible) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+                IconButton(
+                    onClick = { setPasswordConfirmVisibility(!isPasswordConfirmVisible) },
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = Color.DarkGray
+                    )
+                }
+            },
             shape = RoundedCornerShape(15.dp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            ),
         )
-//        TODO("keyboard hide")
-//        TODO("password confirm check")
         Spacer(modifier = Modifier.height(30.dp))
-//        TextField(value = nickname, onValueChange = nicknameValue)
-//        TextField(value = phoneNumber, onValueChange = phoneNumberValue)
         Button(
             onClick = {
                 coroutineScope.launch {
@@ -162,13 +231,13 @@ fun SignUpScreen(
                 } },
             interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                BaseGreen,//CMidGreen,
+                FooriendColor.FooriendGreen,
                 contentColor = color )) {
             Text(
                 "SIGN UP",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold
-                )
+            )
         }
     }
 }

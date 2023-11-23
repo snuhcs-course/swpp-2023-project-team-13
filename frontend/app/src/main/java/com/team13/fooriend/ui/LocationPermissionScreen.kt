@@ -16,13 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.team13.fooriend.ui.theme.BaseGreen
-import com.team13.fooriend.ui.theme.CMidGreen
+import com.team13.fooriend.ui.theme.FooriendColor
 
 @Composable
 fun LocationPermissionScreen(
@@ -55,7 +53,7 @@ fun LocationPermissionScreen(
             text= "Fooriend",
             fontSize = 40.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = BaseGreen
+            color = FooriendColor.FooriendGreen,
         )
         Text(
             text = "믿을 수 있는 사람의 믿을 수 있는 리뷰 FOORIEND",
@@ -76,7 +74,7 @@ fun LocationPermissionScreen(
                 )
             },
             colors = ButtonDefaults.buttonColors(
-                CMidGreen,
+                FooriendColor.FooriendGreen,
                 contentColor = MaterialTheme.colorScheme.background
             )
 

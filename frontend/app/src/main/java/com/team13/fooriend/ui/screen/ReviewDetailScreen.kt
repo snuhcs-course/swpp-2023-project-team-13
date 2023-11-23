@@ -4,23 +4,36 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ThumbDown
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,13 +49,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.team13.fooriend.R
 import com.team13.fooriend.data.Restaurant
+import com.team13.fooriend.ui.FooriendIcon
+import com.team13.fooriend.ui.fooriendicon.Dislike
+import com.team13.fooriend.ui.fooriendicon.Fooriendicon
+import com.team13.fooriend.ui.fooriendicon.Like
+import com.team13.fooriend.ui.fooriendicon.Verified
+import com.team13.fooriend.ui.theme.notosanskr
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.Review
 import com.team13.fooriend.ui.util.createRetrofit
@@ -66,12 +92,15 @@ fun ReviewDetailScreen(
     var review by remember { mutableStateOf<Review?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val coroutineScope = rememberCoroutineScope()
+    var userProfileImageUrl by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         try {
             // API 호출하여 데이터 가져오기
             review = apiService.getReviewDetail(reviewId = reviewId)
             myId = apiService.getMyInfo().id
+            var User = apiService.getUserDetail(userId = myId)
+            userProfileImageUrl = User.profileImage
         } catch (e: Exception) {
             Log.d("RestaurantDetailScreen", "error: $e")
         }
@@ -82,8 +111,9 @@ fun ReviewDetailScreen(
     if(!isLoading){
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+                .padding(top = 7.dp)
+                .fillMaxSize(),
+
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
@@ -109,29 +139,111 @@ fun ReviewDetailScreen(
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = Color.Black
+                            tint = Color.Red
                         )
                     }
                 }
             }
             Spacer(modifier = Modifier.height(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Button(onClick = { onWriterClick(review!!.user.id) }) {
-                    Text(text = review!!.user.name)
+                Box(
+                    modifier = Modifier
+                        .clickable { onWriterClick(review!!.user.id) }
+                        .wrapContentWidth(Alignment.Start)
+                        .padding(end = 20.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .heightIn(min = 15.dp, max = 20.dp)
+                                .fillMaxHeight()
+                                .widthIn(min = 15.dp, max = 20.dp)
+                                .fillMaxWidth()
+                                .graphicsLayer {
+                                    clip = true
+                                    shape = CircleShape
+                                }
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = userProfileImageUrl,
+                                    builder = {
+                                        crossfade(true)
+                                    }),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        ClickableText(
+                            text = AnnotatedString(review!!.user.name),
+                            onClick = { offset ->
+                                onWriterClick(review!!.user.id)
+                            },
+                            style = TextStyle(
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.notosanskr_regular, FontWeight.Normal))
+                            ),
+                        )
+                    }
                 }
+
                 Spacer(modifier = Modifier.width(20.dp))
-                Button(onClick = { onRestaurantClick(review!!.restaurant.googleMapPlaceId) }) {
-                    Text(text = review!!.restaurant.name)
+                Box(
+                    modifier = Modifier
+                        .clickable { onRestaurantClick(review!!.restaurant.googleMapPlaceId) }
+                        .wrapContentWidth(Alignment.Start)
+                        .padding(start = 20.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .heightIn(min = 15.dp, max = 20.dp)
+                                .fillMaxHeight()
+                                .widthIn(min = 15.dp, max = 20.dp)
+                                .fillMaxWidth()
+                        )
+                        {Icon(
+                            imageVector = FooriendIcon.Fooriendicon,
+                            contentDescription = "Your Icon Description",
+                            modifier = Modifier.size(12.dp)
+                        )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        ClickableText(
+                            text = AnnotatedString(review!!.restaurant.name),
+                            onClick = { offset ->
+                                onRestaurantClick(review!!.restaurant.googleMapPlaceId)
+                            },
+                            style = TextStyle(
+                                color = Color.Black,
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily(Font(R.font.notosanskr_bold, FontWeight.Bold))
+                            )
+                        )
+                    }
                 }
+
             }
             Spacer(modifier = Modifier.height(20.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .verticalScroll(scrollState),
-            ) {
+                    .verticalScroll(scrollState)
+                    .padding(16.dp),
+                ) {
                 LazyRow() {
                     review?.let {
                         items(it.images) {
@@ -156,13 +268,52 @@ fun ReviewDetailScreen(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(20.dp)
+                ){
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        if (review?.isPositive == true) {
+                            Icon(
+                                imageVector = FooriendIcon.Like,
+                                contentDescription = "Positive Review",
+                                modifier = Modifier.size(12.dp)
+                            )
+                        } else if (!review?.isPositive!!) {
+                            Icon(
+                                imageVector = FooriendIcon.Dislike,
+                                contentDescription = "Negative Review",
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+
+                        if (review!!.receiptImage?.isReceiptVerified == true) {
+                            Icon(
+                                imageVector = FooriendIcon.Verified,
+                                contentDescription = "Receipt Verified",
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    }
+                }
+
+
+
+                Spacer(modifier = Modifier.height(10.dp))
                 review?.let {
                     Text(
                         text = it.content,
                         modifier = Modifier.fillMaxWidth(),
-                    )
+                        fontFamily = notosanskr,
+                        fontSize = 16.sp,
+
+                        )
                 }
+
             }
 
         }

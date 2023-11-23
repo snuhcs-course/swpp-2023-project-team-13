@@ -103,7 +103,7 @@ describe('Get adjacent restaurant test', () => {
       .expect(HttpStatus.OK);
 
     validateRestaurantList(body);
-    expect(body.restaurantList.length).toBe(1);
+    expect(body.restaurantList.length).toBe(2);
   });
 
   it('친구 끊으면 나오지 않는다', async () => {
@@ -114,7 +114,7 @@ describe('Get adjacent restaurant test', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    expect(body.restaurantList.length).toBe(0);
+    expect(body.restaurantList.length).toBe(1);
   });
 
   it('제 3의 유저의 리뷰 레스토랑은 나오지 않는다', async () => {
@@ -136,7 +136,10 @@ describe('Get adjacent restaurant test', () => {
       .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
-    expect(body.restaurantList.length).toBe(1);
+    expect(body.restaurantList.length).toBe(2);
+    for (const restaurant of body.restaurantList) {
+      expect(restaurant.id).not.toBe(newRestaurant.id);
+    }
   });
 
   it('제 3의 유저의 리뷰 레스토랑은 나오지 않는다 - 친구하면 나온다', async () => {
@@ -158,7 +161,7 @@ describe('Get adjacent restaurant test', () => {
       .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
-    expect(body.restaurantList.length).toBe(1);
+    expect(body.restaurantList.length).toBe(2);
 
     await user.follow(newUser);
 
@@ -166,6 +169,6 @@ describe('Get adjacent restaurant test', () => {
       .get(`/reviews/friends/restaurants`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
-    expect(newBody.restaurantList.length).toBe(2);
+    expect(newBody.restaurantList.length).toBe(3);
   });
 });

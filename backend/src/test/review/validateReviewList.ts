@@ -16,6 +16,7 @@ export function validateReview(body: any) {
     'issuedAt',
     'restaurant',
     'user',
+    'isPositive',
   ]);
 
   validateRestaurant(body.restaurant);

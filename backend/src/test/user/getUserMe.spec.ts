@@ -34,7 +34,7 @@ describe('getUserMe test', () => {
     await dataSource.synchronize(true);
 
     user = await UserFixture.create({
-      name: 'hi',
+      name: '황승준',
       username: 'hello',
       password: 'world',
     });

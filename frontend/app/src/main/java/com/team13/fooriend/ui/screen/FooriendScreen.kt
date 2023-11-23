@@ -2,14 +2,21 @@ package com.team13.fooriend.ui.screen
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -26,8 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import com.team13.fooriend.ui.component.ProfileSection
 import com.team13.fooriend.ui.component.ReviewLazyGrid
@@ -50,6 +61,7 @@ fun FooriendScreen(
 
     val apiService = retrofit.create(ApiService::class.java)
 
+    var fName by remember { mutableStateOf("") }
     var reviews by remember { mutableStateOf<List<Review>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var followerList by remember { mutableStateOf<List<Int>>(emptyList()) }
@@ -66,10 +78,12 @@ fun FooriendScreen(
         try {
             // API 호출하여 데이터 가져오기
             val response = apiService.getUserReviews(userId = userId)
+            var user = apiService.getUserDetail(userId = userId)
             reviews = response.reviewList
             followerList = apiService.getFollows(userId).followers.map {
                 it.id
             }
+            fName = user.name
             for(id in followerList){
                 followers += apiService.getUserDetail(id)
             }
@@ -86,10 +100,37 @@ fun FooriendScreen(
     }
 
     Column(
-        modifier = Modifier.padding(16.dp)
+//        modifier = Modifier.padding(16.dp)
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        IconButton(onClick = onBackClick) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "back")
+        Row(
+            modifier = Modifier
+                .padding(top = 7.dp)
+                .fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "back")
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Face,
+                    contentDescription = "face",
+                    modifier = Modifier
+                        .width(15.dp)
+                        .height(15.dp)
+                )
+                Spacer(modifier = Modifier.width(7.dp))
+                Text(
+                    text = fName,
+                    style = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp),
+                )
+            }
         }
 
         // profile section
@@ -142,6 +183,7 @@ fun FooriendScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
             ReviewLazyGrid(reviews = reviews, onReviewClick = onReviewClick)
         }
         // review lazy grid
