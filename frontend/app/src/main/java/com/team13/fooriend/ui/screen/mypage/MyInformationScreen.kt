@@ -79,7 +79,7 @@ fun MyInformationScreen(
                 .fillMaxHeight(0.3f)
 
         ){
-            IconButton(onClick = onBackClick, modifier = Modifier.padding(top = 7.dp).testTag("backButton") {
+            IconButton(onClick = onBackClick, modifier = Modifier.padding(top = 7.dp).testTag("backButton")) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
