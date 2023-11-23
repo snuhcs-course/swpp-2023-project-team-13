@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
@@ -53,36 +54,36 @@ class BottomBarTest {
     @Test
     fun verify_StartDestinationIsHomeScreen(){
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
     }
     @Test
     fun performClick_OnSocialIcon_navigatesToSocialScreen_startHomeScreen(){
         // Home -> Social
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, BottomNavItem.Social.route)
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
     }
 
@@ -90,23 +91,23 @@ class BottomBarTest {
     fun performClick_OnSocialIcon_navigatesToSocialScreen_startMyPageScreen(){
         // MyPage -> Social
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, BottomNavItem.Social.route)
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
     }
 
@@ -114,23 +115,23 @@ class BottomBarTest {
     fun performClick_OnMyPageIcon_navigatesToMyPageScreen_startHomeScreen(){
         // Home -> MyPage
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .performClick()
 
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, BottomNavItem.MyPage.route)
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsSelected()
     }
 
@@ -138,23 +139,23 @@ class BottomBarTest {
     fun performClick_OnMyPageIcon_navigatesToMyPageScreen_startSocialScreen(){
         // Social -> MyPage
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .performClick()
 
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, BottomNavItem.MyPage.route)
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsSelected()
     }
 
@@ -162,23 +163,23 @@ class BottomBarTest {
     fun performClick_OnHomeIcon_navigatesHomeScreen_startSocialScreen(){
         // Social -> Home
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsNotSelected()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, BottomNavItem.Home.route)
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
     }
 
@@ -186,23 +187,23 @@ class BottomBarTest {
     fun performClick_OnHomeIcon_navigatesHomeScreen_startMyPageScreen(){
         // MyPage -> Home
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsNotSelected()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, BottomNavItem.Home.route)
         composeTestRule
-            .onNodeWithText("Home")
+            .onNodeWithTag("Home")
             .assertIsSelected()
         composeTestRule
-            .onNodeWithText("Social")
+            .onNodeWithTag("Social")
             .assertIsNotSelected()
         composeTestRule
-            .onNodeWithText("MyPage")
+            .onNodeWithTag("MyPage")
             .assertIsNotSelected()
     }
 }
