@@ -64,7 +64,7 @@ describe('getUserMe test', () => {
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
+      .get(`/user/${anotherUser.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
   });
@@ -76,7 +76,7 @@ describe('getUserMe test', () => {
     }).save();
 
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
+      .get(`/user/${anotherUser.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
@@ -88,50 +88,7 @@ describe('getUserMe test', () => {
       'followingCount',
     ]);
 
-    expect(body.followingCount).toBe(0);
-    expect(body.followerCount).toBe(1);
-  });
-
-  it('팔로우 후에 count 반영되는가', async () => {
-    await supertest(testServer.getHttpServer())
-      .put(`/user/follow/${anotherUser.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    const { body } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
     expect(body.followingCount).toBe(1);
-    expect(body.followerCount).toBe(0);
-  });
-
-  it('언팔로우 후에 count 반영되는가', async () => {
-    await supertest(testServer.getHttpServer())
-      .put(`/user/follow/${anotherUser.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    const { body: beforeBody } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    expect(beforeBody.followingCount).toBe(1);
-    expect(beforeBody.followerCount).toBe(0);
-
-    await supertest(testServer.getHttpServer())
-      .put(`/user/follow/${anotherUser.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    const { body } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    expect(body.followingCount).toBe(0);
     expect(body.followerCount).toBe(0);
   });
 });

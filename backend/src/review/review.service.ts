@@ -24,6 +24,8 @@ export class ReviewService {
       restaurant: restaurantDto,
     } = createReviewDto;
 
+    console.log(createReviewDto);
+
     const restaurant =
       await this.restaurantRepository.findOrCreate(restaurantDto);
     const images = await this.imageRepository.findBy({
@@ -35,6 +37,8 @@ export class ReviewService {
       await receiptImage.markAsReceipt();
       try {
         const receiptData = await getReceiptOcr(receiptImage.url);
+        console.log(receiptData);
+        await receiptImage.markAsReceiptVerified();
         menu = receiptData['menu'];
       } catch (e) {
         throw new BadRequestException('잘못된 영수증입니다.');

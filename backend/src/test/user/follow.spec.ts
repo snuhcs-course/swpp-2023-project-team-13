@@ -1,7 +1,7 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from '../../app.module';
 import { Test } from '@nestjs/testing';
-import { DataSource } from 'typeorm';
+import { DataSource, MoreThan } from 'typeorm';
 import { appSetting } from '../../main';
 import * as supertest from 'supertest';
 import { UserEntity } from '../../user/models/user.entity';
@@ -14,6 +14,7 @@ describe('update password test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
+  let users: UserEntity[];
   let accessToken: string;
 
   beforeAll(async () => {
@@ -58,7 +59,7 @@ describe('update password test', () => {
 
     await UserFixture.create({
       name: 'hiasdfasa',
-      username: 'hellof',
+      username: 'helloe',
       password: 'world',
     });
 
@@ -77,55 +78,67 @@ describe('update password test', () => {
       .expect(HttpStatus.CREATED);
 
     accessToken = body.accessToken;
+
+    users = await UserEntity.findBy({ id: MoreThan(0) });
+
+    for (const lhs of users) {
+      for (const rhs of users) {
+        if (lhs.id === rhs.id) continue;
+        await lhs.follow(rhs);
+      }
+    }
   });
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get('/user/search/hello')
+      .get('/user/follow/1')
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get('/user/search/hello')
+      .get(`/user/follow/${user.id}`)
       .set('Authorization', 'Bearer ' + accessToken)
       .expect(HttpStatus.OK);
-  });
-
-  it('안찾아지면 랜덤 5개', async () => {
-    const { body } = await supertest(testServer.getHttpServer())
-      .get('/user/search/hell123123213o')
-      .set('Authorization', 'Bearer ' + accessToken)
-      .expect(HttpStatus.OK);
-
-    expect(body.userList.length).toBe(5);
   });
 
   it('DTO check', async () => {
     const { body } = await supertest(testServer.getHttpServer())
-      .get('/user/search/hello')
+      .get(`/user/follow/${user.id}`)
       .set('Authorization', 'Bearer ' + accessToken)
       .expect(HttpStatus.OK);
 
-    validateDtoKeys(body, ['userList']);
-
-    for (const user of body.userList) {
+    validateDtoKeys(body, ['followings', 'followers']);
+    for (const user of body.followings) {
       validateUserSummary(user);
     }
+    for (const user of body.followers) {
+      validateUserSummary(user);
+    }
+
+    expect(body.followings.length).toBe(5);
+    expect(body.followers.length).toBe(5);
   });
 
-  it('유사도 정렬', async () => {
+  it('언팔하면 반영된다', async () => {
+    const follow = await user.findFollow(users[4]);
+    await user.unfollow(follow!);
     const { body } = await supertest(testServer.getHttpServer())
-      .get('/user/search/hi')
+      .get(`/user/follow/${user.id}`)
       .set('Authorization', 'Bearer ' + accessToken)
       .expect(HttpStatus.OK);
 
-    validateDtoKeys(body, ['userList']);
+    expect(body.followings.length).toBe(4);
+    expect(body.followers.length).toBe(5);
 
-    expect(body.userList.length).toBe(5);
-    expect(body.userList[0].name).toBe('hi');
-    expect(body.userList[1].name).toBe('hi123');
-    expect(body.userList[2].name).toBe('hi1515');
-    expect(body.userList[3].name).toBe('hiasdfasa');
+    const { accessToken: anotherToken } = users[4].createToken();
+
+    const { body: anotherBody } = await supertest(testServer.getHttpServer())
+      .get(`/user/follow/${users[4].id}`)
+      .set('Authorization', 'Bearer ' + anotherToken)
+      .expect(HttpStatus.OK);
+
+    expect(anotherBody.followings.length).toBe(5);
+    expect(anotherBody.followers.length).toBe(4);
   });
 });

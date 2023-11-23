@@ -20,4 +20,9 @@ export class ImageEntity extends IssuedAtMetaEntity {
     this.isReceipt = true;
     await this.save();
   }
+
+  async markAsReceiptVerified() {
+    this.isReceiptVerified = true;
+    await this.save();
+  }
 }

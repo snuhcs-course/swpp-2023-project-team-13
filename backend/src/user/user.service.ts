@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserEntity } from './models/user.entity';
 import { CreateUserDto } from './in-dtos/createuser.dto';
 import { UserRepository } from './repostiories/user.repository';
@@ -9,7 +9,9 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const { name, username, password } = createUserDto;
+    await this.userRepository.validateUniqueness(name, username);
     const user = this.userRepository.create({ name, username, password });
+
     return this.userRepository.save(user);
   }
 

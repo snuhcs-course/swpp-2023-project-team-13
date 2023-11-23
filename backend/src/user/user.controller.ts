@@ -23,6 +23,7 @@ import { ApiOperation } from '@nestjs/swagger';
 import { UserInfoDto } from './out-dtos/userInfo.dto';
 import { UserListDto } from './out-dtos/userList.dto';
 import stringSimilarity from 'string-similarity-js';
+import { FollowDto } from './out-dtos/follow.dto';
 
 @Controller('user')
 export class UserController {
@@ -33,12 +34,6 @@ export class UserController {
 
   @Post('/')
   async signUp(@Body() createUserDto: CreateUserDto) {
-    const existingUser = await this.userRepository.findByUsername(
-      createUserDto.username,
-    );
-    if (existingUser) {
-      throw new ConflictException('Username already exists');
-    }
     await this.userService.create(createUserDto);
   }
 
@@ -89,14 +84,54 @@ export class UserController {
   }
 
   @UseGuards(JwtAccessGuard)
+  @Get('/:userId')
+  async getUserInfo(
+    @Req() { user }: UserRequest,
+    @Param('userId') userId: number,
+  ) {
+    const findUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!findUser) throw new NotFoundException('존재하지 않는 유저입니다.');
+
+    const followerCount = await findUser.getFollowerCount();
+    const followingCount = await findUser.getFollowingCount();
+
+    return new UserInfoDto(findUser, followerCount, followingCount);
+  }
+
+  @UseGuards(JwtAccessGuard)
+  @Get('/follow/:userId')
+  async getUserFollowing(
+    @Req() { user }: UserRequest,
+    @Param('userId') userId: number,
+  ) {
+    const findUser = await this.userRepository.findOneBy({
+      id: userId,
+    });
+
+    if (!findUser) throw new NotFoundException('존재하지 않는 유저입니다.');
+
+    const followerUsers = await findUser.getFollowerUsers();
+    const followingUsers = await findUser.getFollowingUsers();
+
+    return new FollowDto(followerUsers, followingUsers);
+  }
+
+  @UseGuards(JwtAccessGuard)
   @Get('/search/:name')
   async search(@Param('name') name: string) {
-    const users = await this.userRepository.searchUserByUsernameSorted(name);
+    let users = await this.userRepository.searchUserByUsernameSorted(name);
 
     users.sort(
       (a, b) =>
         -stringSimilarity(a.name, name) + stringSimilarity(b.name, name),
     );
+
+    if (users.length === 0) {
+      users = await this.userRepository.getRandomFiveUsers();
+    }
 
     return new UserListDto(users);
   }

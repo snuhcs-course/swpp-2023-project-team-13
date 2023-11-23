@@ -48,7 +48,7 @@ export class UserEntity extends IssuedAtMetaEntity {
 
   public createAccessToken() {
     return sign(this.tokenPayload, process.env.ACCESS_SECRET!, {
-      expiresIn: '1d',
+      expiresIn: process.env.ACCESS_EXPIRES_IN || '1d',
     });
   }
 
@@ -104,5 +104,35 @@ export class UserEntity extends IssuedAtMetaEntity {
     return FollowEntity.countBy({
       user: { id: this.id },
     });
+  }
+
+  async getFollowerUsers() {
+    return (
+      await FollowEntity.find({
+        where: {
+          follower: {
+            id: this.id,
+          },
+        },
+        relations: {
+          user: true,
+        },
+      })
+    ).map((follow) => follow.user);
+  }
+
+  async getFollowingUsers() {
+    return (
+      await FollowEntity.find({
+        where: {
+          user: {
+            id: this.id,
+          },
+        },
+        relations: {
+          follower: true,
+        },
+      })
+    ).map((follow) => follow.follower);
   }
 }

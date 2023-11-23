@@ -7,15 +7,21 @@ import * as supertest from 'supertest';
 import { UserEntity } from '../../user/models/user.entity';
 import { UserFixture } from '../fixture/user.fixture';
 import { HttpStatus } from '@nestjs/common';
-import { FollowEntity } from '../../user/models/follow.entity';
-import { validateDtoKeys } from '../utils';
+import { RestaurantEntity } from '../../review/models/restaurant.entity';
+import { RestaurantFixture } from '../fixture/restaurant.fixture';
+import { ReviewEntity } from '../../review/models/review.entity';
+import { ReviewFixture } from '../fixture/review.fixture';
+import { ImageFixture } from '../fixture/image.fixture';
+import { validateReview, validateReviewList } from './validateReviewList';
 
-describe('getUserMe test', () => {
+describe('My Review test', () => {
   let testServer: NestExpressApplication;
   let dataSource: DataSource;
   let user: UserEntity;
-  let accessToken: string;
   let anotherUser: UserEntity;
+  let accessToken: string;
+  let restaurant: RestaurantEntity;
+  let review: ReviewEntity;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -34,14 +40,14 @@ describe('getUserMe test', () => {
     await dataSource.synchronize(true);
 
     user = await UserFixture.create({
-      name: '황승준',
+      name: 'hi',
       username: 'hello',
       password: 'world',
     });
 
     anotherUser = await UserFixture.create({
-      name: 'hi',
-      username: 'helloasdfasdfasdf',
+      name: 'hi123',
+      username: 'hellob',
       password: 'world',
     });
 
@@ -54,84 +60,57 @@ describe('getUserMe test', () => {
       .expect(HttpStatus.CREATED);
 
     accessToken = body.accessToken;
+
+    restaurant = await RestaurantFixture.create({});
+    const image = await ImageFixture.create({});
+    review = await ReviewFixture.create({
+      restaurant,
+      images: [image],
+      user: anotherUser,
+    });
+    await ReviewFixture.create({
+      restaurant,
+      images: [image],
+      user: anotherUser,
+    });
   });
 
   it('unauthorized', async () => {
     await supertest(testServer.getHttpServer())
-      .get('/user/me')
+      .get(`/reviews/users/${anotherUser.id}`)
+
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('OK', async () => {
     await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
+      .get(`/reviews/users/${anotherUser.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
   });
 
-  it('DTO test', async () => {
-    await FollowEntity.create({
-      user: anotherUser,
-      follower: user,
-    }).save();
-
+  it('DTO check', async () => {
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
+      .get(`/reviews/users/${anotherUser.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    validateDtoKeys(body, [
-      'id',
-      'name',
-      'username',
-      'followerCount',
-      'followingCount',
-    ]);
-
-    expect(body.followingCount).toBe(0);
-    expect(body.followerCount).toBe(1);
+    validateReviewList(body);
+    expect(body.reviewList.length).toBe(2);
   });
 
-  it('팔로우 후에 count 반영되는가', async () => {
-    await supertest(testServer.getHttpServer())
-      .put(`/user/follow/${anotherUser.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
+  it('리뷰 없으면 빈 배열 준다', async () => {
+    const newUser = await UserFixture.create({
+      name: 'hinew',
+      username: 'hellonew',
+      password: 'world',
+    });
 
     const { body } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
+      .get(`/reviews/users/${newUser.id}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.OK);
 
-    expect(body.followingCount).toBe(1);
-    expect(body.followerCount).toBe(0);
-  });
-
-  it('언팔로우 후에 count 반영되는가', async () => {
-    await supertest(testServer.getHttpServer())
-      .put(`/user/follow/${anotherUser.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    const { body: beforeBody } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    expect(beforeBody.followingCount).toBe(1);
-    expect(beforeBody.followerCount).toBe(0);
-
-    await supertest(testServer.getHttpServer())
-      .put(`/user/follow/${anotherUser.id}`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    const { body } = await supertest(testServer.getHttpServer())
-      .get(`/user/me`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.OK);
-
-    expect(body.followingCount).toBe(0);
-    expect(body.followerCount).toBe(0);
+    expect(body.reviewList).toStrictEqual([]);
   });
 });

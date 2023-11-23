@@ -6,8 +6,13 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { setUpSwagger } from './core/swagger';
+import { CommandFactory } from 'nest-commander';
 
 async function bootstrap() {
+  if (process.env.NODE_ENV!.includes('command')) {
+    return CommandFactory.run(AppModule);
+  }
+
   const app = await NestFactory.create(AppModule);
   await setUpSwagger(app);
   await appSetting(app);

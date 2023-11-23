@@ -49,6 +49,17 @@ describe('signup test', () => {
     expect(await UserEntity.count()).toBe(1);
   });
 
+  it('Check if the name already exists', async () => {
+    await supertest(testServer.getHttpServer()).post('/user').send({
+      name: 'hi',
+      username: 'helloasdfasdf',
+      password: 'password123',
+    });
+    expect(HttpStatus.CONFLICT);
+
+    expect(await UserEntity.count()).toBe(1);
+  });
+
   it('Check if the name field is not empty', async () => {
     const response = await supertest(testServer.getHttpServer())
       .post('/user')
