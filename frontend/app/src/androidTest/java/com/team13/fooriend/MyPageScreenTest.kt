@@ -1,9 +1,12 @@
 package com.team13.fooriend
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertAll
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasContentDescription
@@ -35,30 +38,75 @@ class MyPageScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     lateinit var navController: TestNavHostController
+    lateinit var context: Context
 
     @Before
     fun setUpNavHost(){
         composeTestRule.setContent {
-            navController = TestNavHostController(LocalContext.current)
+            context = LocalContext.current
+            navController = TestNavHostController(context)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
-            HomeNavGraph(navController = navController, context = LocalContext.current, startDestination = BottomNavItem.MyPage.route)
+            HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.MyPage.route)
         }
+        composeTestRule.waitUntil(timeoutMillis = 10000) {
+            composeTestRule
+                .onAllNodesWithTag("reviewLazyGridItem")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onRoot().printToLog("MyPageScreenTest")
         val route = navController.currentBackStackEntry?.destination?.route
         Log.d("MyPageScreenTest", route.toString())
     }
     @Test
     fun performClick_OnSettingButton_navigatesToMyInformationScreen(){
-        composeTestRule.waitUntil {
-            composeTestRule
-                .onAllNodesWithTag("myInfoButton")
-                .fetchSemanticsNodes().size == 1
-        }
         composeTestRule
             .onNodeWithTag("myInfoButton")
             .assertIsDisplayed()
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, "myInfo")
+    }
+
+    @Test
+    fun performClick_OnReviewLazyGridItem_navigatesToReviewDetailScreen(){
+        composeTestRule
+            .onAllNodesWithTag("reviewLazyGridItem")[0]
+            .assertIsDisplayed()
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "reviewDetail/{reviewId}")
+    }
+
+    @Test
+    fun performClick_OnFollowersButton_showFollowersList(){
+        composeTestRule
+            .onNodeWithTag("followersButton")
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitUntil {
+            composeTestRule
+                .onAllNodesWithTag("popup")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule
+            .onNodeWithTag("popup")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun performClick_OnFollowersButton_showFollowingList(){
+        composeTestRule
+            .onNodeWithTag("followingButton")
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitUntil {
+            composeTestRule
+                .onAllNodesWithTag("popup")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule
+            .onNodeWithTag("popup")
+            .assertIsDisplayed()
     }
 
 }

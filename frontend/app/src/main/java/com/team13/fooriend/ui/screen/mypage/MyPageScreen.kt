@@ -170,18 +170,20 @@ fun MyPageScreen(
             if (showPopup) {
                 Popup(
                     alignment = Alignment.Center,
-                    onDismissRequest = { showPopup = false }
+                    onDismissRequest = { showPopup = false },
                 ) {
                     // Your popup content
                     Card(
                         modifier = Modifier
                             .wrapContentSize()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .testTag("popup"),
                     ) {
                         Column {
                             // Tabs for Followers and Following
                             var selectedTab by remember { mutableStateOf(if(clickedFollower) 0 else 1) }
                             TabRow(
+                                modifier = Modifier.testTag("tabRow"),
                                 selectedTabIndex = selectedTab,
                                 containerColor = Color.White,
                                 indicator = { tabPositions ->

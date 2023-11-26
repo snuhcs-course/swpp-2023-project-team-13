@@ -1,5 +1,6 @@
 package com.team13.fooriend
 
+import android.content.Context
 import androidx.annotation.UiThread
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -23,10 +24,11 @@ class LogInScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     lateinit var navController: TestNavHostController
+    lateinit var context: Context
     @Before
     fun setUpNavHost(){
         composeTestRule.setContent {
-            val context = LocalContext.current
+            context = LocalContext.current
             saveAccessToken(context, "")
             navController = TestNavHostController(context)
             navController.navigatorProvider.addNavigator(ComposeNavigator())

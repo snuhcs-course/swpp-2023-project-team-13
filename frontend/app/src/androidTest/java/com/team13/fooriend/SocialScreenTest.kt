@@ -7,18 +7,21 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import com.team13.fooriend.core.graph.HomeNavGraph
 import com.team13.fooriend.ui.navigation.BottomNavItem
+import okhttp3.internal.wait
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class MyInformationScreen {
+class SocialScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     lateinit var navController: TestNavHostController
@@ -30,37 +33,25 @@ class MyInformationScreen {
             context = LocalContext.current
             navController = TestNavHostController(context)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
-            HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.MyPage.route)
+            HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.Social.route)
         }
-        composeTestRule.waitUntil {
-            composeTestRule
-                .onAllNodesWithTag("myInfoButton")
-                .fetchSemanticsNodes().size == 1
-        }
-        composeTestRule
-            .onNodeWithTag("myInfoButton")
-            .assertIsDisplayed()
-            .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
-        Log.d("MyInfoScreenTest", route.toString())
-    }
-    @Test
-    fun performClick_OnLogOutButton_navigatesToLoginScreen(){
-        composeTestRule
-            .onNodeWithText("로그아웃")
-            .assertIsDisplayed()
-            .performClick()
-        val route = navController.currentBackStackEntry?.destination?.route
-        Assert.assertEquals(route, "logout")
+        Log.d("SocialScreenTest", route.toString())
     }
 
     @Test
-    fun performClick_OnBackButton_navigatesToMyPageScreen(){
+    fun performClick_OnReviewLazyGridItem_navigatesToReviewDetailScreen(){
+        composeTestRule.onRoot().printToLog("test1")
+        composeTestRule.waitUntil(timeoutMillis = 10000) {
+            composeTestRule
+                .onAllNodesWithTag("reviewLazyGridItem")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
         composeTestRule
-            .onNodeWithTag("backButton")
+            .onAllNodesWithTag("reviewLazyGridItem")[0]
             .assertIsDisplayed()
             .performClick()
-        val route = navController.backStack.last().destination.route
-        Assert.assertEquals(route, BottomNavItem.MyPage.route)
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "reviewDetail/{reviewId}")
     }
 }
