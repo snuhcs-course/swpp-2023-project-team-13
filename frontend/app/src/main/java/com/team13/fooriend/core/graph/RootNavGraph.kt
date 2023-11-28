@@ -26,7 +26,7 @@ fun RootNavigationGraph(navController: NavHostController, context: Context) {
 
 private fun isLoggedIn(context: Context): Boolean {
     val accesstoken = getAccessToken(context)
-    return accesstoken != ""
+    return accesstoken != null && accesstoken != ""
 }
 
 object Graph {
