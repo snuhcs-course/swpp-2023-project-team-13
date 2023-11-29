@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -99,6 +100,7 @@ fun SignUpScreen(
         //Text(text = "Sign Up Page")
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
+            modifier = Modifier.testTag("nameTextField"),
             value = name,
             onValueChange = nameValue,
             colors = TextFieldDefaults.colors(
@@ -119,6 +121,7 @@ fun SignUpScreen(
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
+            modifier = Modifier.testTag("idTextField"),
             value = id,
             onValueChange = idValue,
             colors = TextFieldDefaults.colors(
@@ -139,6 +142,7 @@ fun SignUpScreen(
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
+            modifier = Modifier.testTag("passwordTextField"),
             value = password,
             onValueChange = passwordValue,
             colors = TextFieldDefaults.colors(
@@ -179,6 +183,7 @@ fun SignUpScreen(
         )
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
+            modifier = Modifier.testTag("passwordCheckTextField"),
             value = passwordCheck,
             onValueChange = passwordCheckValue,
             colors = TextFieldDefaults.colors(
