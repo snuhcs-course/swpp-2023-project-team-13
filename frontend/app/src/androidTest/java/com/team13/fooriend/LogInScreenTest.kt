@@ -14,6 +14,7 @@ import com.team13.fooriend.core.graph.AuthScreen
 import com.team13.fooriend.core.graph.Graph
 import com.team13.fooriend.core.graph.RootNavigationGraph
 import com.team13.fooriend.ui.util.saveAccessToken
+import okhttp3.internal.wait
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -68,7 +69,7 @@ class LogInScreenTest {
             .performTextInput("admin")
         composeTestRule
             .onNodeWithText("PASSWORD")
-            .performTextInput("admin") // please change wrong pwd
+            .performTextInput("admin")
         composeTestRule
             .onNodeWithText("LOGIN")
             .performClick()
@@ -87,9 +88,10 @@ class LogInScreenTest {
         composeTestRule
             .onNodeWithText("LOGIN")
             .performClick()
-        composeTestRule.runOnUiThread {
-            val route = navController.currentBackStackEntry?.destination?.route
-            Assert.assertEquals(route, AuthScreen.Login.route)
+        composeTestRule.waitUntil {
+            navController.currentBackStackEntry?.destination?.route == Graph.HOME
         }
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, Graph.HOME)
     }
 }

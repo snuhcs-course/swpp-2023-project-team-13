@@ -44,12 +44,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.team13.fooriend.MainActivity
 import com.team13.fooriend.ui.theme.CRed
 import com.team13.fooriend.ui.theme.FooriendColor
 import com.team13.fooriend.ui.util.ApiService
 import com.team13.fooriend.ui.util.LoginBody
 import com.team13.fooriend.ui.util.LoginResponse
 import com.team13.fooriend.ui.util.saveAccessToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -154,7 +156,7 @@ fun LogInScreen(
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             onClick = { if(id.isNotEmpty() && password.isNotEmpty()){
-                coroutineScope.launch{
+                coroutineScope.launch(Dispatchers.Main){
                     var response: LoginResponse? = null
                     try{
                         response = apiService.login(LoginBody(id, password))
