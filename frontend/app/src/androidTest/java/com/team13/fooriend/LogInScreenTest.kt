@@ -1,6 +1,7 @@
 package com.team13.fooriend
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
@@ -93,5 +94,6 @@ class LogInScreenTest {
         }
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, Graph.HOME)
+        Log.d("testLog", context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE).getString("AccessToken", null).toString())
     }
 }

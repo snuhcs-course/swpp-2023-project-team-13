@@ -12,6 +12,7 @@ import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import com.team13.fooriend.core.graph.HomeNavGraph
 import com.team13.fooriend.ui.navigation.BottomNavItem
+import com.team13.fooriend.ui.util.saveAccessToken
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -27,6 +28,7 @@ class ReviewDetailScreenTest {
     fun setUpNavHost_fromSocialScreen(){
         composeTestRule.setContent {
             context = LocalContext.current
+            saveAccessToken(context, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJtZWNoYW5pY2pvIiwiaWF0IjoxNzAxMjY3NTc5LCJleHAiOjE3MDkwNDM1Nzl9.QcaBr1w8RKQ_FkQ_Yce_J7fOn6TuvVhjl3H0jjMANmY")
             navController = TestNavHostController(context)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.Social.route)

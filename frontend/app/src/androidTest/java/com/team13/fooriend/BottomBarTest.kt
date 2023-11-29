@@ -17,6 +17,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.team13.fooriend.ui.component.BottomBar
 import com.team13.fooriend.ui.navigation.BottomNavItem
+import com.team13.fooriend.ui.util.saveAccessToken
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -30,9 +31,9 @@ class BottomBarTest {
 
     @Before
     fun setUpNavHost(){
-        // 위치 정보 공유 허가 코드 작성 필요 -> 아래에 작성함
         composeTestRule.setContent {
             context = LocalContext.current
+            saveAccessToken(context, "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJtZWNoYW5pY2pvIiwiaWF0IjoxNzAxMjY3NTc5LCJleHAiOjE3MDkwNDM1Nzl9.QcaBr1w8RKQ_FkQ_Yce_J7fOn6TuvVhjl3H0jjMANmY")
             navController = TestNavHostController(context)
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             BottomBar(navController = navController, context = context, showBottomBar = true)
