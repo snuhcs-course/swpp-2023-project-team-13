@@ -245,7 +245,8 @@ fun UserListItem(user: User, onUserClick: (Int) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onUserClick(user.id) },
+            .clickable { onUserClick(user.id) }
+            .testTag("userListItem"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(

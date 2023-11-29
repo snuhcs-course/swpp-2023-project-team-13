@@ -390,7 +390,8 @@ fun TopRestaurantBar(
             onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, bottom = 8.dp, end = 8.dp),
+                .padding(start = 8.dp, bottom = 8.dp, end = 8.dp)
+                .testTag("postingButton"),
             colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
             border = BorderStroke(1.dp, Color.Black)
 

@@ -64,7 +64,7 @@ class LogInScreenTest {
     }
 
     @Test
-    fun performClick_OnLogInButton_withWrongIDorPWD(){
+    fun performClick_OnLogInButton_withWrongIDorPWD1(){
         composeTestRule
             .onNodeWithText("ID")
             .performTextInput("admin")
@@ -77,12 +77,45 @@ class LogInScreenTest {
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, AuthScreen.Login.route)
     }
-
     @Test
-    fun performClick_OnLogInButton_withCorrectIDandPWD(){
+    fun performClick_OnLogInButton_withWrongIDorPWD2(){
         composeTestRule
             .onNodeWithText("ID")
             .performTextInput("mechanicjo")
+        composeTestRule
+            .onNodeWithText("PASSWORD")
+            .performTextInput("1q2w3e4")
+        composeTestRule
+            .onNodeWithText("LOGIN")
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, AuthScreen.Login.route)
+    }
+
+    @Test
+    fun performClick_OnLogInButton_withCorrectIDandPWD1(){
+        composeTestRule
+            .onNodeWithText("ID")
+            .performTextInput("mechanicjo")
+        composeTestRule
+            .onNodeWithText("PASSWORD")
+            .performTextInput("1q2w3e4r")
+        composeTestRule
+            .onNodeWithText("LOGIN")
+            .performClick()
+        composeTestRule.waitUntil {
+            navController.currentBackStackEntry?.destination?.route == Graph.HOME
+        }
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, Graph.HOME)
+        Log.d("testLog", context.getSharedPreferences("MyAppPrefs", Context.MODE_PRIVATE).getString("AccessToken", null).toString())
+    }
+
+    @Test
+    fun performClick_OnLogInButton_withCorrectIDandPWD2(){
+        composeTestRule
+            .onNodeWithText("ID")
+            .performTextInput("jakehsj")
         composeTestRule
             .onNodeWithText("PASSWORD")
             .performTextInput("1q2w3e4r")

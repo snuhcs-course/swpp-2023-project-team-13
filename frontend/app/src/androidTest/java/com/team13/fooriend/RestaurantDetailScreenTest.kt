@@ -3,10 +3,14 @@ package com.team13.fooriend
 import android.content.Context
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
@@ -61,6 +65,27 @@ class RestaurantDetailScreenTest {
     }
 
     @Test
+    fun display_IsLikeButton(){
+        composeTestRule
+            .onNodeWithTag("isLikeButton")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun display_IsDislikeButton(){
+        composeTestRule
+            .onNodeWithTag("isDislikeButton")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun display_postingButton(){
+        composeTestRule
+            .onNodeWithTag("postingButton")
+            .assertIsDisplayed()
+    }
+
+    @Test
     fun performClick_OnBackButton_navigatesToReviewDetailScreen(){
         composeTestRule
             .onNodeWithTag("backButton")
@@ -85,7 +110,7 @@ class RestaurantDetailScreenTest {
         composeTestRule
             .onNodeWithTag("isLikeButton")
             .assertIsDisplayed()
-            .performClick()
+            .assertHasClickAction()
     }
 
     @Test
@@ -93,6 +118,16 @@ class RestaurantDetailScreenTest {
         composeTestRule
             .onNodeWithTag("isDislikeButton")
             .assertIsDisplayed()
+            .assertHasClickAction()
+    }
+
+    @Test
+    fun performClick_OnPostingButton_navigatesToPostingScreen(){
+        composeTestRule
+            .onNodeWithTag("postingButton")
+            .assertIsDisplayed()
             .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "writeReview/{restaurantPlaceId}/{restaurantName}")
     }
 }

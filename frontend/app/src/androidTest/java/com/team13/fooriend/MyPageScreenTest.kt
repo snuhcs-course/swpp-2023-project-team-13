@@ -111,4 +111,40 @@ class MyPageScreenTest {
             .assertIsDisplayed()
     }
 
+    @Test
+    fun performClick_OnFollwerNameClick_navigatesToFooriendScreen(){
+        composeTestRule
+            .onNodeWithTag("followersButton")
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitUntil {
+            composeTestRule
+                .onAllNodesWithTag("popup")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule
+            .onAllNodesWithTag("userListItem")[0]
+            .assertIsDisplayed()
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "fooriend/{userId}")
+    }
+    @Test
+    fun performClick_OnFollwingNameClick_navigatesToFooriendScreen(){
+        composeTestRule
+            .onNodeWithTag("followingButton")
+            .assertIsDisplayed()
+            .performClick()
+        composeTestRule.waitUntil {
+            composeTestRule
+                .onAllNodesWithTag("popup")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule
+            .onAllNodesWithTag("userListItem")[0]
+            .assertIsDisplayed()
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "fooriend/{userId}")
+    }
 }
