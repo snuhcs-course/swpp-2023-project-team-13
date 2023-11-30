@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
@@ -76,6 +77,11 @@ class HomeScreenTest {
 
     @Test
     fun verify_StartDestinationIsHomeScreen(){
+        composeTestRule.waitUntil(10000) {
+            composeTestRule
+                .onAllNodesWithTag("HomeScreen")
+                .fetchSemanticsNodes().isNotEmpty()
+        }
         composeTestRule
             .onNodeWithTag("HomeScreen")
             .assertIsDisplayed()

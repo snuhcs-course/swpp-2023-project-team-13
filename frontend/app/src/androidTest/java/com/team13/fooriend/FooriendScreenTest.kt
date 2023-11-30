@@ -98,8 +98,8 @@ class FooriendScreenTest {
             .performClick()
         composeTestRule.waitUntil(timeoutMillis = 10000) {
             composeTestRule
-                .onAllNodesWithTag("followButton")
-                .fetchSemanticsNodes().isNotEmpty()
+                .onAllNodesWithTag("unfollowButton")
+                .fetchSemanticsNodes().isEmpty()
         }
         composeTestRule
             .onNodeWithTag("followButton")
