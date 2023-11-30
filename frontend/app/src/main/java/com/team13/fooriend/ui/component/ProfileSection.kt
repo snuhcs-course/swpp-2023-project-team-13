@@ -87,7 +87,7 @@ fun ProfileSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp).testTag("profileSection"),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
@@ -141,7 +141,7 @@ fun ProfileSection(
                             isFollowing = true
                         } },
                         modifier = Modifier
-                            .fillMaxWidth(0.8f),
+                            .fillMaxWidth(0.8f).testTag("followButton"),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = FooriendColor.FooriendGreen,
                             contentColor = Color.White,
@@ -159,7 +159,7 @@ fun ProfileSection(
                             isFollowing = false
                             } },
                         modifier = Modifier
-                            .fillMaxWidth(0.8f),
+                            .fillMaxWidth(0.8f).testTag("unfollowButton"),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = FooriendColor.FooriendGray,
                             contentColor = Color.White,
