@@ -48,6 +48,7 @@ import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -84,7 +85,6 @@ fun PostingScreen(
     onCloseClick: () -> Unit = {},
     onPostClick: () -> Unit = {},
 ){
-
     val state = rememberScrollState()
     val (content, contentValue) = remember { mutableStateOf("") }
     var selectImages by remember { mutableStateOf(listOf<Uri>()) }
@@ -115,6 +115,11 @@ fun PostingScreen(
     var isLoading by remember { mutableStateOf(false) }
 
     var contentState by remember { mutableStateOf(TextFieldValue("")) }
+
+    val reviewCountManager = ReviewCountManager()
+    val toastObserver = ToastObserver(context)
+
+    reviewCountManager.addObserver(toastObserver)
 
     Column(
         modifier = Modifier
@@ -336,6 +341,7 @@ fun PostingScreen(
                 coroutineScope.launch {
                     Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
                     val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
+                    var myReviewCount = apiService.getMyReviews().reviewList.size
                     Log.d("PostingScreen", "restaurant: $response")
                     val restaurant = RestaurantInfo(
                         googleMapPlaceId = restaurantPlaceId,
@@ -386,8 +392,9 @@ fun PostingScreen(
                             restaurant = restaurant
                         )
                     )
-                    Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
                     onPostClick()
+                    reviewCountManager.updateReviewCount(myReviewCount)
+                    Log.d(myReviewCount.toString(), "log")
                 }
             },
                 modifier = Modifier
