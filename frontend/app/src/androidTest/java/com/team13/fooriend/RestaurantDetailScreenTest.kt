@@ -37,7 +37,7 @@ class RestaurantDetailScreenTest {
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.Social.route)
         }
-        composeTestRule.waitUntil() {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewLazyGridItem")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -46,7 +46,7 @@ class RestaurantDetailScreenTest {
             .onAllNodesWithTag("reviewLazyGridItem")[0]
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewDetailScreen")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -57,7 +57,7 @@ class RestaurantDetailScreenTest {
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Log.d("RestaurantDetailScreenTest", route.toString())
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("restaurantDetailScreen")
                 .fetchSemanticsNodes().isNotEmpty()

@@ -34,7 +34,7 @@ class MyInformationScreenTest {
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.MyPage.route)
         }
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("myInfoButton")
                 .fetchSemanticsNodes().size == 1

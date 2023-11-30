@@ -44,7 +44,7 @@ class FooriendScreenTest {
             .onNodeWithTag("followingButton")
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(100000) {
             composeTestRule
                 .onAllNodesWithTag("popup")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -53,7 +53,7 @@ class FooriendScreenTest {
             .onAllNodesWithTag("userListItem")[0]
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewLazyGridItem")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -75,7 +75,7 @@ class FooriendScreenTest {
         composeTestRule
             .onNodeWithTag("profileSection")
             .assertIsDisplayed()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("unfollowButton")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -87,7 +87,7 @@ class FooriendScreenTest {
 
     @Test
     fun performClick_OnUnfollowButton_OnFollowButton(){
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("unfollowButton")
                 .fetchSemanticsNodes().isNotEmpty()

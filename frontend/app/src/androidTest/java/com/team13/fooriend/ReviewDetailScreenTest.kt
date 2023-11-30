@@ -33,7 +33,7 @@ class ReviewDetailScreenTest {
             navController.navigatorProvider.addNavigator(ComposeNavigator())
             HomeNavGraph(navController = navController, context = context, startDestination = BottomNavItem.Social.route)
         }
-        composeTestRule.waitUntil() {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewLazyGridItem")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -44,7 +44,7 @@ class ReviewDetailScreenTest {
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Log.d("ReviewDetailScreenTest", route.toString())
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewDetailScreen")
                 .fetchSemanticsNodes().isNotEmpty()

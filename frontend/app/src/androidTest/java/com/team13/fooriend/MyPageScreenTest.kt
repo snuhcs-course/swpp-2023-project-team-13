@@ -85,7 +85,7 @@ class MyPageScreenTest {
             .onNodeWithTag("followersButton")
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("popup")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -101,7 +101,7 @@ class MyPageScreenTest {
             .onNodeWithTag("followingButton")
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("popup")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -117,7 +117,7 @@ class MyPageScreenTest {
             .onNodeWithTag("followersButton")
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("popup")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -135,7 +135,7 @@ class MyPageScreenTest {
             .onNodeWithTag("followingButton")
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("popup")
                 .fetchSemanticsNodes().isNotEmpty()

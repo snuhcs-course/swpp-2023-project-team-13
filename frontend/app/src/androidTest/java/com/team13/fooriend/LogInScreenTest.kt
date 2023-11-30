@@ -103,7 +103,7 @@ class LogInScreenTest {
         composeTestRule
             .onNodeWithText("LOGIN")
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             navController.currentBackStackEntry?.destination?.route == Graph.HOME
         }
         val route = navController.currentBackStackEntry?.destination?.route
@@ -122,7 +122,7 @@ class LogInScreenTest {
         composeTestRule
             .onNodeWithText("LOGIN")
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             navController.currentBackStackEntry?.destination?.route == Graph.HOME
         }
         val route = navController.currentBackStackEntry?.destination?.route

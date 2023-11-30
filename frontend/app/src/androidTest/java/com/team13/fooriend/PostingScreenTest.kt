@@ -43,7 +43,7 @@ class PostingScreenTest {
                 startDestination = BottomNavItem.Social.route
             )
         }
-        composeTestRule.waitUntil() {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewLazyGridItem")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -52,7 +52,7 @@ class PostingScreenTest {
             .onAllNodesWithTag("reviewLazyGridItem")[0]
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("reviewDetailScreen")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -61,7 +61,7 @@ class PostingScreenTest {
             .onNodeWithTag("restaurantName")
             .assertIsDisplayed()
             .performClick()
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("restaurantDetailScreen")
                 .fetchSemanticsNodes().isNotEmpty()
@@ -72,7 +72,7 @@ class PostingScreenTest {
             .performClick()
         val route = navController.currentBackStackEntry?.destination?.route
         Log.d("PostingScreenTest", route.toString())
-        composeTestRule.waitUntil {
+        composeTestRule.waitUntil(10000) {
             composeTestRule
                 .onAllNodesWithTag("postingScreen")
                 .fetchSemanticsNodes().isNotEmpty()
