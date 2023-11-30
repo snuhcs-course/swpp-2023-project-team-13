@@ -295,7 +295,7 @@ fun PostingScreen(
                             .fillMaxHeight()
                             .background(Color.Gray)
                             .clickable {
-                                galleryLauncher.launch(
+                                receiptLauncher.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
                             }
