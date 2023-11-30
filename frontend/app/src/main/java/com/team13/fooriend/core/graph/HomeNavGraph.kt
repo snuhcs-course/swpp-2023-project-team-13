@@ -97,7 +97,7 @@ fun HomeNavGraph(
             MyInformationScreen(
                 context = context,
                 onBackClick = { navController.navigateUp() },
-                onChangePwd = {
+                onLogout = {
                     saveAccessToken(context, "")
                     navController.navigate("logout") },
             )

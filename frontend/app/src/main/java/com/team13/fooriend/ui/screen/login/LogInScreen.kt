@@ -1,6 +1,7 @@
 package com.team13.fooriend.ui.screen.login
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource

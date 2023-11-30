@@ -54,7 +54,7 @@ import com.team13.fooriend.ui.util.createRetrofit
 fun MyInformationScreen(
     context: Context,
     onBackClick: () -> Unit,
-    onChangePwd: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     val retrofit = createRetrofit(context)
     val apiService = retrofit.create(ApiService::class.java)
@@ -134,7 +134,7 @@ fun MyInformationScreen(
             Text(text = username, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(35.dp))
             Button(
-                onClick = onChangePwd,
+                onClick = onLogout,
                 colors = ButtonDefaults.buttonColors(
                     FooriendColor.FooriendGreen,
                 )) {
@@ -153,6 +153,6 @@ fun MyInformationScreen(
 //    MyInformationScreen(
 //        context = TODO(),
 //        onBackClick = {},
-//        onChangePwd = {}
+//        onLogout = {}
 //    )
 //}
