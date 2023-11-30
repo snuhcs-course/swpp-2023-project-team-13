@@ -116,8 +116,12 @@ class SignUpScreenTest {
     @Test
     fun canTextInput_OnPasswordTextField(){
         composeTestRule
-            .onNodeWithText("PASSWORD")
+            .onNodeWithTag("passwordTextField")
             .performTextInput("PASSWORD_test")
+        composeTestRule
+            .onNodeWithTag("passwordVisibilityButton")
+            .assertIsDisplayed()
+            .performClick()
         composeTestRule
             .onNodeWithTag("passwordTextField")
             .assertIsDisplayed()
@@ -127,8 +131,12 @@ class SignUpScreenTest {
     @Test
     fun canTextInput_OnPasswordCheckTextField(){
         composeTestRule
-            .onNodeWithText("PASSWORD CONFIRM")
+            .onNodeWithTag("passwordCheckTextField")
             .performTextInput("PASSWORD_CHECK_test")
+        composeTestRule
+            .onNodeWithTag("passwordConfirmVisibilityButton")
+            .assertIsDisplayed()
+            .performClick()
         composeTestRule
             .onNodeWithTag("passwordCheckTextField")
             .assertIsDisplayed()
@@ -158,6 +166,75 @@ class SignUpScreenTest {
         composeTestRule
             .onNodeWithTag("passwordCheckTextField")
             .performTextInput("PASSWORD_CHECK_test")
+        composeTestRule
+            .onNodeWithText("SIGN UP")
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "SIGN_UP")
+    }
+
+    @Test
+    fun performClick_OnSignUpButton_WithEmptyNAME(){
+        composeTestRule
+            .onNodeWithTag("idTextField")
+            .performTextInput("ID_test")
+        composeTestRule
+            .onNodeWithTag("passwordTextField")
+            .performTextInput("PASSWORD_test")
+        composeTestRule
+            .onNodeWithTag("passwordCheckTextField")
+            .performTextInput("PASSWORD_test")
+        composeTestRule
+            .onNodeWithText("SIGN UP")
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "SIGN_UP")
+    }
+
+    @Test
+    fun performClick_OnSignUpButton_WithEmptyID(){
+        composeTestRule
+            .onNodeWithTag("nameTextField")
+            .performTextInput("NAME_test")
+        composeTestRule
+            .onNodeWithTag("passwordTextField")
+            .performTextInput("PASSWORD_test")
+        composeTestRule
+            .onNodeWithTag("passwordCheckTextField")
+            .performTextInput("PASSWORD_test")
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "SIGN_UP")
+    }
+
+    @Test
+    fun performClick_OnSignUpButton_WithEmptyPassword(){
+        composeTestRule
+            .onNodeWithTag("nameTextField")
+            .performTextInput("NAME_test")
+        composeTestRule
+            .onNodeWithTag("idTextField")
+            .performTextInput("ID_test")
+        composeTestRule
+            .onNodeWithTag("passwordCheckTextField")
+            .performTextInput("PASSWORD_test")
+        composeTestRule
+            .onNodeWithText("SIGN UP")
+            .performClick()
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(route, "SIGN_UP")
+    }
+
+    @Test
+    fun performClick_OnSignUpButton_WithEmptyPasswordConfirm(){
+        composeTestRule
+            .onNodeWithTag("nameTextField")
+            .performTextInput("NAME_test")
+        composeTestRule
+            .onNodeWithTag("idTextField")
+            .performTextInput("ID_test")
+        composeTestRule
+            .onNodeWithTag("passwordTextField")
+            .performTextInput("PASSWORD_test")
         composeTestRule
             .onNodeWithText("SIGN UP")
             .performClick()

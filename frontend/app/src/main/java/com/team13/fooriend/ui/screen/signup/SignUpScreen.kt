@@ -177,6 +177,7 @@ fun SignUpScreen(
                     }
                     IconButton(
                         onClick = { setPasswordVisibility(!isPasswordVisible) },
+                        modifier = Modifier.testTag("passwordVisibilityButton")
                     ) {
                         Icon(
                             icon,
@@ -219,6 +220,7 @@ fun SignUpScreen(
                     }
                     IconButton(
                         onClick = { setPasswordConfirmVisibility(!isPasswordConfirmVisible) },
+                        modifier = Modifier.testTag("passwordConfirmVisibilityButton")
                     ) {
                         Icon(
                             icon,
