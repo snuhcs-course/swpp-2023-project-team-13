@@ -29,6 +29,15 @@ export class ReviewService {
     let images = await this.imageRepository.findBy({
       id: In(imageIds.concat([receiptImageId ?? -1])),
     });
+
+    let isPositive = false;
+    try {
+      isPositive = await getReviewIsPositive(content);
+    } catch (e) {
+      console.log(e);
+      throw new BadRequestException('리뷰 분석 중 오류가 발생했습니다.');
+    }
+
     const receiptImage = images.find((image) => image.id === receiptImageId);
     let menu = [];
     if (receiptImage) {
@@ -40,13 +49,6 @@ export class ReviewService {
       } catch (e) {
         images = images.filter((image) => image.id !== receiptImageId);
       }
-    }
-
-    let isPositive = false;
-    try {
-      isPositive = await getReviewIsPositive(content);
-    } catch (e) {
-      throw new BadRequestException('리뷰 분석 중 오류가 발생했습니다.');
     }
 
     return await ReviewEntity.create({
