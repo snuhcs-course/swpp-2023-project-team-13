@@ -38,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +54,7 @@ import com.team13.fooriend.ui.util.createRetrofit
 fun MyInformationScreen(
     context: Context,
     onBackClick: () -> Unit,
-    onChangePwd: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     val retrofit = createRetrofit(context)
     val apiService = retrofit.create(ApiService::class.java)
@@ -77,7 +79,7 @@ fun MyInformationScreen(
                 .fillMaxHeight(0.3f)
 
         ){
-            IconButton(onClick = onBackClick, modifier = Modifier.padding(top = 7.dp)) {
+            IconButton(onClick = onBackClick, modifier = Modifier.padding(top = 7.dp).testTag("backButton")) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
@@ -132,7 +134,7 @@ fun MyInformationScreen(
             Text(text = username, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.height(35.dp))
             Button(
-                onClick = onChangePwd,
+                onClick = onLogout,
                 colors = ButtonDefaults.buttonColors(
                     FooriendColor.FooriendGreen,
                 )) {
@@ -151,6 +153,6 @@ fun MyInformationScreen(
 //    MyInformationScreen(
 //        context = TODO(),
 //        onBackClick = {},
-//        onChangePwd = {}
+//        onLogout = {}
 //    )
 //}

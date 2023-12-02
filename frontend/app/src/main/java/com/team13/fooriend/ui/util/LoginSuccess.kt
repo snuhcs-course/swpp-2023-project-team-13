@@ -1,6 +1,7 @@
 package com.team13.fooriend.ui.util
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,7 @@ fun LoginSuccess(context: Context, navController: NavHostController = rememberNa
         "reviewDetail/{reviewId}" -> false
         "fooriend/{userId}" -> false
         "writeReview/{restaurantPlaceId}" -> false
-        "changePwd" -> false
+        "logout" -> false
         "myInfo" -> false
         else -> true // in all other cases show the bottom bar
     }

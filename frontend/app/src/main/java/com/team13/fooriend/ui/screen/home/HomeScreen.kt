@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.location.LocationCallback
@@ -105,7 +106,7 @@ fun HomeScreen(
         isFirstLoad = false
     }
     if(!isFirstLoad) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize().testTag("HomeScreen")) {
             AndroidView(
                 factory = { innerContext ->
                     MapView(innerContext).apply {
@@ -224,6 +225,7 @@ fun HomeScreen(
                                     if(response.result.types.contains("restaurant") || response.result.types.contains("bar") || response.result.types.contains("cafe")){
                                         map.setOnInfoWindowClickListener { clickedMarker ->
                                             if (clickedMarker.id == marker?.id) {
+                                                Log.d("MyMap", "onReviewClickParameter: ${poi.placeId + poi.name.lines()[0]}")
                                                 onReviewClick(poi.placeId + poi.name.lines()[0]) // onReviewClick(poi.placeId)
                                             }
                                             true
@@ -279,6 +281,7 @@ fun HomeScreen(
                                 defaultClusterRenderer.getMarker(it)?.showInfoWindow()
                                 Log.d("MyMap", "marker clicked: ${defaultClusterRenderer.getMarker(it)?.title}")
                                 Log.d("MyMap", "marker clicked: ${clusterManager.markerCollection.markers}")
+                                Log.d("MyMap", "marker clicked: ${defaultClusterRenderer.getMarker(it)?.id}")
                                 false
                             }
                             defaultClusterRenderer.setOnClusterItemInfoWindowClickListener { item ->

@@ -51,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -112,7 +113,7 @@ fun ReviewDetailScreen(
         Column(
             modifier = Modifier
                 .padding(top = 7.dp)
-                .fillMaxSize(),
+                .fillMaxSize().testTag("reviewDetailScreen"),
 
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
@@ -121,7 +122,7 @@ fun ReviewDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = onBackClick) {
+                IconButton(onClick = onBackClick, modifier = Modifier.testTag("backButton")) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
@@ -135,7 +136,8 @@ fun ReviewDetailScreen(
                             Toast.makeText(context, "리뷰가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
                             onBackClick()
                         }
-                    }) {
+                    }, modifier = Modifier.testTag("deleteButton"),
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
@@ -156,6 +158,7 @@ fun ReviewDetailScreen(
                         .clickable { onWriterClick(review!!.user.id) }
                         .wrapContentWidth(Alignment.Start)
                         .padding(end = 20.dp)
+                        .testTag("writerName")
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
@@ -205,6 +208,7 @@ fun ReviewDetailScreen(
                         .clickable { onRestaurantClick(review!!.restaurant.googleMapPlaceId) }
                         .wrapContentWidth(Alignment.Start)
                         .padding(start = 20.dp)
+                        .testTag("restaurantName")
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically) {

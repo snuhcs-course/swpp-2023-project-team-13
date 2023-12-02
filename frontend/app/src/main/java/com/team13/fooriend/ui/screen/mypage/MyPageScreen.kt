@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -150,7 +151,7 @@ fun MyPageScreen(
                         style = TextStyle(fontWeight = FontWeight.ExtraBold, fontSize = 20.sp),
                     )
                 }
-                IconButton(onClick = onMyInfoClick) {
+                IconButton(onClick = onMyInfoClick, modifier = Modifier.testTag("myInfoButton")) {
                     Icon(
                         imageVector = Icons.Default.Settings,
                         contentDescription = "My Info",
@@ -169,18 +170,20 @@ fun MyPageScreen(
             if (showPopup) {
                 Popup(
                     alignment = Alignment.Center,
-                    onDismissRequest = { showPopup = false }
+                    onDismissRequest = { showPopup = false },
                 ) {
                     // Your popup content
                     Card(
                         modifier = Modifier
                             .wrapContentSize()
-                            .padding(16.dp),
+                            .padding(16.dp)
+                            .testTag("popup"),
                     ) {
                         Column {
                             // Tabs for Followers and Following
                             var selectedTab by remember { mutableStateOf(if(clickedFollower) 0 else 1) }
                             TabRow(
+                                modifier = Modifier.testTag("tabRow"),
                                 selectedTabIndex = selectedTab,
                                 containerColor = Color.White,
                                 indicator = { tabPositions ->
@@ -242,7 +245,8 @@ fun UserListItem(user: User, onUserClick: (Int) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onUserClick(user.id) },
+            .clickable { onUserClick(user.id) }
+            .testTag("userListItem"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(

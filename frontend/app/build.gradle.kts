@@ -126,4 +126,7 @@ dependencies {
 
     // swipe refresh
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.18.0")
+
+    // using GrantPermissionRule
+    androidTestImplementation ("androidx.test:rules:1.3.0")
 }

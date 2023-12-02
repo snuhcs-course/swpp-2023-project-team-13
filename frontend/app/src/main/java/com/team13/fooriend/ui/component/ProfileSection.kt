@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -86,7 +87,7 @@ fun ProfileSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(16.dp).testTag("profileSection"),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceAround
     ) {
@@ -111,20 +112,20 @@ fun ProfileSection(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = clickedFollower) {
+                TextButton(onClick = clickedFollower, modifier = Modifier.testTag("followersButton")) {
                     Text(
                         text = "$followerCount \n Followers",
                         color = Color.Black,
                         fontSize = 15.sp,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
-                TextButton(onClick = clickedFollowing) {
+                TextButton(onClick = clickedFollowing, modifier = Modifier.testTag("followingButton")) {
                     Text(
                         text = "$followingCount \n Following",
                         color = Color.Black,
                         fontSize = 15.sp,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
@@ -140,7 +141,7 @@ fun ProfileSection(
                             isFollowing = true
                         } },
                         modifier = Modifier
-                            .fillMaxWidth(0.8f),
+                            .fillMaxWidth(0.8f).testTag("followButton"),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = FooriendColor.FooriendGreen,
                             contentColor = Color.White,
@@ -158,7 +159,7 @@ fun ProfileSection(
                             isFollowing = false
                             } },
                         modifier = Modifier
-                            .fillMaxWidth(0.8f),
+                            .fillMaxWidth(0.8f).testTag("unfollowButton"),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = FooriendColor.FooriendGray,
                             contentColor = Color.White,
