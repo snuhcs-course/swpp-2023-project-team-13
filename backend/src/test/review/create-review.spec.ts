@@ -161,13 +161,13 @@ describe('Create Review test', () => {
     expect(reviewEntity.menu).toEqual(['낙지탕탕이']);
   });
 
-  it('영수증 에러나면 400', async () => {
+  it('긍부정 에러나면 400', async () => {
     const image = await ImageFixture.create({});
 
     const receiptImageId = await ImageFixture.create({});
 
     jest.clearAllMocks();
-    (getReceiptOcr as jest.Mock).mockRejectedValue(new Error('error'));
+    (getReviewIsPositive as jest.Mock).mockRejectedValue(new Error('error'));
 
     await supertest(testServer.getHttpServer())
       .post('/reviews')
