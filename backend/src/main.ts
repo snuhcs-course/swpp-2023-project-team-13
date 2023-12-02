@@ -13,7 +13,9 @@ async function bootstrap() {
     return CommandFactory.run(AppModule);
   }
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log'],
+  });
   await setUpSwagger(app);
   await appSetting(app);
   if (process.env.NODE_ENV !== 'test') {
