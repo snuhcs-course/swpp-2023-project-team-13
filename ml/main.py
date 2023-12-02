@@ -27,6 +27,9 @@ async def receipt_ocr(data: OcrModel):
   jpg_image.save(receipt_path)
   response = ocr_receipt(receipt_path)
 
+  if(response is None):
+    raise HTTPException(status_code=403, detail="잘못된 영수증입니다")
+
   return response
 
 

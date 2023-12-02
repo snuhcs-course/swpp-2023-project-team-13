@@ -44,6 +44,9 @@ def ocr_receipt(path):
     images = response_body["images"]
     images_receipt = images[0].get("receipt")
 
+    if(images_receipt is None):
+       return None
+
     receipt_title = images_receipt["result"]["storeInfo"]["name"]["text"]
     receipt_address = images_receipt["result"]["storeInfo"]["addresses"][0]["text"]
     receipt_date = images_receipt["result"]["paymentInfo"]["date"]["text"]
