@@ -48,14 +48,10 @@ import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -85,6 +81,7 @@ fun PostingScreen(
     onCloseClick: () -> Unit = {},
     onPostClick: () -> Unit = {},
 ){
+
     val state = rememberScrollState()
     val (content, contentValue) = remember { mutableStateOf("") }
     var selectImages by remember { mutableStateOf(listOf<Uri>()) }
@@ -124,6 +121,7 @@ fun PostingScreen(
     Column(
         modifier = Modifier
             .verticalScroll(state)
+            .testTag("postingScreen")
     ){
         // 나가기 버튼
         Row(
@@ -133,7 +131,7 @@ fun PostingScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onCloseClick) {
+            IconButton(onClick = onCloseClick, modifier = Modifier.testTag("backButton")) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Close"
@@ -179,7 +177,8 @@ fun PostingScreen(
             TextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 130.dp),
+                    .heightIn(min = 130.dp)
+                    .testTag("writeReviewField"),
                 value = contentState,
                 onValueChange = {
                     if (it.text.length <= 200) {
@@ -188,7 +187,7 @@ fun PostingScreen(
                 },
                 placeholder = {
                     Text(
-                        text = "음식점 리뷰를 작성하면 리뷰의 긍정/부정을 AI가 자동으로 분류하여 등록합니다.",
+                        text = "음식점 리뷰를 작성하면 리뷰의 긍정/부정을 AI가 자동으로 분류하여 등록합니다. \n * 보다 정확한 분류를 위해 리뷰 내용은 최소 20자 이상 작성해주시기 바랍니다 *",
                         color = Color.Gray,
                         fontSize = 12.sp,
                     )
@@ -239,7 +238,8 @@ fun PostingScreen(
                                 galleryLauncher.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
-                            },
+                            }
+                            .testTag("imageButton"),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -296,10 +296,11 @@ fun PostingScreen(
                             .fillMaxHeight()
                             .background(Color.Gray)
                             .clickable {
-                                galleryLauncher.launch(
+                                receiptLauncher.launch(
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
-                            },
+                            }
+                            .testTag("receiptButton"),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -393,13 +394,15 @@ fun PostingScreen(
                         )
                     )
                     onPostClick()
-                    reviewCountManager.updateReviewCount(myReviewCount)
-                    Log.d(myReviewCount.toString(), "log")
+                    Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                    reviewCountManager.updateReviewCount(myReviewCount+1)
                 }
             },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally), colors = ButtonDefaults.buttonColors(containerColor = FooriendColor.FooriendGreen, contentColor = Color.White)){
+                    .align(Alignment.CenterHorizontally)
+                    .testTag("postingButton"),
+                colors = ButtonDefaults.buttonColors(containerColor = FooriendColor.FooriendGreen, contentColor = Color.White)){
                 Text(text = "리뷰 등록")
             }
         }

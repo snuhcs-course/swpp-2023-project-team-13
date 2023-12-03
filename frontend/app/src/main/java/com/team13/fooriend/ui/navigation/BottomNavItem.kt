@@ -27,7 +27,7 @@ sealed class BottomNavItem( // Bottom Navigation Bar에 들어갈 아이템들
     )
     object Social: BottomNavItem(
         title = "Social",
-        icon = FooriendIcon.Social,
+        icon = Icons.Default.Search,
         route = "social"
     )
     object MyPage: BottomNavItem(

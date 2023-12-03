@@ -165,7 +165,7 @@ fun SocialSearchBar(
             active = it
         },
         placeholder = {
-            Text(text = "Search User", fontSize = 15.sp)
+            Text(text = "친구를 이름으로 검색", fontSize = 15.sp)
         },
         leadingIcon = {
             Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
