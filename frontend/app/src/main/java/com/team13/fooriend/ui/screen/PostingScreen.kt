@@ -122,7 +122,7 @@ fun PostingScreen(
         modifier = Modifier
             .verticalScroll(state)
             .testTag("postingScreen")
-    ){
+    ) {
         // 나가기 버튼
         Row(
             modifier = Modifier
@@ -163,7 +163,7 @@ fun PostingScreen(
         }
         Column(
             modifier = Modifier.padding(16.dp)
-        ){
+        ) {
             Text(
                 text = "리뷰 작성",
                 style = TextStyle(
@@ -171,7 +171,7 @@ fun PostingScreen(
                     fontSize = 18.sp
                 ),
                 modifier = Modifier
-                    .padding(vertical = 8 .dp)
+                    .padding(vertical = 8.dp)
             )
 
             TextField(
@@ -329,89 +329,106 @@ fun PostingScreen(
 
             Spacer(modifier = Modifier.height(50.dp))
 
-            Button(onClick = {
-                Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
-                if(contentState.text.isEmpty()){
-                    Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                    return@Button
-                } else if(selectImages.size == 0){
-                    Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
-                    return@Button
-                }
-                isLoading = true
-                coroutineScope.launch {
+            Button(
+                onClick = {
                     Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
-                    val response = placesApi.getPlaceDetails(placeId = restaurantPlaceId, apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0")
-                    var myReviewCount = apiService.getMyReviews().reviewList.size
-                    Log.d("PostingScreen", "restaurant: $response")
-                    val restaurant = RestaurantInfo(
-                        googleMapPlaceId = restaurantPlaceId,
-                        name = response.result.name,
-                        latitude = response.result.geometry.location["lat"]!!,
-                        longitude = response.result.geometry.location["lng"]!!
-                    )
-                    var imageIds = mutableListOf<Int>()
-                    for(uri in selectImages){
-                        val inputStream = context.contentResolver.openInputStream(uri)
-                        inputStream?.let { stream ->
-                            val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
-                            val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+                    if (contentState.text.isEmpty()) {
+                        Toast.makeText(context, "리뷰 내용을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    } else if (selectImages.size == 0) {
+                        Toast.makeText(context, "리뷰 사진을 등록해주세요.", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+                    isLoading = true
+                    coroutineScope.launch {
+                        Log.d("PostingScreen", "restaurantPlaceId: $restaurantPlaceId")
+                        val response = placesApi.getPlaceDetails(
+                            placeId = restaurantPlaceId,
+                            apiKey = "AIzaSyDV4YwwZmJp1PHNO4DSp_BdgY4qCDQzKH0"
+                        )
+                        var myReviewCount = apiService.getMyReviews().reviewList.size
+                        Log.d("PostingScreen", "restaurant: $response")
+                        val restaurant = RestaurantInfo(
+                            googleMapPlaceId = restaurantPlaceId,
+                            name = response.result.name,
+                            latitude = response.result.geometry.location["lat"]!!,
+                            longitude = response.result.geometry.location["lng"]!!
+                        )
+                        var imageIds = mutableListOf<Int>()
+                        for (uri in selectImages) {
+                            val inputStream = context.contentResolver.openInputStream(uri)
+                            inputStream?.let { stream ->
+                                val requestBody =
+                                    stream.readBytes().toRequestBody(MultipartBody.FORM)
+                                val multipartBody = MultipartBody.Part.createFormData(
+                                    "file",
+                                    "filename.jpg",
+                                    requestBody
+                                )
 
-                            // API 호출
-                            val response = apiService.uploadImage(multipartBody)
-                            imageIds.add(response.id)
-                        }
+                                // API 호출
+                                val response = apiService.uploadImage(multipartBody)
+                                imageIds.add(response.id)
+                            }
 //                     val file = File(uri.path)
 //                     Log.d("PostingScreen", "file: $file")
 //                     val requestbody = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
 //                     val body = MultipartBody.Part.createFormData("file",file.name, requestbody)
 //                     val imageresponse = apiService.uploadImage(body)
 
-                    }
-                    Log.d("PostingScreen", "imageIds: $imageIds")
-                    val receiptImageIds = mutableListOf<Int>()
-                    val inputStream = selectReceipt?.let { context.contentResolver.openInputStream(it) }
-                    inputStream?.let { stream ->
-                        val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
-                        val multipartBody = MultipartBody.Part.createFormData("file", "filename.jpg", requestBody)
+                        }
+                        Log.d("PostingScreen", "imageIds: $imageIds")
+                        val receiptImageIds = mutableListOf<Int>()
+                        val inputStream =
+                            selectReceipt?.let { context.contentResolver.openInputStream(it) }
+                        inputStream?.let { stream ->
+                            val requestBody = stream.readBytes().toRequestBody(MultipartBody.FORM)
+                            val multipartBody = MultipartBody.Part.createFormData(
+                                "file",
+                                "filename.jpg",
+                                requestBody
+                            )
 
-                        // API 호출
-                        val response = apiService.uploadImage(multipartBody)
-                        receiptImageIds.add(response.id)
-                    }
-                    Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
-                    var receiptImageId = 0
-                    if(receiptImageIds.size > 0) {
-                        receiptImageId = receiptImageIds[0]
-                    }
+                            // API 호출
+                            val response = apiService.uploadImage(multipartBody)
+                            receiptImageIds.add(response.id)
+                        }
+                        Log.d("PostingScreen", "receiptImageIds: $receiptImageIds")
+                        var receiptImageId = 0
+                        if (receiptImageIds.size > 0) {
+                            receiptImageId = receiptImageIds[0]
+                        }
 
-                    apiService.postReview(
-                        ReviewPostBody(
-                            content = contentState.text,
-                            imageIds = imageIds,
-                            receiptImageId = receiptImageId,
-                            restaurant = restaurant
+                        apiService.postReview(
+                            ReviewPostBody(
+                                content = contentState.text,
+                                imageIds = imageIds,
+                                receiptImageId = receiptImageId,
+                                restaurant = restaurant
+                            )
                         )
-                    )
-                    onPostClick()
-                    Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
-                    reviewCountManager.updateReviewCount(myReviewCount+1)
-                }
-            },
+                        onPostClick()
+                        Toast.makeText(context, "리뷰가 등록되었습니다.", Toast.LENGTH_SHORT).show()
+                        reviewCountManager.updateReviewCount(myReviewCount + 1)
                     }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
                     .testTag("postingButton"),
-                colors = ButtonDefaults.buttonColors(containerColor = FooriendColor.FooriendGreen, contentColor = Color.White)){
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = FooriendColor.FooriendGreen,
+                    contentColor = Color.White
+                )
+            ) {
                 Text(text = "리뷰 등록")
             }
+
         }
 
-
-
     }
+
+
     if (isLoading) {
         LoadingScreen()
     }
@@ -427,8 +444,8 @@ fun LoadingScreen() {
     }
 }
 
-@Composable
-@Preview(showSystemUi = true, showBackground = true)
-fun PostingScreenPreview(){
-//    PostingScreen()
-}
+//@Composable
+//@Preview(showSystemUi = true, showBackground = true)
+//fun PostingScreenPreview(){
+////    PostingScreen()
+//}
