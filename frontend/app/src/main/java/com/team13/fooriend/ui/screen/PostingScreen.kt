@@ -398,6 +398,8 @@ fun PostingScreen(
                     reviewCountManager.updateReviewCount(myReviewCount+1)
                 }
             },
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)

@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -167,7 +168,8 @@ fun RestaurantDetailScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(innerPadding)
+                    .testTag("restaurantDetailScreen"),
 //                    .padding(16.dp),
                 contentPadding = PaddingValues(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -210,9 +212,7 @@ fun ReviewItem(review: Review, onWriterClick: (Int) -> Unit, flag: Int, userProf
             Button(
                 onClick = { onWriterClick(review.user.id) },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-//                modifier = Modifier
-//                    .width(30.dp)
-//                    .height(15.dp)
+                modifier = Modifier.testTag("writerName")
             ) {
                 Box(
                     modifier = Modifier
@@ -352,7 +352,7 @@ fun TopRestaurantBar(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onCloseClick) {
+            IconButton(onClick = onCloseClick, modifier = Modifier.testTag("backButton")) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Close"
@@ -390,7 +390,8 @@ fun TopRestaurantBar(
             onClick = { onWriteReviewClick(restaurantPlaceId, restaurantName) },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 8.dp, bottom = 8.dp, end = 8.dp),
+                .padding(start = 8.dp, bottom = 8.dp, end = 8.dp)
+                .testTag("postingButton"),
             colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
             border = BorderStroke(1.dp, Color.Black)
 
@@ -423,6 +424,7 @@ fun TopRestaurantBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 30.dp, max = 60.dp)
+                        .testTag("isLikeButton")
                 ) {
                     Text(text = "좋아요 $restaurantGood")
                 }
@@ -446,6 +448,7 @@ fun TopRestaurantBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 30.dp, max = 60.dp)
+                        .testTag("isDislikeButton")
                 ) {
                     Text(text = "싫어요 $restaurantBad")
                 }

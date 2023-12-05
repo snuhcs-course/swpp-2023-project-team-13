@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -62,6 +63,7 @@ fun BottomNavigation(navController: NavHostController){
         items.forEach { item ->
             val selected = item.route == navBackStackEntry.value?.destination?.route
             NavigationBarItem(
+                modifier = Modifier.testTag(item.title),
                 icon = { Icon(imageVector = item.icon, contentDescription = item.title,modifier = Modifier.size(item.iconSize)) },
                 // label = { Text(text = item.title, fontWeight = FontWeight.Bold) },
                 selected = selected,

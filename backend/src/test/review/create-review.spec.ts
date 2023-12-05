@@ -161,32 +161,7 @@ describe('Create Review test', () => {
     expect(reviewEntity.menu).toEqual(['낙지탕탕이']);
   });
 
-  it('영수증 에러나면 400', async () => {
-    const image = await ImageFixture.create({});
-
-    const receiptImageId = await ImageFixture.create({});
-
-    jest.clearAllMocks();
-    (getReceiptOcr as jest.Mock).mockRejectedValue(new Error('error'));
-
-    await supertest(testServer.getHttpServer())
-      .post('/reviews')
-      .send({
-        restaurant: {
-          googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
-          latitude: 37.4224764,
-          longitude: -122.0842499,
-          name: '두근두근쭈꾸미',
-        },
-        content: 'content',
-        imageIds: [image.id],
-        receiptImageId: receiptImageId.id,
-      })
-      .set('Authorization', `Bearer ${accessToken}`)
-      .expect(HttpStatus.BAD_REQUEST);
-  });
-
-  it('영수증 에러나면 400', async () => {
+  it('긍부정 에러나면 400', async () => {
     const image = await ImageFixture.create({});
 
     const receiptImageId = await ImageFixture.create({});
@@ -209,6 +184,48 @@ describe('Create Review test', () => {
       })
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(HttpStatus.BAD_REQUEST);
+  });
+
+  it('영수증 에러나면 사진 빠진다', async () => {
+    const image = await ImageFixture.create({});
+
+    const receiptImageId = await ImageFixture.create({});
+
+    jest.clearAllMocks();
+    (getReceiptOcr as jest.Mock).mockRejectedValue(new Error('error'));
+
+    await supertest(testServer.getHttpServer())
+      .post('/reviews')
+      .send({
+        restaurant: {
+          googleMapPlaceId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
+          latitude: 37.4224764,
+          longitude: -122.0842499,
+          name: '두근두근쭈꾸미',
+        },
+        content: 'content',
+        imageIds: [image.id],
+        receiptImageId: receiptImageId.id,
+      })
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(HttpStatus.CREATED);
+
+    const review = await ReviewEntity.findOneOrFail({
+      where: {
+        content: 'content',
+      },
+      relations: {
+        restaurant: true,
+        images: true,
+        user: true,
+      },
+    });
+
+    expect(review.images.length).toEqual(1);
+    expect(review.images[0].id).toEqual(image.id);
+    expect(review.images[0].isReceipt).toEqual(false);
+    expect(review.images[0].isReceiptVerified).toEqual(false);
+    expect(review.images[0].id).not.toEqual(receiptImageId.id);
   });
 
   it('레스토랑 없었으면 생성한다.', async () => {

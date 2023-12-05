@@ -24,32 +24,31 @@ export class ReviewService {
       restaurant: restaurantDto,
     } = createReviewDto;
 
-    console.log(createReviewDto);
-
     const restaurant =
       await this.restaurantRepository.findOrCreate(restaurantDto);
-    const images = await this.imageRepository.findBy({
+    let images = await this.imageRepository.findBy({
       id: In(imageIds.concat([receiptImageId ?? -1])),
     });
+
+    let isPositive = false;
+    try {
+      isPositive = await getReviewIsPositive(content);
+    } catch (e) {
+      console.log(e);
+      throw new BadRequestException('리뷰 분석 중 오류가 발생했습니다.');
+    }
+
     const receiptImage = images.find((image) => image.id === receiptImageId);
     let menu = [];
     if (receiptImage) {
       await receiptImage.markAsReceipt();
       try {
         const receiptData = await getReceiptOcr(receiptImage.url);
-        console.log(receiptData);
         await receiptImage.markAsReceiptVerified();
         menu = receiptData['menu'];
       } catch (e) {
-        throw new BadRequestException('잘못된 영수증입니다.');
+        images = images.filter((image) => image.id !== receiptImageId);
       }
-    }
-
-    let isPositive = false;
-    try {
-      isPositive = await getReviewIsPositive(content);
-    } catch (e) {
-      throw new BadRequestException('리뷰 분석 중 오류가 발생했습니다.');
     }
 
     return await ReviewEntity.create({
