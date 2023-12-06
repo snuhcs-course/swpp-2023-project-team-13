@@ -15,7 +15,7 @@ class ReviewCountManager : ReviewCountSubject {
 
     fun updateReviewCount(count: Int) {
         myReviewCount = count
-        if (myReviewCount % 3 == 0 && myReviewCount > 0) {
+        if (myReviewCount % 10 == 0 && myReviewCount > 0) {
             notifyObservers()
         }
     }
