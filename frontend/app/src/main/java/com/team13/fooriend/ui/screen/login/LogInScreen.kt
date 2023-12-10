@@ -75,7 +75,7 @@ fun LogInScreen(
     val color = if (isPressed) CRed else Color.DarkGray//CDarkGreen
     val coroutineScope = rememberCoroutineScope()
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
+        .baseUrl("http://ec2-13-125-245-104.ap-northeast-2.compute.amazonaws.com")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
@@ -162,6 +162,7 @@ fun LogInScreen(
                     try{
                         response = apiService.login(LoginBody(id, password))
                     } catch(e: Exception){
+                        Log.d("LogInScreen", "error: $e")
                         Toast.makeText(context, "아이디 또는 비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
                         return@launch
                     }

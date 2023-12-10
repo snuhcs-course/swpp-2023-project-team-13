@@ -81,7 +81,7 @@ fun SignUpScreen(
 
 //    val (phoneNumber, phoneNumberValue) = remember { mutableStateOf("") }
     val retrofit = Retrofit.Builder()
-        .baseUrl("http://ec2-54-180-101-207.ap-northeast-2.compute.amazonaws.com")
+        .baseUrl("http://ec2-13-125-245-104.ap-northeast-2.compute.amazonaws.com")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

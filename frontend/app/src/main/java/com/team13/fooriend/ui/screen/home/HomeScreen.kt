@@ -271,7 +271,7 @@ fun HomeScreen(
                                 CustomMarkerRenderer(context, map, clusterManager)
                             val defaultClusterRenderer =
                                 clusterManager.renderer as DefaultClusterRenderer<MyItem>
-                            defaultClusterRenderer.minClusterSize = 3
+                            defaultClusterRenderer.minClusterSize = 10
                             clusterManager.cluster()
 
                             defaultClusterRenderer.setOnClusterItemClickListener {
