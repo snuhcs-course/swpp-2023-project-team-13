@@ -21,7 +21,7 @@ fun LoginSuccess(context: Context, navController: NavHostController = rememberNa
         "restaurant/{restaurantId}" -> false
         "reviewDetail/{reviewId}" -> false
         "fooriend/{userId}" -> false
-        "writeReview/{restaurantPlaceId}" -> false
+        "writeReview/{restaurantPlaceId}/{restaurantName}" -> false
         "logout" -> false
         "myInfo" -> false
         else -> true // in all other cases show the bottom bar
